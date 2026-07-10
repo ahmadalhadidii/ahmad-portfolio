@@ -1,10 +1,11 @@
 $ErrorActionPreference = 'Stop'
 
 $chrome = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
-$outDir = Join-Path $env:TEMP 'ahmad-portfolio-rebuild-check'
+$outDir = Join-Path $env:TEMP 'ahmad-portfolio-editorial-check'
 $runId = Get-Date -Format 'yyyyMMdd-HHmmssfff'
 $profile = Join-Path $outDir ("profile-$runId")
-$url = ([System.Uri]::new((Resolve-Path '.\index.html').Path)).AbsoluteUri
+$homeUrl = ([System.Uri]::new((Resolve-Path '.\index.html').Path)).AbsoluteUri
+$projectBaseUrl = ([System.Uri]::new((Resolve-Path '.\project.html').Path)).AbsoluteUri
 
 New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 
@@ -77,15 +78,25 @@ function Evaluate([string]$expression) {
   return $result.result.value
 }
 
-function Wait-ForRenderedSite {
-  $ready = $false
-  for ($i = 0; $i -lt 120 -and -not $ready; $i++) {
+function Navigate([string]$url) {
+  $null = Invoke-Cdp 'Page.navigate' @{ url = $url }
+  for ($i = 0; $i -lt 120; $i++) {
     try {
-      $ready = [bool](Evaluate 'document.readyState !== "loading" && document.querySelectorAll(".project-item").length === 6')
-    } catch { $ready = $false }
-    if (-not $ready) { Start-Sleep -Milliseconds 100 }
+      if ([bool](Evaluate 'document.readyState !== "loading"')) { return }
+    } catch {}
+    Start-Sleep -Milliseconds 100
   }
-  if (-not $ready) { throw 'Portfolio did not render six project rows.' }
+  throw "Page did not finish parsing: $url"
+}
+
+function Wait-For([string]$expression, [string]$message) {
+  for ($i = 0; $i -lt 120; $i++) {
+    try {
+      if ([bool](Evaluate $expression)) { return }
+    } catch {}
+    Start-Sleep -Milliseconds 100
+  }
+  throw $message
 }
 
 function Save-Screenshot([string]$name) {
@@ -99,26 +110,49 @@ function Save-Screenshot([string]$name) {
   return $path
 }
 
-function Get-SiteState {
+function Home-State {
   $expression = @'
 JSON.stringify({
   width: innerWidth,
   height: innerHeight,
   bodyClass: document.body.className,
-  loaderPresent: Boolean(document.getElementById("binary-loader")),
-  progress: document.getElementById("binary-loader-progress") ? document.getElementById("binary-loader-progress").textContent : null,
-  projectRows: document.querySelectorAll(".project-item").length,
-  openProjects: document.querySelectorAll(".project-item.is-open").length,
-  expandedValue: document.querySelector(".project-trigger") ? document.querySelector(".project-trigger").getAttribute("aria-expanded") : null,
-  firstAction: document.querySelector(".project-trigger__action") ? document.querySelector(".project-trigger__action").textContent : null,
-  imageCodes: Array.from(document.querySelectorAll(".project-item:first-child .project-image__code")).map(function (element) { return element.textContent; }),
-  missingImages: document.querySelectorAll(".project-item:first-child .project-image.is-missing").length,
-  firstImagePath: document.querySelector(".project-item:first-child .project-image__path") ? document.querySelector(".project-item:first-child .project-image__path").textContent : null,
-  activeNav: document.querySelector(".nav-link.is-active") ? document.querySelector(".nav-link.is-active").textContent : null,
-  focusedId: document.activeElement ? document.activeElement.id : null,
+  htmlClass: document.documentElement.className,
+  introHidden: !document.getElementById("intro") || document.getElementById("intro").hidden || getComputedStyle(document.getElementById("intro")).display === "none",
+  introCount: document.getElementById("intro-count") ? document.getElementById("intro-count").textContent : null,
+  previews: document.querySelectorAll(".project-preview").length,
+  linkedPreviews: document.querySelectorAll('.project-preview__link[href^="project.html?project="]').length,
+  methodStages: document.querySelectorAll(".method-stage").length,
+  cvGroups: document.querySelectorAll(".cv-group").length,
+  cvSupportGroups: document.querySelectorAll(".cv-support-group").length,
+  contactLinks: document.querySelectorAll(".contact__links a").length,
+  missingMedia: document.querySelectorAll(".media-frame.is-missing").length,
+  darkProgress: getComputedStyle(document.documentElement).getPropertyValue("--dark-progress").trim(),
+  activeNav: document.querySelector(".site-nav a.is-active") ? document.querySelector(".site-nav a.is-active").dataset.sectionLink : null,
+  menuExpanded: document.getElementById("nav-toggle") ? document.getElementById("nav-toggle").getAttribute("aria-expanded") : null,
+  focused: document.activeElement ? (document.activeElement.dataset.sectionLink || document.activeElement.id || document.activeElement.tagName) : null,
   scrollWidth: document.documentElement.scrollWidth,
-  clientWidth: document.documentElement.clientWidth,
-  mobileNavInert: document.getElementById("mainNav").hasAttribute("inert")
+  clientWidth: document.documentElement.clientWidth
+})
+'@
+  return (Evaluate $expression) | ConvertFrom-Json
+}
+
+function Project-State {
+  $expression = @'
+JSON.stringify({
+  title: document.title,
+  projectKey: document.body.dataset.project || null,
+  hero: document.querySelectorAll(".project-hero").length,
+  metaItems: document.querySelectorAll(".project-meta__item").length,
+  introductionItems: document.querySelectorAll(".project-introduction__item").length,
+  narrativeFigures: document.querySelectorAll(".project-narrative .project-detail-figure").length,
+  informationItems: document.querySelectorAll(".project-information__item").length,
+  paginationLinks: document.querySelectorAll(".project-pagination a").length,
+  missingMedia: document.querySelectorAll(".project-detail-media.is-missing").length,
+  errorState: document.querySelectorAll(".project-detail__error").length,
+  errorHeading: document.querySelector(".project-detail__error-title") ? document.querySelector(".project-detail__error-title").textContent : null,
+  scrollWidth: document.documentElement.scrollWidth,
+  clientWidth: document.documentElement.clientWidth
 })
 '@
   return (Evaluate $expression) | ConvertFrom-Json
@@ -137,29 +171,34 @@ $null = Invoke-Cdp 'Emulation.setDeviceMetricsOverride' @{
 $null = Invoke-Cdp 'Emulation.setEmulatedMedia' @{
   features = @(@{ name = 'prefers-reduced-motion'; value = 'no-preference' })
 }
-$null = Invoke-Cdp 'Page.navigate' @{ url = $url }
-Wait-ForRenderedSite
+
+Navigate $homeUrl
+Wait-For 'document.querySelectorAll(".project-preview").length === 6 && document.querySelectorAll(".method-stage").length === 5' 'Home content did not render.'
 Start-Sleep -Milliseconds 450
-$desktopIntroState = Get-SiteState
-$desktopIntroShot = Save-Screenshot 'desktop-intro'
-Start-Sleep -Milliseconds 1950
-$desktopHeroState = Get-SiteState
+$bootState = Home-State
+$bootShot = Save-Screenshot 'desktop-boot'
+Start-Sleep -Milliseconds 2050
+$desktopHeroState = Home-State
 $desktopHeroShot = Save-Screenshot 'desktop-hero'
 
+$null = Evaluate 'document.getElementById("profile").scrollIntoView({block:"start"}); true'
+Start-Sleep -Milliseconds 180
+$profileShot = Save-Screenshot 'desktop-profile'
+$null = Evaluate 'document.getElementById("cv").scrollIntoView({block:"start"}); true'
+Start-Sleep -Milliseconds 180
+$cvShot = Save-Screenshot 'desktop-cv'
 $null = Evaluate 'document.getElementById("work").scrollIntoView({block:"start"}); true'
-Start-Sleep -Milliseconds 500
-$desktopWorkShot = Save-Screenshot 'desktop-work-closed'
-$null = Evaluate 'document.querySelector(".project-trigger").click(); true'
-Start-Sleep -Milliseconds 500
-$desktopOpenState = Get-SiteState
-$desktopOpenShot = Save-Screenshot 'desktop-work-open'
-$null = Evaluate 'document.querySelector(".project-image-grid").scrollIntoView({block:"start"}); true'
-Start-Sleep -Milliseconds 300
-$desktopImagesShot = Save-Screenshot 'desktop-images'
-
-$null = Evaluate 'document.getElementById("project-trigger-01").focus(); true'
-$null = Evaluate 'document.getElementById("project-trigger-01").dispatchEvent(new KeyboardEvent("keydown", {key:"ArrowDown", bubbles:true})); true'
-$keyboardState = Get-SiteState
+Start-Sleep -Milliseconds 260
+$workState = Home-State
+$workShot = Save-Screenshot 'desktop-work'
+$null = Evaluate 'document.getElementById("method").scrollIntoView({block:"start"}); true'
+Start-Sleep -Milliseconds 220
+$methodState = Home-State
+$methodShot = Save-Screenshot 'desktop-method'
+$null = Evaluate 'document.getElementById("contact").scrollIntoView({block:"start"}); true'
+Start-Sleep -Milliseconds 260
+$contactState = Home-State
+$contactShot = Save-Screenshot 'desktop-contact'
 
 $null = Invoke-Cdp 'Emulation.setDeviceMetricsOverride' @{
   width = 360
@@ -169,38 +208,58 @@ $null = Invoke-Cdp 'Emulation.setDeviceMetricsOverride' @{
   screenWidth = 360
   screenHeight = 800
 }
-$null = Invoke-Cdp 'Page.navigate' @{ url = $url }
-Wait-ForRenderedSite
-Start-Sleep -Milliseconds 2350
-$mobileHeroState = Get-SiteState
+Navigate $homeUrl
+Wait-For 'document.querySelectorAll(".project-preview").length === 6' 'Mobile home content did not render.'
+Start-Sleep -Milliseconds 250
+$mobileState = Home-State
 $mobileHeroShot = Save-Screenshot 'mobile-hero'
+$null = Evaluate 'document.getElementById("nav-toggle").click(); true'
+Start-Sleep -Milliseconds 120
+$menuOpenState = Home-State
+$menuShot = Save-Screenshot 'mobile-menu'
+$null = Evaluate 'document.dispatchEvent(new KeyboardEvent("keydown", {key:"Escape", bubbles:true})); true'
+Start-Sleep -Milliseconds 80
+$menuClosedState = Home-State
 $null = Evaluate 'document.getElementById("work").scrollIntoView({block:"start"}); true'
-Start-Sleep -Milliseconds 400
-$mobileWorkShot = Save-Screenshot 'mobile-work-closed'
-$null = Evaluate 'document.querySelector(".project-trigger").click(); true'
-Start-Sleep -Milliseconds 500
-$mobileOpenState = Get-SiteState
-$mobileOpenShot = Save-Screenshot 'mobile-work-open'
-$null = Evaluate 'document.querySelector(".project-image-grid").scrollIntoView({block:"start"}); true'
-Start-Sleep -Milliseconds 300
-$mobileImagesShot = Save-Screenshot 'mobile-images'
+Start-Sleep -Milliseconds 220
+$mobileWorkState = Home-State
+$mobileWorkShot = Save-Screenshot 'mobile-work'
 
 $null = Invoke-Cdp 'Emulation.setEmulatedMedia' @{
   features = @(@{ name = 'prefers-reduced-motion'; value = 'reduce' })
 }
-$null = Invoke-Cdp 'Page.navigate' @{ url = $url }
-Wait-ForRenderedSite
-Start-Sleep -Milliseconds 200
-$reducedState = Get-SiteState
+$null = Evaluate 'sessionStorage.removeItem("portfolio:intro:v3"); true'
+Navigate $homeUrl
+Wait-For 'document.querySelectorAll(".project-preview").length === 6' 'Reduced-motion home did not render.'
+Start-Sleep -Milliseconds 120
+$reducedState = Home-State
 
-Write-Output ("desktop-intro`t{0}`t{1}" -f ($desktopIntroState | ConvertTo-Json -Compress), $desktopIntroShot)
+$null = Invoke-Cdp 'Emulation.setEmulatedMedia' @{
+  features = @(@{ name = 'prefers-reduced-motion'; value = 'no-preference' })
+}
+Navigate ($projectBaseUrl + '?project=project-01')
+Wait-For 'document.querySelectorAll(".project-hero").length === 1 && document.querySelectorAll(".project-information__item").length === 5' 'Valid project did not render.'
+Start-Sleep -Milliseconds 220
+$validProjectState = Project-State
+$validProjectShot = Save-Screenshot 'mobile-project-valid'
+
+Navigate ($projectBaseUrl + '?project=missing')
+Wait-For 'document.querySelectorAll(".project-detail__error").length === 1' 'Invalid-project fallback did not render.'
+$invalidProjectState = Project-State
+
+Write-Output ("boot`t{0}`t{1}" -f ($bootState | ConvertTo-Json -Compress), $bootShot)
 Write-Output ("desktop-hero`t{0}`t{1}" -f ($desktopHeroState | ConvertTo-Json -Compress), $desktopHeroShot)
-Write-Output ("desktop-open`t{0}`t{1}" -f ($desktopOpenState | ConvertTo-Json -Compress), $desktopOpenShot)
-Write-Output ("keyboard`t{0}" -f ($keyboardState | ConvertTo-Json -Compress))
-Write-Output ("mobile-hero`t{0}`t{1}" -f ($mobileHeroState | ConvertTo-Json -Compress), $mobileHeroShot)
-Write-Output ("mobile-open`t{0}`t{1}" -f ($mobileOpenState | ConvertTo-Json -Compress), $mobileOpenShot)
+Write-Output ("work-theme`t{0}`t{1}" -f ($workState | ConvertTo-Json -Compress), $workShot)
+Write-Output ("method-theme`t{0}`t{1}" -f ($methodState | ConvertTo-Json -Compress), $methodShot)
+Write-Output ("contact-theme`t{0}`t{1}" -f ($contactState | ConvertTo-Json -Compress), $contactShot)
+Write-Output ("mobile-home`t{0}`t{1}" -f ($mobileState | ConvertTo-Json -Compress), $mobileHeroShot)
+Write-Output ("mobile-menu-open`t{0}`t{1}" -f ($menuOpenState | ConvertTo-Json -Compress), $menuShot)
+Write-Output ("mobile-menu-closed`t{0}" -f ($menuClosedState | ConvertTo-Json -Compress))
+Write-Output ("mobile-work`t{0}`t{1}" -f ($mobileWorkState | ConvertTo-Json -Compress), $mobileWorkShot)
 Write-Output ("reduced`t{0}" -f ($reducedState | ConvertTo-Json -Compress))
-Write-Output ("screenshots`t{0}" -f (($desktopWorkShot, $desktopImagesShot, $mobileWorkShot, $mobileImagesShot) -join ','))
+Write-Output ("project-valid`t{0}`t{1}" -f ($validProjectState | ConvertTo-Json -Compress), $validProjectShot)
+Write-Output ("project-invalid`t{0}" -f ($invalidProjectState | ConvertTo-Json -Compress))
+Write-Output ("section-shots`t{0}" -f (($profileShot, $cvShot, $methodShot, $contactShot) -join ','))
 
 try { $null = Invoke-Cdp 'Browser.close' } catch {}
 try { $ws.Dispose() } catch {}

@@ -1,387 +1,625 @@
 /*
  * EDITABLE PORTFOLIO CONTENT
  *
- * This is the single content source for the portfolio. Edit copy, links,
- * project metadata, and image paths here; layout and behaviour live elsewhere.
+ * Keep personal, CV, project, and contact content in this file. Layout,
+ * interactions, and rendering belong in index.html, assets/css/style.css,
+ * assets/js/main.js, and assets/js/project.js.
+ *
+ * Empty CV fields are intentional: the source material does not provide those
+ * facts. Project placeholders begin with "ADD" so unfinished content remains
+ * obvious and cannot be mistaken for portfolio information.
  */
 
 const siteContent = {
   meta: {
     title: "Ahmad Alhadidii — Architecture Portfolio",
     description:
-      "Architecture, research, and computational design portfolio by Ahmad Alhadidii."
+      "Architecture, research, and computational design portfolio by Ahmad Alhadidii.",
+    language: "en"
   },
 
-  boot: {
-    name: "AHMAD ALHADIDII",
-    role: "ARCHITECTURE / RESEARCH / COMPUTATIONAL DESIGN",
-    index: "JO / PORTFOLIO INDEX",
-    progress: "000 → 100",
-    progressStart: "000",
-    progressEnd: "100"
+  loader: {
+    start: "000",
+    end: "100",
+    label: "ARCHIVE / INITIALIZING",
+    duration: 2300
   },
 
   nav: [
-    { label: "PROFILE", target: "#profile" },
-    { label: "WORK", target: "#work" },
-    { label: "METHOD", target: "#method" },
-    { label: "CV", target: "#cv" },
-    { label: "CONTACT", target: "#contact" }
+    { number: "01", label: "PROFILE", target: "#profile" },
+    { number: "02", label: "CV", target: "#cv" },
+    { number: "03", label: "WORK", target: "#work" },
+    { number: "04", label: "METHOD", target: "#method" },
+    { number: "05", label: "CONTACT", target: "#contact" }
   ],
 
   person: {
     name: "Ahmad Alhadidii",
     displayName: "AHMAD ALHADIDII",
-    role: "Architecture / Research / Computational Design",
+    discipline: "ARCHITECTURE / RESEARCH / COMPUTATIONAL DESIGN",
+    roles: [
+      "Architecture student — Al-Balqa Applied University",
+      "Architectural Designer",
+      "Design Researcher",
+      "Computational Design Explorer"
+    ],
     location: "Jordan",
     timezone: "Asia/Amman",
-    email: "alhadidiahamd@gmail.com",
-    statement:
-      "I read beneath the surface of disorder — tracing the quiet systems, patterns, and relationships that shape what first appears random, and reveal the hidden logic that gives scattered things their structure."
+    email: "alhadidiahamd@gmail.com"
   },
 
   hero: {
-    image: "assets/images/hero.jpg",
-    imageLabel: "0.1",
-    caption: "Hero image / replace with selected architectural work",
-    metadata: [
-      "BASED IN JORDAN",
-      "SELECTED WORKS 2025–2026",
-      "AVAILABLE FOR INTERNSHIPS / COLLABORATIONS"
-    ]
+    image: {
+      src: "assets/images/hero-cover.jpg",
+      alt: "ADD HERO IMAGE DESCRIPTION",
+      code: "H.01"
+    },
+    name: "AHMAD ALHADIDII",
+    discipline: "ARCHITECTURE / RESEARCH / COMPUTATIONAL DESIGN",
+    edition: "SELECTED WORKS 2025–2026",
+    location: "BASED IN JORDAN",
+    conceptualTitle: "ARCHITECTURE OF ELSEWHERE",
+    scrollLabel: "SCROLL TO ENTER"
   },
 
   profile: {
     number: "01",
     title: "PROFILE",
+    portrait: {
+      src: "assets/images/portrait.jpg",
+      alt: "ADD PORTRAIT DESCRIPTION",
+      code: "P.01"
+    },
+    positionStatement:
+      "I work across architecture, research, and computational design, translating complex systems, contexts, and relationships into spatial structures.",
     paragraphs: [
-      "I’m Ahmad Alhadidii, an architecture student and architectural designer based in Jordan.",
-      "My work is driven by an interest in how ideas, contexts, human experiences, and emerging technologies can shape meaningful spatial responses. I approach architecture through research, systems, and visual communication, often exploring references beyond architecture before translating them into spatial and graphic form.",
-      "I’m drawn to architecture defined not only by image, but by purpose, memory, use, and contextual logic."
+      "My work begins with questions, evidence, and relationships rather than form alone. Through research, visual communication, and computational tools, I develop spatial responses that are legible in purpose, grounded in context, and open to testing and refinement.",
+      "I am interested in architecture shaped not only by image, but by the systems, memories, uses, and hidden forms of logic that give it structure."
     ],
-    facts: [
-      "Architecture student — Al-Balqa Applied University",
-      "Architecture / Research / Computational Design",
-      "Interested in systems, spatial logic, visual communication, and emerging technologies",
-      "Based in Jordan"
+    metadata: [
+      { label: "NAME", value: "Ahmad Alhadidii" },
+      {
+        label: "EDUCATION",
+        value: "Architecture student — Al-Balqa Applied University"
+      },
+      { label: "ROLE 01", value: "Architectural Designer" },
+      { label: "ROLE 02", value: "Design Researcher" },
+      { label: "ROLE 03", value: "Computational Design Explorer" },
+      { label: "LOCATION", value: "Based in Jordan" }
     ],
     cvLink: {
       label: "CV / PDF",
-      href: "#"
+      href: "#",
+      placeholder: true
+    }
+  },
+
+  cv: {
+    number: "02",
+    title: "CV",
+    eyebrow: "EDUCATION / PRACTICE / RECOGNITION",
+    timeline: {
+      experience: [
+        {
+          index: "01",
+          role: "BIM Lab — Architecture Training",
+          institution: "",
+          location: "",
+          date: "",
+          description: ""
+        },
+        {
+          index: "02",
+          role: "Publication / Research Support",
+          institution: "",
+          location: "",
+          date: "",
+          description: ""
+        }
+      ],
+      education: [
+        {
+          index: "01",
+          qualification: "Architecture Student",
+          institution: "Al-Balqa Applied University",
+          location: "",
+          date: "",
+          description: ""
+        }
+      ],
+      awards: [
+        {
+          index: "01",
+          title: "Environmental Legacy Makers Award",
+          result: "1st Place",
+          location: "",
+          date: "",
+          description: ""
+        }
+      ]
+    },
+    supporting: {
+      software: [
+        "Rhino",
+        "Grasshopper",
+        "Revit",
+        "AutoCAD",
+        "Photoshop",
+        "Illustrator",
+        "D5 Render",
+        "Canva"
+      ],
+      designStrengths: [
+        "Research-Based Design",
+        "Concept Development",
+        "Spatial Storytelling",
+        "Computational Thinking",
+        "Visual Communication"
+      ],
+      technicalSkills: ["BIM Documentation"],
+      languages: [],
+      certifications: []
+    },
+    links: {
+      view: {
+        label: "VIEW CV",
+        href: "#",
+        placeholder: true
+      },
+      download: {
+        label: "DOWNLOAD CV / PDF",
+        href: "#",
+        placeholder: true
+      }
     }
   },
 
   work: {
-    number: "02",
-    title: "SELECTED WORK",
-    openLabel: "[OPEN]",
-    closeLabel: "[CLOSE]"
+    number: "03",
+    title: "WORK",
+    eyebrow: "SELECTED PROJECTS",
+    viewLabel: "VIEW PROJECT"
   },
 
   projects: [
     {
+      id: "project-01",
+      slug: "project-01",
       number: "01",
       title: "PROJECT SLOT",
-      subtitle: "Add project subtitle here",
-      year: "2026",
-      type: "Architecture / Research / Visual Work",
-      status: "Editable",
-      description: "Write a short project description here.",
-      details: [
-        "Add note 01 here.",
-        "Add note 02 here.",
-        "Add note 03 here."
-      ],
-      images: [
-        {
-          code: "1.1",
-          src: "assets/images/project-01-01.jpg",
-          caption: "Image 01"
+      year: "ADD YEAR",
+      location: "ADD LOCATION",
+      type: "ADD PROJECT TYPE",
+      description: "ADD ONE-LINE PROJECT DESCRIPTION",
+      tags: ["ADD TAG 01", "ADD TAG 02"],
+      previewImage: {
+        src: "assets/images/project-01-preview.jpg",
+        alt: "ADD PROJECT 01 PREVIEW IMAGE DESCRIPTION",
+        code: "1.0"
+      },
+      detail: {
+        metadata: {
+          status: "ADD STATUS",
+          role: "ADD ROLE",
+          team: "ADD TEAM"
         },
-        {
-          code: "1.2",
-          src: "assets/images/project-01-02.jpg",
-          caption: "Image 02"
+        introduction: {
+          statement: "ADD PROJECT CONCEPT STATEMENT",
+          question: "ADD PROJECT QUESTION OR PROBLEM",
+          response: "ADD MAIN DESIGN RESPONSE"
         },
-        {
-          code: "1.3",
-          src: "assets/images/project-01-03.jpg",
-          caption: "Image 03"
-        }
-      ]
+        information: {
+          research: "ADD RESEARCH SUMMARY",
+          process: "ADD PROCESS SUMMARY",
+          designSystem: "ADD DESIGN SYSTEM SUMMARY",
+          technicalDevelopment: "ADD TECHNICAL DEVELOPMENT SUMMARY",
+          outcome: "ADD PROJECT OUTCOME"
+        },
+        images: [
+          {
+            code: "1.1",
+            src: "assets/images/project-01-01.jpg",
+            alt: "ADD PROJECT 01 IMAGE 01 DESCRIPTION",
+            caption: "ADD IMAGE 01 CAPTION",
+            layout: "full"
+          },
+          {
+            code: "1.2",
+            src: "assets/images/project-01-02.jpg",
+            alt: "ADD PROJECT 01 IMAGE 02 DESCRIPTION",
+            caption: "ADD IMAGE 02 CAPTION",
+            layout: "half"
+          },
+          {
+            code: "1.3",
+            src: "assets/images/project-01-03.jpg",
+            alt: "ADD PROJECT 01 IMAGE 03 DESCRIPTION",
+            caption: "ADD IMAGE 03 CAPTION",
+            layout: "half"
+          }
+        ]
+      }
     },
     {
+      id: "project-02",
+      slug: "project-02",
       number: "02",
       title: "PROJECT SLOT",
-      subtitle: "Add project subtitle here",
-      year: "2026",
-      type: "Architecture / Research / Visual Work",
-      status: "Editable",
-      description: "Write a short project description here.",
-      details: [
-        "Add note 01 here.",
-        "Add note 02 here.",
-        "Add note 03 here."
-      ],
-      images: [
-        {
-          code: "2.1",
-          src: "assets/images/project-02-01.jpg",
-          caption: "Image 01"
+      year: "ADD YEAR",
+      location: "ADD LOCATION",
+      type: "ADD PROJECT TYPE",
+      description: "ADD ONE-LINE PROJECT DESCRIPTION",
+      tags: ["ADD TAG 01", "ADD TAG 02"],
+      previewImage: {
+        src: "assets/images/project-02-preview.jpg",
+        alt: "ADD PROJECT 02 PREVIEW IMAGE DESCRIPTION",
+        code: "2.0"
+      },
+      detail: {
+        metadata: {
+          status: "ADD STATUS",
+          role: "ADD ROLE",
+          team: "ADD TEAM"
         },
-        {
-          code: "2.2",
-          src: "assets/images/project-02-02.jpg",
-          caption: "Image 02"
+        introduction: {
+          statement: "ADD PROJECT CONCEPT STATEMENT",
+          question: "ADD PROJECT QUESTION OR PROBLEM",
+          response: "ADD MAIN DESIGN RESPONSE"
         },
-        {
-          code: "2.3",
-          src: "assets/images/project-02-03.jpg",
-          caption: "Image 03"
-        }
-      ]
+        information: {
+          research: "ADD RESEARCH SUMMARY",
+          process: "ADD PROCESS SUMMARY",
+          designSystem: "ADD DESIGN SYSTEM SUMMARY",
+          technicalDevelopment: "ADD TECHNICAL DEVELOPMENT SUMMARY",
+          outcome: "ADD PROJECT OUTCOME"
+        },
+        images: [
+          {
+            code: "2.1",
+            src: "assets/images/project-02-01.jpg",
+            alt: "ADD PROJECT 02 IMAGE 01 DESCRIPTION",
+            caption: "ADD IMAGE 01 CAPTION",
+            layout: "full"
+          },
+          {
+            code: "2.2",
+            src: "assets/images/project-02-02.jpg",
+            alt: "ADD PROJECT 02 IMAGE 02 DESCRIPTION",
+            caption: "ADD IMAGE 02 CAPTION",
+            layout: "half"
+          },
+          {
+            code: "2.3",
+            src: "assets/images/project-02-03.jpg",
+            alt: "ADD PROJECT 02 IMAGE 03 DESCRIPTION",
+            caption: "ADD IMAGE 03 CAPTION",
+            layout: "half"
+          }
+        ]
+      }
     },
     {
+      id: "project-03",
+      slug: "project-03",
       number: "03",
       title: "PROJECT SLOT",
-      subtitle: "Add project subtitle here",
-      year: "2026",
-      type: "Architecture / Research / Visual Work",
-      status: "Editable",
-      description: "Write a short project description here.",
-      details: [
-        "Add note 01 here.",
-        "Add note 02 here.",
-        "Add note 03 here."
-      ],
-      images: [
-        {
-          code: "3.1",
-          src: "assets/images/project-03-01.jpg",
-          caption: "Image 01"
+      year: "ADD YEAR",
+      location: "ADD LOCATION",
+      type: "ADD PROJECT TYPE",
+      description: "ADD ONE-LINE PROJECT DESCRIPTION",
+      tags: ["ADD TAG 01", "ADD TAG 02"],
+      previewImage: {
+        src: "assets/images/project-03-preview.jpg",
+        alt: "ADD PROJECT 03 PREVIEW IMAGE DESCRIPTION",
+        code: "3.0"
+      },
+      detail: {
+        metadata: {
+          status: "ADD STATUS",
+          role: "ADD ROLE",
+          team: "ADD TEAM"
         },
-        {
-          code: "3.2",
-          src: "assets/images/project-03-02.jpg",
-          caption: "Image 02"
+        introduction: {
+          statement: "ADD PROJECT CONCEPT STATEMENT",
+          question: "ADD PROJECT QUESTION OR PROBLEM",
+          response: "ADD MAIN DESIGN RESPONSE"
         },
-        {
-          code: "3.3",
-          src: "assets/images/project-03-03.jpg",
-          caption: "Image 03"
-        }
-      ]
+        information: {
+          research: "ADD RESEARCH SUMMARY",
+          process: "ADD PROCESS SUMMARY",
+          designSystem: "ADD DESIGN SYSTEM SUMMARY",
+          technicalDevelopment: "ADD TECHNICAL DEVELOPMENT SUMMARY",
+          outcome: "ADD PROJECT OUTCOME"
+        },
+        images: [
+          {
+            code: "3.1",
+            src: "assets/images/project-03-01.jpg",
+            alt: "ADD PROJECT 03 IMAGE 01 DESCRIPTION",
+            caption: "ADD IMAGE 01 CAPTION",
+            layout: "full"
+          },
+          {
+            code: "3.2",
+            src: "assets/images/project-03-02.jpg",
+            alt: "ADD PROJECT 03 IMAGE 02 DESCRIPTION",
+            caption: "ADD IMAGE 02 CAPTION",
+            layout: "half"
+          },
+          {
+            code: "3.3",
+            src: "assets/images/project-03-03.jpg",
+            alt: "ADD PROJECT 03 IMAGE 03 DESCRIPTION",
+            caption: "ADD IMAGE 03 CAPTION",
+            layout: "half"
+          }
+        ]
+      }
     },
     {
+      id: "project-04",
+      slug: "project-04",
       number: "04",
       title: "PROJECT SLOT",
-      subtitle: "Add project subtitle here",
-      year: "2026",
-      type: "Architecture / Research / Visual Work",
-      status: "Editable",
-      description: "Write a short project description here.",
-      details: [
-        "Add note 01 here.",
-        "Add note 02 here.",
-        "Add note 03 here."
-      ],
-      images: [
-        {
-          code: "4.1",
-          src: "assets/images/project-04-01.jpg",
-          caption: "Image 01"
+      year: "ADD YEAR",
+      location: "ADD LOCATION",
+      type: "ADD PROJECT TYPE",
+      description: "ADD ONE-LINE PROJECT DESCRIPTION",
+      tags: ["ADD TAG 01", "ADD TAG 02"],
+      previewImage: {
+        src: "assets/images/project-04-preview.jpg",
+        alt: "ADD PROJECT 04 PREVIEW IMAGE DESCRIPTION",
+        code: "4.0"
+      },
+      detail: {
+        metadata: {
+          status: "ADD STATUS",
+          role: "ADD ROLE",
+          team: "ADD TEAM"
         },
-        {
-          code: "4.2",
-          src: "assets/images/project-04-02.jpg",
-          caption: "Image 02"
+        introduction: {
+          statement: "ADD PROJECT CONCEPT STATEMENT",
+          question: "ADD PROJECT QUESTION OR PROBLEM",
+          response: "ADD MAIN DESIGN RESPONSE"
         },
-        {
-          code: "4.3",
-          src: "assets/images/project-04-03.jpg",
-          caption: "Image 03"
-        }
-      ]
+        information: {
+          research: "ADD RESEARCH SUMMARY",
+          process: "ADD PROCESS SUMMARY",
+          designSystem: "ADD DESIGN SYSTEM SUMMARY",
+          technicalDevelopment: "ADD TECHNICAL DEVELOPMENT SUMMARY",
+          outcome: "ADD PROJECT OUTCOME"
+        },
+        images: [
+          {
+            code: "4.1",
+            src: "assets/images/project-04-01.jpg",
+            alt: "ADD PROJECT 04 IMAGE 01 DESCRIPTION",
+            caption: "ADD IMAGE 01 CAPTION",
+            layout: "full"
+          },
+          {
+            code: "4.2",
+            src: "assets/images/project-04-02.jpg",
+            alt: "ADD PROJECT 04 IMAGE 02 DESCRIPTION",
+            caption: "ADD IMAGE 02 CAPTION",
+            layout: "half"
+          },
+          {
+            code: "4.3",
+            src: "assets/images/project-04-03.jpg",
+            alt: "ADD PROJECT 04 IMAGE 03 DESCRIPTION",
+            caption: "ADD IMAGE 03 CAPTION",
+            layout: "half"
+          }
+        ]
+      }
     },
     {
+      id: "project-05",
+      slug: "project-05",
       number: "05",
       title: "PROJECT SLOT",
-      subtitle: "Add project subtitle here",
-      year: "2026",
-      type: "Architecture / Research / Visual Work",
-      status: "Editable",
-      description: "Write a short project description here.",
-      details: [
-        "Add note 01 here.",
-        "Add note 02 here.",
-        "Add note 03 here."
-      ],
-      images: [
-        {
-          code: "5.1",
-          src: "assets/images/project-05-01.jpg",
-          caption: "Image 01"
+      year: "ADD YEAR",
+      location: "ADD LOCATION",
+      type: "ADD PROJECT TYPE",
+      description: "ADD ONE-LINE PROJECT DESCRIPTION",
+      tags: ["ADD TAG 01", "ADD TAG 02"],
+      previewImage: {
+        src: "assets/images/project-05-preview.jpg",
+        alt: "ADD PROJECT 05 PREVIEW IMAGE DESCRIPTION",
+        code: "5.0"
+      },
+      detail: {
+        metadata: {
+          status: "ADD STATUS",
+          role: "ADD ROLE",
+          team: "ADD TEAM"
         },
-        {
-          code: "5.2",
-          src: "assets/images/project-05-02.jpg",
-          caption: "Image 02"
+        introduction: {
+          statement: "ADD PROJECT CONCEPT STATEMENT",
+          question: "ADD PROJECT QUESTION OR PROBLEM",
+          response: "ADD MAIN DESIGN RESPONSE"
         },
-        {
-          code: "5.3",
-          src: "assets/images/project-05-03.jpg",
-          caption: "Image 03"
-        }
-      ]
+        information: {
+          research: "ADD RESEARCH SUMMARY",
+          process: "ADD PROCESS SUMMARY",
+          designSystem: "ADD DESIGN SYSTEM SUMMARY",
+          technicalDevelopment: "ADD TECHNICAL DEVELOPMENT SUMMARY",
+          outcome: "ADD PROJECT OUTCOME"
+        },
+        images: [
+          {
+            code: "5.1",
+            src: "assets/images/project-05-01.jpg",
+            alt: "ADD PROJECT 05 IMAGE 01 DESCRIPTION",
+            caption: "ADD IMAGE 01 CAPTION",
+            layout: "full"
+          },
+          {
+            code: "5.2",
+            src: "assets/images/project-05-02.jpg",
+            alt: "ADD PROJECT 05 IMAGE 02 DESCRIPTION",
+            caption: "ADD IMAGE 02 CAPTION",
+            layout: "half"
+          },
+          {
+            code: "5.3",
+            src: "assets/images/project-05-03.jpg",
+            alt: "ADD PROJECT 05 IMAGE 03 DESCRIPTION",
+            caption: "ADD IMAGE 03 CAPTION",
+            layout: "half"
+          }
+        ]
+      }
     },
     {
+      id: "project-06",
+      slug: "project-06",
       number: "06",
       title: "PROJECT SLOT",
-      subtitle: "Add project subtitle here",
-      year: "2026",
-      type: "Architecture / Research / Visual Work",
-      status: "Editable",
-      description: "Write a short project description here.",
-      details: [
-        "Add note 01 here.",
-        "Add note 02 here.",
-        "Add note 03 here."
-      ],
-      images: [
-        {
-          code: "6.1",
-          src: "assets/images/project-06-01.jpg",
-          caption: "Image 01"
+      year: "ADD YEAR",
+      location: "ADD LOCATION",
+      type: "ADD PROJECT TYPE",
+      description: "ADD ONE-LINE PROJECT DESCRIPTION",
+      tags: ["ADD TAG 01", "ADD TAG 02"],
+      previewImage: {
+        src: "assets/images/project-06-preview.jpg",
+        alt: "ADD PROJECT 06 PREVIEW IMAGE DESCRIPTION",
+        code: "6.0"
+      },
+      detail: {
+        metadata: {
+          status: "ADD STATUS",
+          role: "ADD ROLE",
+          team: "ADD TEAM"
         },
-        {
-          code: "6.2",
-          src: "assets/images/project-06-02.jpg",
-          caption: "Image 02"
+        introduction: {
+          statement: "ADD PROJECT CONCEPT STATEMENT",
+          question: "ADD PROJECT QUESTION OR PROBLEM",
+          response: "ADD MAIN DESIGN RESPONSE"
         },
-        {
-          code: "6.3",
-          src: "assets/images/project-06-03.jpg",
-          caption: "Image 03"
-        }
-      ]
+        information: {
+          research: "ADD RESEARCH SUMMARY",
+          process: "ADD PROCESS SUMMARY",
+          designSystem: "ADD DESIGN SYSTEM SUMMARY",
+          technicalDevelopment: "ADD TECHNICAL DEVELOPMENT SUMMARY",
+          outcome: "ADD PROJECT OUTCOME"
+        },
+        images: [
+          {
+            code: "6.1",
+            src: "assets/images/project-06-01.jpg",
+            alt: "ADD PROJECT 06 IMAGE 01 DESCRIPTION",
+            caption: "ADD IMAGE 01 CAPTION",
+            layout: "full"
+          },
+          {
+            code: "6.2",
+            src: "assets/images/project-06-02.jpg",
+            alt: "ADD PROJECT 06 IMAGE 02 DESCRIPTION",
+            caption: "ADD IMAGE 02 CAPTION",
+            layout: "half"
+          },
+          {
+            code: "6.3",
+            src: "assets/images/project-06-03.jpg",
+            alt: "ADD PROJECT 06 IMAGE 03 DESCRIPTION",
+            caption: "ADD IMAGE 03 CAPTION",
+            layout: "half"
+          }
+        ]
+      }
     }
   ],
 
   method: {
-    number: "03",
-    title: "METHOD / TOOLS",
-    rows: [
+    number: "04",
+    title: "METHOD",
+    stages: [
       {
         number: "01",
-        title: "Research-Based Design",
-        description:
-          "Questions, references, and evidence establish the design framework before form is developed.",
-        diagramType: "connected-nodes"
+        title: "RESEARCH",
+        sentence:
+          "Questions, evidence, and context establish the frame before form is developed.",
+        diagram: "research-grid"
       },
       {
         number: "02",
-        title: "Spatial Systems",
-        description:
-          "Program, circulation, structure, and context are organized as related spatial systems.",
-        diagramType: "coordinate-grid"
+        title: "SYSTEMS",
+        sentence:
+          "Programs, users, movement, and constraints are read as connected spatial relationships.",
+        diagram: "connected-system"
       },
       {
         number: "03",
-        title: "Computational Thinking",
-        description:
-          "Complex relationships are translated into clear rules that can be tested and refined.",
-        diagramType: "line-interpolation"
+        title: "TESTING",
+        sentence:
+          "Options are modelled, compared, and refined against the project criteria.",
+        diagram: "iteration-series"
       },
       {
         number: "04",
-        title: "Parametric Logic",
-        description:
-          "Parameters and constraints guide controlled variation rather than decorative complexity.",
-        diagramType: "radial-logic"
+        title: "TRANSLATION",
+        sentence:
+          "Research and rules are converted into clear spatial decisions.",
+        diagram: "rule-to-space"
       },
       {
         number: "05",
-        title: "Visual Communication",
-        description:
-          "Drawings, diagrams, and images make spatial reasoning precise and legible.",
-        diagramType: "stacked-section-lines"
-      },
-      {
-        number: "06",
-        title: "BIM + Documentation",
-        description:
-          "Models and drawing sets coordinate design intent with accurate technical information.",
-        diagramType: "layered-document-grid"
+        title: "COMMUNICATION",
+        sentence:
+          "Drawings, diagrams, and images make the project reasoning legible.",
+        diagram: "drawing-layers"
       }
     ]
-  },
-
-  cv: {
-    number: "04",
-    title: "CV / EXPERIENCE",
-    education: [
-      "Architecture Student — Al-Balqa Applied University"
-    ],
-    experience: [
-      "BIM Lab — Architecture Training",
-      "Publication / Research Support"
-    ],
-    awards: [
-      "Environmental Legacy Makers Award — 1st Place"
-    ],
-    skills: [
-      "Research-Based Design",
-      "Concept Development",
-      "Spatial Storytelling",
-      "Computational Thinking",
-      "Visual Communication",
-      "BIM Documentation"
-    ],
-    software: [
-      "Rhino",
-      "Grasshopper",
-      "Revit",
-      "AutoCAD",
-      "Photoshop",
-      "Illustrator",
-      "D5 Render",
-      "Canva"
-    ],
-    downloadLink: {
-      label: "CV / PDF",
-      href: "#"
-    }
   },
 
   contact: {
     number: "05",
     title: "CONTACT",
-    text: "For internships, collaborations, competitions, or selected visual work.",
+    availability: "Jordan / Open to professional opportunities",
     links: [
       {
+        id: "email",
         label: "EMAIL",
         value: "alhadidiahamd@gmail.com",
-        href: "mailto:alhadidiahamd@gmail.com"
+        href: "mailto:alhadidiahamd@gmail.com",
+        placeholder: false
       },
       {
+        id: "linkedin",
         label: "LINKEDIN",
-        value: "#",
-        href: "#"
+        value: "ADD LINKEDIN URL",
+        href: "#",
+        placeholder: true
       },
       {
+        id: "github",
         label: "GITHUB",
-        value: "#",
-        href: "#"
+        value: "ADD GITHUB URL",
+        href: "#",
+        placeholder: true
       },
       {
-        label: "PORTFOLIO PDF",
-        value: "#",
-        href: "#"
+        id: "instagram",
+        label: "INSTAGRAM",
+        value: "ADD INSTAGRAM URL",
+        href: "#",
+        placeholder: true
       },
       {
+        id: "cv",
         label: "CV PDF",
-        value: "#",
-        href: "#"
+        value: "ADD CV PDF",
+        href: "#",
+        placeholder: true
+      },
+      {
+        id: "portfolio",
+        label: "PORTFOLIO PDF",
+        value: "ADD PORTFOLIO PDF",
+        href: "#",
+        placeholder: true
       }
     ]
   },
@@ -390,9 +628,10 @@ const siteContent = {
     copyright: "©2026",
     name: "AHMAD ALHADIDII",
     location: "JORDAN",
+    discipline: "ARCHITECTURE / RESEARCH / COMPUTATIONAL DESIGN",
     text: "©2026 — AHMAD ALHADIDII — JORDAN"
   }
 };
 
-/* A classic script does not place top-level const bindings on window. */
+/* Classic scripts do not expose top-level const bindings on window. */
 window.siteContent = siteContent;

@@ -2,19 +2,19 @@
   "use strict";
 
   const content = window.siteContent || {};
+  const root = document.documentElement;
+  const body = document.body;
+  const isHome = body.classList.contains("home-page");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const scrambleFrames = new WeakMap();
-  let openProject = null;
+  let menuPreviouslyFocused = null;
+  let themeFrame = 0;
 
   function byId(id) {
     return document.getElementById(id);
   }
 
-  function setText(id, value) {
-    const element = byId(id);
-    if (element && typeof value === "string") {
-      element.textContent = value;
-    }
+  function safeArray(value) {
+    return Array.isArray(value) ? value : [];
   }
 
   function makeElement(tag, className, text) {
@@ -28,25 +28,181 @@
     return element;
   }
 
-  function safeArray(value) {
-    return Array.isArray(value) ? value : [];
+  function setText(id, value) {
+    const element = byId(id);
+    if (element && typeof value === "string") {
+      element.textContent = value;
+    }
+  }
+
+  function hasValue(value) {
+    return typeof value === "string"
+      ? value.trim().length > 0
+      : value !== null && value !== undefined;
+  }
+
+  function clamp(value, minimum, maximum) {
+    return Math.min(Math.max(value, minimum), maximum);
   }
 
   function updateDocumentMeta() {
     if (content.meta && content.meta.title) {
       document.title = content.meta.title;
     }
-
     if (content.meta && content.meta.description) {
       const description = document.querySelector('meta[name="description"]');
       if (description) {
-        description.setAttribute("content", content.meta.description);
+        description.content = content.meta.description;
       }
+    }
+    if (content.meta && content.meta.language) {
+      root.lang = content.meta.language;
     }
   }
 
+  function createConstructionGrid() {
+    const namespace = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(namespace, "svg");
+    svg.setAttribute("viewBox", "0 0 800 500");
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.setAttribute("aria-hidden", "true");
+
+    const fine = document.createElementNS(namespace, "path");
+    fine.setAttribute(
+      "d",
+      "M100 0V500M200 0V500M300 0V500M400 0V500M500 0V500M600 0V500M700 0V500M0 100H800M0 200H800M0 300H800M0 400H800"
+    );
+
+    const strong = document.createElementNS(namespace, "path");
+    strong.setAttribute("class", "strong");
+    strong.setAttribute("d", "M0 0L800 500M800 0L0 500M400 0V500M0 250H800");
+
+    const circle = document.createElementNS(namespace, "circle");
+    circle.setAttribute("cx", "400");
+    circle.setAttribute("cy", "250");
+    circle.setAttribute("r", "64");
+
+    svg.append(fine, strong, circle);
+    return svg;
+  }
+
+  function createMediaFallback(mediaData, label) {
+    const fallback = makeElement("div", "media-fallback");
+    fallback.setAttribute("aria-hidden", "true");
+    fallback.appendChild(createConstructionGrid());
+
+    const copy = makeElement("div", "media-fallback__label");
+    copy.appendChild(makeElement("span", "", label || "IMAGE PENDING"));
+    copy.appendChild(makeElement("span", "", mediaData.src || "ADD IMAGE PATH"));
+    fallback.appendChild(copy);
+
+    if (mediaData.code) {
+      fallback.appendChild(makeElement("span", "media-code", mediaData.code));
+    }
+    return fallback;
+  }
+
+  function applyResponsiveImageAttributes(image, mediaData, sizes) {
+    image.sizes = mediaData.sizes || sizes || "100vw";
+    if (Number(mediaData.width) > 0 && Number(mediaData.height) > 0) {
+      image.width = Number(mediaData.width);
+      image.height = Number(mediaData.height);
+    }
+    if (mediaData.position) {
+      image.style.objectPosition = mediaData.position;
+    }
+  }
+
+  function monitorImage(frame, image, fallback, mediaData) {
+    let settled = false;
+
+    function cleanup() {
+      image.removeEventListener("load", onLoad);
+      image.removeEventListener("error", onError);
+    }
+
+    function finish(loaded) {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      cleanup();
+      frame.classList.remove("is-pending", "has-image", "is-missing");
+      frame.classList.add(loaded ? "has-image" : "is-missing");
+
+      if (loaded) {
+        fallback.setAttribute("aria-hidden", "true");
+      } else {
+        image.hidden = true;
+        image.removeAttribute("src");
+        image.removeAttribute("srcset");
+        fallback.setAttribute("aria-hidden", "false");
+        fallback.setAttribute("role", "img");
+        fallback.setAttribute(
+          "aria-label",
+          mediaData.alt || mediaData.caption || "Image pending replacement"
+        );
+      }
+    }
+
+    function onLoad() {
+      finish(true);
+    }
+
+    function onError() {
+      finish(false);
+    }
+
+    image.addEventListener("load", onLoad, { once: true });
+    image.addEventListener("error", onError, { once: true });
+
+    if (mediaData.srcset) {
+      image.srcset = mediaData.srcset;
+    }
+
+    if (image.getAttribute("src") !== mediaData.src) {
+      image.src = mediaData.src;
+    } else if (image.complete) {
+      finish(image.naturalWidth > 0);
+    }
+  }
+
+  function prepareExistingMedia(frame, image, fallback, mediaData, sizes) {
+    if (!frame || !image || !fallback || !mediaData || !mediaData.src) {
+      return;
+    }
+    image.alt = mediaData.alt || "";
+    applyResponsiveImageAttributes(image, mediaData, sizes);
+    monitorImage(frame, image, fallback, mediaData);
+  }
+
+  function createMediaFrame(mediaData, options) {
+    const settings = options || {};
+    const frame = makeElement("div", "media-frame is-pending " + (settings.className || ""));
+    if (settings.ratio) {
+      frame.style.aspectRatio = settings.ratio;
+    }
+
+    const image = makeElement("img");
+    image.alt = mediaData.alt || "";
+    image.loading = settings.eager ? "eager" : "lazy";
+    image.decoding = "async";
+    if (settings.eager) {
+      image.setAttribute("fetchpriority", "high");
+    }
+    applyResponsiveImageAttributes(image, mediaData, settings.sizes);
+
+    const fallback = createMediaFallback(mediaData, settings.label);
+    frame.append(image, fallback);
+    monitorImage(frame, image, fallback, mediaData);
+    return frame;
+  }
+
   function renderNavigation() {
-    const nav = document.querySelector(".site-nav");
+    if (!isHome) {
+      return;
+    }
+    const nav = byId("primary-navigation");
     const items = safeArray(content.nav);
     if (!nav || !items.length) {
       return;
@@ -54,41 +210,113 @@
 
     const fragment = document.createDocumentFragment();
     items.forEach(function (item) {
-      const link = makeElement("a", "nav-link", item.label);
+      const link = makeElement("a");
+      const sectionName = String(item.target || "").replace(/^#/, "");
       link.href = item.target;
-      link.dataset.scrambleText = item.label;
+      link.dataset.sectionLink = sectionName;
+      link.append(
+        makeElement("span", "", item.number),
+        document.createTextNode(item.label)
+      );
       fragment.appendChild(link);
     });
     nav.replaceChildren(fragment);
   }
 
-  function renderIdentity() {
+  function bindSectionHeading(sectionId, sectionData, note) {
+    const section = byId(sectionId);
+    if (!section || !sectionData) {
+      return;
+    }
+    const number = section.querySelector(".section-heading__number");
+    const title = section.querySelector(".section-heading h2");
+    const headingNote = section.querySelector(".section-heading__note");
+    if (number && sectionData.number) {
+      number.textContent = sectionData.number;
+    }
+    if (title && sectionData.title) {
+      title.textContent = sectionData.title;
+    }
+    if (headingNote && note) {
+      headingNote.textContent = String(note).toUpperCase();
+    }
+  }
+
+  function renderSharedIdentity() {
     const person = content.person || {};
+    const headerName = document.querySelector(".site-header__name");
+    if (headerName && person.displayName) {
+      headerName.textContent = person.displayName;
+      headerName.setAttribute("aria-label", person.name + ", return to top");
+    }
+
+    const intro = byId("intro");
+    if (intro && person.name) {
+      intro.setAttribute("aria-label", "Opening " + person.name + " architecture portfolio");
+    }
+
+    const contactIdentity = document.querySelector(".contact__identity");
+    if (contactIdentity) {
+      contactIdentity.textContent = [person.displayName, person.discipline]
+        .filter(hasValue)
+        .join("\n");
+    }
+
+    bindSectionHeading("profile", content.profile);
+    bindSectionHeading("cv", content.cv, content.cv && content.cv.eyebrow);
+    bindSectionHeading("work", content.work, content.work && content.work.eyebrow);
+    bindSectionHeading("method", content.method);
+    bindSectionHeading("contact", content.contact, content.contact && content.contact.availability);
+  }
+
+  function applyContentLink(element, linkData) {
+    if (!element || !linkData) {
+      return;
+    }
+    element.href = linkData.href || "#";
+    if (linkData.placeholder || linkData.href === "#") {
+      element.dataset.placeholder = "true";
+      element.setAttribute("aria-disabled", "true");
+      element.title = "Replace this placeholder link in content.js";
+    }
+  }
+
+  function renderHeroAndProfile() {
     const hero = content.hero || {};
     const profile = content.profile || {};
 
-    setText("hero-name", person.displayName);
-    setText("hero-role", person.role);
-    setText("hero-statement", person.statement);
+    setText("hero-name", hero.name);
+    setText("hero-discipline", hero.discipline);
+    setText("hero-edition", hero.edition);
+    setText("hero-location", hero.location);
+    setText("hero-concept", hero.conceptualTitle);
+    setText("hero-scroll-label", hero.scrollLabel);
 
-    const metadata = safeArray(hero.metadata);
-    setText("hero-location", metadata[0]);
-    setText("hero-years", metadata[1]);
-    setText("hero-availability", metadata[2]);
-
-    const heroImage = byId("hero-image");
-    const heroFrame = byId("hero-media-frame");
-    if (heroImage && heroFrame && hero.image) {
-      heroImage.alt = "Selected architectural work by " + (person.name || "Ahmad Alhadidii");
-      setText("hero-caption", hero.caption);
-      setText("hero-image-code", hero.imageLabel);
-      setText("hero-placeholder-path", hero.image);
-      const placeholderCode = heroFrame.querySelector(".image-placeholder__code");
-      if (placeholderCode) {
-        placeholderCode.textContent = hero.imageLabel;
-      }
-      monitorImage(heroFrame, heroImage, hero.image);
+    if (hero.image) {
+      setText("hero-path", hero.image.src);
+      setText("hero-code", hero.image.code);
+      prepareExistingMedia(
+        byId("hero-media"),
+        byId("hero-image"),
+        byId("hero-media") && byId("hero-media").querySelector(".media-fallback"),
+        hero.image,
+        "100vw"
+      );
     }
+
+    if (profile.portrait) {
+      setText("portrait-path", profile.portrait.src);
+      setText("portrait-code", profile.portrait.code);
+      prepareExistingMedia(
+        byId("portrait-media"),
+        byId("portrait-image"),
+        byId("portrait-media") && byId("portrait-media").querySelector(".media-fallback"),
+        profile.portrait,
+        "(max-width: 820px) 82vw, 33vw"
+      );
+    }
+
+    setText("profile-statement", profile.positionStatement);
 
     const profileCopy = byId("profile-copy");
     if (profileCopy && safeArray(profile.paragraphs).length) {
@@ -99,518 +327,379 @@
       profileCopy.replaceChildren(fragment);
     }
 
-    const facts = byId("profile-facts");
-    if (facts && safeArray(profile.facts).length) {
+    const metadata = byId("profile-metadata");
+    if (metadata && safeArray(profile.metadata).length) {
       const fragment = document.createDocumentFragment();
-      profile.facts.forEach(function (fact, index) {
-        const item = makeElement("li");
-        item.appendChild(makeElement("span", "", String(index + 1).padStart(2, "0")));
-        item.appendChild(document.createTextNode(fact));
-        fragment.appendChild(item);
+      profile.metadata.forEach(function (item) {
+        const group = makeElement("div");
+        group.append(
+          makeElement("dt", "", item.label),
+          makeElement("dd", "", item.value)
+        );
+        fragment.appendChild(group);
       });
-      facts.replaceChildren(fragment);
+      metadata.replaceChildren(fragment);
     }
 
-    applyLink(byId("profile-cv-link"), profile.cvLink);
-  }
-
-  function applyLink(element, linkData) {
-    if (!element || !linkData) {
-      return;
-    }
-    if (linkData.href) {
-      element.setAttribute("href", linkData.href);
-    }
-    if (linkData.label) {
-      element.firstChild.textContent = linkData.label + " ";
+    const profileLink = byId("profile-cv-link");
+    if (profileLink && profile.cvLink) {
+      profileLink.firstChild.textContent = profile.cvLink.label + " ";
+      applyContentLink(profileLink, profile.cvLink);
     }
   }
 
-  function monitorImage(frame, image, source) {
-    frame.classList.remove("has-image", "is-missing");
-    frame.classList.add("is-pending");
+  function createCVEntry(record, kind) {
+    const entry = makeElement("article", "cv-entry");
+    const index = makeElement("p", "cv-entry__index", record.index || "—");
+    const contentColumn = makeElement("div", "cv-entry__content");
 
-    let settled = false;
-
-    function clearListeners() {
-      image.removeEventListener("load", onLoad);
-      image.removeEventListener("error", onError);
+    let role = record.role || record.qualification || record.title || "";
+    let institution = record.institution || record.result || "";
+    contentColumn.appendChild(makeElement("h4", "cv-entry__role", role));
+    if (institution) {
+      contentColumn.appendChild(makeElement("p", "cv-entry__institution", institution));
+    }
+    if (record.description) {
+      contentColumn.appendChild(makeElement("p", "cv-entry__description", record.description));
     }
 
-    function onLoad() {
-      if (settled) {
-        return;
-      }
-      settled = true;
-      clearListeners();
-      frame.classList.remove("is-pending", "is-missing");
-      frame.classList.add("has-image");
-      frame.dataset.imageState = "loaded";
+    const context = makeElement("div", "cv-entry__context");
+    if (record.location) {
+      context.appendChild(makeElement("span", "", record.location));
+    }
+    if (record.date) {
+      context.appendChild(makeElement("time", "", record.date));
     }
 
-    function onError() {
-      if (settled) {
-        return;
-      }
-      settled = true;
-      clearListeners();
-      image.removeAttribute("src");
-      frame.classList.remove("is-pending", "has-image");
-      frame.classList.add("is-missing");
-      frame.dataset.imageState = "missing";
+    entry.append(index, contentColumn, context);
+    entry.dataset.cvKind = kind;
+    return entry;
+  }
+
+  function createCVGroup(title, records, modifier) {
+    const section = makeElement("section", "cv-group cv-group--" + modifier);
+    section.appendChild(makeElement("h3", "cv-group__title", title));
+    safeArray(records).forEach(function (record) {
+      section.appendChild(createCVEntry(record, modifier));
+    });
+    return section;
+  }
+
+  function createSupportGroup(title, values, type) {
+    const section = makeElement("section", "cv-support-group cv-support-group--" + type);
+    section.appendChild(makeElement("h3", "cv-support-group__title", title));
+
+    if (!safeArray(values).length) {
+      section.classList.add("is-empty");
+      section.appendChild(makeElement("p", "", "—"));
+      return section;
     }
 
-    image.addEventListener("load", onLoad, { once: true });
-    image.addEventListener("error", onError, { once: true });
+    if (type === "software") {
+      const list = makeElement("ul", "software-index");
+      values.forEach(function (value) {
+        const item = makeElement("li");
+        item.append(
+          makeElement("span", "", value),
+          makeElement("span", "software-index__signal")
+        );
+        list.appendChild(item);
+      });
+      section.appendChild(list);
+    } else {
+      const list = makeElement("ul", "cv-support-list");
+      values.forEach(function (value) {
+        list.appendChild(makeElement("li", "", value));
+      });
+      section.appendChild(list);
+    }
+    return section;
+  }
 
-    if (image.getAttribute("src") !== source) {
-      image.setAttribute("src", source);
-    } else if (image.complete) {
-      if (image.naturalWidth > 0) {
-        onLoad();
-      } else {
-        onError();
-      }
+  function renderCV() {
+    const cv = content.cv || {};
+    const timeline = cv.timeline || {};
+    const supporting = cv.supporting || {};
+    const main = byId("cv-main");
+    const support = byId("cv-support");
+
+    if (main) {
+      main.replaceChildren(
+        createCVGroup("EXPERIENCE", timeline.experience, "experience"),
+        createCVGroup("EDUCATION", timeline.education, "education"),
+        createCVGroup("AWARDS / COMPETITIONS", timeline.awards, "awards")
+      );
+    }
+
+    if (support) {
+      support.replaceChildren(
+        createSupportGroup("SOFTWARE", supporting.software, "software"),
+        createSupportGroup("DESIGN STRENGTHS", supporting.designStrengths, "strengths"),
+        createSupportGroup("TECHNICAL SKILLS", supporting.technicalSkills, "technical"),
+        createSupportGroup("LANGUAGES", supporting.languages, "languages"),
+        createSupportGroup("CERTIFICATIONS", supporting.certifications, "certifications")
+      );
+    }
+
+    const actions = byId("cv-actions");
+    if (actions && cv.links) {
+      const links = [cv.links.view, cv.links.download];
+      const existing = actions.querySelectorAll("a");
+      links.forEach(function (linkData, index) {
+        const link = existing[index];
+        if (link && linkData) {
+          link.firstChild.textContent = linkData.label + " ";
+          applyContentLink(link, linkData);
+        }
+      });
     }
   }
 
-  function createConstructionGrid() {
-    const namespace = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(namespace, "svg");
-    svg.setAttribute("class", "construction-grid");
-    svg.setAttribute("viewBox", "0 0 800 600");
-    svg.setAttribute("preserveAspectRatio", "none");
-    svg.setAttribute("aria-hidden", "true");
-
-    const fine = document.createElementNS(namespace, "path");
-    fine.setAttribute("d", "M100 0V600M200 0V600M300 0V600M400 0V600M500 0V600M600 0V600M700 0V600M0 100H800M0 200H800M0 300H800M0 400H800M0 500H800");
-
-    const strong = document.createElementNS(namespace, "path");
-    strong.setAttribute("class", "construction-grid__strong");
-    strong.setAttribute("d", "M0 0L800 600M800 0L0 600M400 0V600M0 300H800");
-
-    const circle = document.createElementNS(namespace, "circle");
-    circle.setAttribute("cx", "400");
-    circle.setAttribute("cy", "300");
-    circle.setAttribute("r", "74");
-
-    svg.append(fine, strong, circle);
-    return svg;
-  }
-
-  function createPlaceholder(source, code) {
-    const placeholder = makeElement("div", "image-placeholder");
-    placeholder.setAttribute("aria-hidden", "true");
-    placeholder.appendChild(createConstructionGrid());
-
-    const copy = makeElement("div", "image-placeholder__copy");
-    copy.appendChild(makeElement("span", "", "REPLACE IMAGE"));
-    copy.appendChild(makeElement("span", "", source));
-    placeholder.appendChild(copy);
-    placeholder.appendChild(makeElement("span", "image-placeholder__code image-code", code));
-    return placeholder;
-  }
-
-  function createMetaRow(label, value) {
-    const item = makeElement("li");
-    item.append(makeElement("span", "", label), makeElement("span", "", value));
-    return item;
-  }
-
-  function createProjectFigure(project, imageData) {
-    const figure = makeElement("figure", "project-figure");
-    const media = makeElement("div", "project-media is-pending");
-    media.dataset.source = imageData.src;
-
-    const image = makeElement("img");
-    image.loading = "lazy";
-    image.decoding = "async";
-    image.alt = project.title + " — " + imageData.caption + " (" + imageData.code + ")";
-    media.append(image, createPlaceholder(imageData.src, imageData.code));
-
-    const caption = makeElement("figcaption", "image-caption");
-    caption.append(
-      makeElement("span", "", imageData.caption),
-      makeElement("span", "image-code", imageData.code)
+  function createDefinition(label, value) {
+    const group = makeElement("div");
+    group.append(
+      makeElement("dt", "", label),
+      makeElement("dd", "", value || "—")
     );
-
-    figure.append(media, caption);
-    return figure;
+    return group;
   }
 
   function renderProjects() {
-    const list = byId("project-list");
+    const container = byId("project-previews");
     const projects = safeArray(content.projects);
-    if (!list) {
+    if (!container) {
       return;
     }
 
     const fragment = document.createDocumentFragment();
+    projects.forEach(function (project, index) {
+      const article = makeElement("article", "project-preview");
+      if ((index + 1) % 3 === 0) {
+        article.classList.add("is-featured");
+      }
 
-    projects.forEach(function (project, projectIndex) {
-      const article = makeElement("article", "project");
-      const triggerId = "project-trigger-" + project.number;
-      const panelId = "project-panel-" + project.number;
+      const link = makeElement("a", "project-preview__link");
+      link.href = "project.html?project=" + encodeURIComponent(project.slug || project.id || project.number);
+      link.dataset.pageTransition = "project";
+      link.setAttribute("aria-label", "View project " + project.number + ": " + project.title);
 
-      const trigger = makeElement("button", "project__trigger");
-      trigger.type = "button";
-      trigger.id = triggerId;
-      trigger.setAttribute("aria-expanded", "false");
-      trigger.setAttribute("aria-controls", panelId);
-      trigger.dataset.projectIndex = String(projectIndex);
+      const media = createMediaFrame(project.previewImage || {}, {
+        className: "project-preview__media",
+        sizes: (index + 1) % 3 === 0
+          ? "100vw"
+          : "(max-width: 820px) 100vw, 66vw",
+        label: "ADD PROJECT PREVIEW"
+      });
 
-      const state = makeElement(
-        "span",
-        "project__state",
-        (content.work && content.work.openLabel) || "[OPEN]"
-      );
-      state.dataset.projectState = "";
-
-      trigger.append(
-        makeElement("span", "project__number", project.number),
-        makeElement("span", "project__title", project.title),
-        makeElement("span", "project__type", project.type),
-        makeElement("span", "project__year", project.year),
-        state
+      const info = makeElement("div", "project-preview__info");
+      info.append(
+        makeElement("p", "project-preview__index", "PROJECT / " + project.number),
+        makeElement("h3", "project-preview__title", project.title),
+        makeElement("p", "project-preview__description", project.description)
       );
 
-      const panel = makeElement("div", "project__panel");
-      panel.id = panelId;
-      panel.hidden = true;
-      panel.inert = true;
-      panel.setAttribute("role", "region");
-      panel.setAttribute("aria-labelledby", triggerId);
-
-      const sheet = makeElement("div", "project-sheet");
-      const sheetHeader = makeElement("div", "project-sheet__header");
-      sheetHeader.appendChild(
-        makeElement(
-          "p",
-          "project-sheet__number",
-          project.number + " / " + String(projects.length).padStart(2, "0")
-        )
-      );
-
-      const identity = makeElement("div", "project-sheet__identity");
-      identity.append(
-        makeElement("h3", "", project.title),
-        makeElement("p", "", project.subtitle)
-      );
-      sheetHeader.appendChild(identity);
-
-      const meta = makeElement("ul", "project-sheet__meta");
+      const meta = makeElement("dl", "project-preview__meta");
       meta.append(
-        createMetaRow("YEAR", project.year),
-        createMetaRow("TYPE", project.type),
-        createMetaRow("STATUS", project.status)
+        createDefinition("YEAR", project.year),
+        createDefinition("LOCATION", project.location),
+        createDefinition("TYPE", project.type)
       );
-      sheetHeader.appendChild(meta);
+      info.appendChild(meta);
 
-      const sheetBody = makeElement("div", "project-sheet__body");
-      sheetBody.appendChild(makeElement("p", "project-sheet__description", project.description));
-      const details = makeElement("ol", "project-sheet__details");
-      safeArray(project.details).forEach(function (detail) {
-        details.appendChild(makeElement("li", "", detail));
+      const tags = makeElement("ul", "project-preview__tags");
+      safeArray(project.tags).forEach(function (tag) {
+        tags.appendChild(makeElement("li", "", tag));
       });
-      sheetBody.appendChild(details);
+      info.appendChild(tags);
 
-      const gallery = makeElement("div", "project-gallery");
-      gallery.setAttribute("aria-label", project.title + " image gallery");
-      safeArray(project.images).forEach(function (imageData) {
-        gallery.appendChild(createProjectFigure(project, imageData));
-      });
+      const action = makeElement("p", "project-preview__action");
+      action.append(
+        makeElement("span", "", (content.work && content.work.viewLabel) || "VIEW PROJECT"),
+        makeElement("span", "", "→")
+      );
+      info.appendChild(action);
 
-      sheet.append(sheetHeader, sheetBody, gallery);
-      panel.appendChild(sheet);
-      article.append(trigger, panel);
+      link.append(media, info);
+      article.appendChild(link);
       fragment.appendChild(article);
     });
-
-    list.replaceChildren(fragment);
-    bindProjectAccordions();
-  }
-
-  function hydrateProjectImages(panel) {
-    panel.querySelectorAll(".project-media[data-source]").forEach(function (media) {
-      if (media.dataset.imageState) {
-        return;
-      }
-      const image = media.querySelector("img");
-      const source = media.dataset.source;
-      if (image && source) {
-        monitorImage(media, image, source);
-      }
-    });
-  }
-
-  function setProjectState(trigger, expanded, restoreFocus) {
-    const panel = byId(trigger.getAttribute("aria-controls"));
-    const state = trigger.querySelector("[data-project-state]");
-    const finalText = expanded
-      ? (content.work && content.work.closeLabel) || "[CLOSE]"
-      : (content.work && content.work.openLabel) || "[OPEN]";
-
-    trigger.setAttribute("aria-expanded", String(expanded));
-    if (panel) {
-      panel.hidden = !expanded;
-      panel.inert = !expanded;
-      if (expanded) {
-        hydrateProjectImages(panel);
-      }
-    }
-    if (state) {
-      scrambleText(state, finalText, 150);
-    }
-    if (!expanded && restoreFocus) {
-      trigger.focus({ preventScroll: true });
-    }
-  }
-
-  function toggleProject(trigger) {
-    const willOpen = trigger.getAttribute("aria-expanded") !== "true";
-
-    if (openProject && openProject !== trigger) {
-      setProjectState(openProject, false, false);
-    }
-
-    setProjectState(trigger, willOpen, false);
-    openProject = willOpen ? trigger : null;
-  }
-
-  function bindProjectAccordions() {
-    const triggers = Array.from(document.querySelectorAll(".project__trigger"));
-
-    triggers.forEach(function (trigger, index) {
-      trigger.addEventListener("click", function () {
-        toggleProject(trigger);
-      });
-
-      trigger.addEventListener("pointerenter", function () {
-        const state = trigger.querySelector("[data-project-state]");
-        if (state) {
-          scrambleText(state, state.textContent, 130);
-        }
-      });
-
-      trigger.addEventListener("keydown", function (event) {
-        let nextIndex = null;
-        if (event.key === "ArrowDown") {
-          nextIndex = (index + 1) % triggers.length;
-        } else if (event.key === "ArrowUp") {
-          nextIndex = (index - 1 + triggers.length) % triggers.length;
-        } else if (event.key === "Home") {
-          nextIndex = 0;
-        } else if (event.key === "End") {
-          nextIndex = triggers.length - 1;
-        }
-
-        if (nextIndex !== null) {
-          event.preventDefault();
-          triggers[nextIndex].focus();
-        }
-      });
-    });
-
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape" && openProject) {
-        const trigger = openProject;
-        setProjectState(trigger, false, true);
-        openProject = null;
-      }
-    });
+    container.replaceChildren(fragment);
   }
 
   function createMethodDiagram(type) {
     const namespace = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(namespace, "svg");
     svg.setAttribute("class", "method-diagram");
-    svg.setAttribute("viewBox", "0 0 240 72");
+    svg.setAttribute("viewBox", "0 0 220 92");
     svg.setAttribute("aria-hidden", "true");
     svg.setAttribute("focusable", "false");
 
     function add(tag, attributes, className) {
       const node = document.createElementNS(namespace, tag);
-      Object.keys(attributes).forEach(function (key) {
-        node.setAttribute(key, attributes[key]);
+      Object.keys(attributes).forEach(function (name) {
+        node.setAttribute(name, attributes[name]);
       });
       if (className) {
         node.setAttribute("class", className);
       }
       svg.appendChild(node);
-      return node;
     }
 
-    if (type === "connected-nodes") {
-      add("path", { d: "M14 54L62 20L111 45L164 14L226 48" }, "");
-      [[14, 54], [62, 20], [111, 45], [164, 14], [226, 48]].forEach(function (point) {
-        add("circle", { cx: point[0], cy: point[1], r: 3.5 }, "");
+    if (type === "research-grid") {
+      add("path", { d: "M18 12V80M64 12V80M110 12V80M156 12V80M202 12V80M10 24H210M10 46H210M10 68H210" }, "soft");
+      add("path", { d: "M18 68L64 52L110 60L156 28L202 38" });
+      add("circle", { cx: 156, cy: 28, r: 3 });
+    } else if (type === "connected-system") {
+      add("path", { d: "M14 68L52 22L98 54L148 18L204 64M52 22L148 18M98 54L204 64" });
+      [[14, 68], [52, 22], [98, 54], [148, 18], [204, 64]].forEach(function (point) {
+        add("circle", { cx: point[0], cy: point[1], r: 3 });
       });
-      add("path", { d: "M62 20L164 14M111 45L226 48" }, "soft-line");
-    } else if (type === "coordinate-grid") {
-      add("path", { d: "M20 8V64M60 8V64M100 8V64M140 8V64M180 8V64M220 8V64M12 18H228M12 36H228M12 54H228" }, "soft-line");
-      add("path", { d: "M20 54L60 46L100 48L140 27L180 31L220 15" }, "");
-      add("circle", { cx: 140, cy: 27, r: 3.5 }, "");
-    } else if (type === "line-interpolation") {
-      add("path", { d: "M12 57C62 57 70 15 120 15S177 57 228 57" }, "");
-      add("path", { d: "M12 46C62 46 72 24 120 24S179 46 228 46M12 35C62 35 74 33 120 33S181 35 228 35" }, "soft-line");
-      add("circle", { cx: 120, cy: 15, r: 3.5 }, "");
-    } else if (type === "radial-logic") {
-      add("circle", { cx: 120, cy: 36, r: 24 }, "");
-      add("circle", { cx: 120, cy: 36, r: 4 }, "");
-      add("path", { d: "M120 36L120 5M120 36L151 12M120 36L166 36M120 36L151 60M120 36L120 67M120 36L89 60M120 36L74 36M120 36L89 12" }, "soft-line");
-      [[120, 5], [151, 12], [166, 36], [151, 60], [120, 67], [89, 60], [74, 36], [89, 12]].forEach(function (point) {
-        add("circle", { cx: point[0], cy: point[1], r: 2.5 }, "");
-      });
-    } else if (type === "stacked-section-lines") {
-      add("path", { d: "M14 58H226M24 48H216M36 38H204M50 28H190M69 18H171" }, "");
-      add("path", { d: "M14 58L69 18M226 58L171 18" }, "soft-line");
-      add("circle", { cx: 120, cy: 18, r: 3 }, "");
+    } else if (type === "iteration-series") {
+      add("path", { d: "M12 68C52 68 56 18 94 18S140 68 178 68M30 76C68 76 72 34 110 34S156 76 208 76" });
+      add("path", { d: "M94 18V74M110 34V82" }, "soft");
+      add("circle", { cx: 94, cy: 18, r: 3 });
+      add("circle", { cx: 110, cy: 34, r: 3 });
+    } else if (type === "rule-to-space") {
+      add("path", { d: "M12 22H84M12 46H84M12 70H84M104 12L208 22V74L104 82ZM104 12L154 34L208 22M154 34V66M104 82L154 66L208 74" });
+      add("path", { d: "M84 22L104 12M84 46L154 34M84 70L104 82" }, "soft");
     } else {
-      add("rect", { x: 24, y: 10, width: 192, height: 52 }, "");
-      add("path", { d: "M24 26H216M24 44H216M72 10V62M154 10V62" }, "soft-line");
-      add("path", { d: "M82 35H143M82 53H125" }, "");
-      add("circle", { cx: 188, cy: 35, r: 4 }, "");
+      add("path", { d: "M16 74H204M28 60H192M44 46H176M64 32H156M88 18H132" });
+      add("path", { d: "M16 74L88 18M204 74L132 18" }, "soft");
+      add("circle", { cx: 110, cy: 18, r: 3 });
     }
-
     return svg;
   }
 
   function renderMethod() {
-    const list = byId("method-list");
-    const rows = content.method && safeArray(content.method.rows);
-    if (!list || !rows || !rows.length) {
+    const sequence = byId("method-sequence");
+    const stages = content.method && safeArray(content.method.stages);
+    if (!sequence || !stages) {
       return;
     }
 
     const fragment = document.createDocumentFragment();
-    rows.forEach(function (row) {
-      const article = makeElement("article", "method-row");
+    stages.forEach(function (stage) {
+      const article = makeElement("article", "method-stage");
       article.append(
-        makeElement("p", "method-row__number", row.number),
-        makeElement("h3", "method-row__title", row.title),
-        makeElement("p", "method-row__description", row.description),
-        createMethodDiagram(row.diagramType)
+        makeElement("p", "method-stage__number", stage.number),
+        makeElement("h3", "method-stage__title", stage.title),
+        makeElement("p", "method-stage__sentence", stage.sentence),
+        createMethodDiagram(stage.diagram)
       );
       fragment.appendChild(article);
     });
-    list.replaceChildren(fragment);
+    sequence.replaceChildren(fragment);
   }
 
-  function renderCV() {
-    const cv = content.cv || {};
-    const table = byId("cv-table");
-    const groups = [
-      ["EDUCATION", cv.education, false],
-      ["EXPERIENCE", cv.experience, false],
-      ["AWARDS", cv.awards, false],
-      ["SKILLS", cv.skills, true],
-      ["SOFTWARE", cv.software, true]
-    ];
-
-    if (table) {
-      const fragment = document.createDocumentFragment();
-      groups.forEach(function (groupData) {
-        const group = makeElement("section", "cv-group");
-        group.appendChild(makeElement("h3", "", groupData[0]));
-        const list = makeElement(
-          "ul",
-          "cv-group__entries" + (groupData[2] ? " cv-group__entries--inline" : "")
-        );
-        safeArray(groupData[1]).forEach(function (entry) {
-          list.appendChild(makeElement("li", "", entry));
-        });
-        group.appendChild(list);
-        fragment.appendChild(group);
-      });
-      table.replaceChildren(fragment);
-    }
-
-    applyLink(byId("cv-download-link"), cv.downloadLink);
-  }
-
-  function renderContact() {
+  function renderContactAndFooter() {
     const contact = content.contact || {};
-    setText("contact-statement", contact.text);
+    const linksContainer = byId("contact-links");
+    setText("contact-availability", String(contact.availability || "").toUpperCase());
 
-    const links = byId("contact-links");
-    if (links && safeArray(contact.links).length) {
+    if (linksContainer) {
       const fragment = document.createDocumentFragment();
-      contact.links.forEach(function (linkData) {
+      safeArray(contact.links).forEach(function (linkData) {
         const link = makeElement("a");
         link.href = linkData.href || "#";
+        if (linkData.placeholder || linkData.href === "#") {
+          link.dataset.placeholder = "true";
+          link.setAttribute("aria-disabled", "true");
+          link.title = "Replace this placeholder link in content.js";
+        }
         link.append(
           makeElement("span", "", linkData.label),
           makeElement("span", "", linkData.value)
         );
         fragment.appendChild(link);
       });
-      links.replaceChildren(fragment);
+      linksContainer.replaceChildren(fragment);
     }
-
     if (content.footer && content.footer.text) {
-      setText("footer-copy", content.footer.text);
+      setText("footer-text", content.footer.text);
     }
   }
 
-  function scrambleText(element, finalText, duration) {
-    if (!element || !finalText) {
+  function setupMobileMenu() {
+    const toggle = byId("nav-toggle");
+    const navigation = byId("primary-navigation");
+    if (!toggle || !navigation) {
       return;
     }
 
-    const previousFrame = scrambleFrames.get(element);
-    if (previousFrame) {
-      window.cancelAnimationFrame(previousFrame);
+    function menuLinks() {
+      return Array.from(navigation.querySelectorAll("a[href]"));
     }
 
-    if (reducedMotion.matches) {
-      element.textContent = finalText;
-      return;
+    function openMenu() {
+      menuPreviouslyFocused = document.activeElement;
+      toggle.setAttribute("aria-expanded", "true");
+      navigation.classList.add("is-open");
+      body.classList.add("nav-open");
+      const links = menuLinks();
+      if (links.length) {
+        links[0].focus();
+      }
     }
 
-    const characters = "01/\\+—×";
-    const start = performance.now();
+    function closeMenu(restoreFocus) {
+      toggle.setAttribute("aria-expanded", "false");
+      navigation.classList.remove("is-open");
+      body.classList.remove("nav-open");
+      if (restoreFocus && menuPreviouslyFocused && typeof menuPreviouslyFocused.focus === "function") {
+        menuPreviouslyFocused.focus({ preventScroll: true });
+      }
+      menuPreviouslyFocused = null;
+    }
 
-    function frame(now) {
-      const progress = Math.min((now - start) / duration, 1);
-      const fixedCount = Math.floor(finalText.length * progress);
-      let output = "";
+    toggle.addEventListener("click", function () {
+      if (toggle.getAttribute("aria-expanded") === "true") {
+        closeMenu(false);
+      } else {
+        openMenu();
+      }
+    });
 
-      for (let index = 0; index < finalText.length; index += 1) {
-        const character = finalText[index];
-        if (index < fixedCount || character === " ") {
-          output += character;
-        } else {
-          output += characters[Math.floor(Math.random() * characters.length)];
+    navigation.addEventListener("click", function (event) {
+      if (event.target.closest("a") && toggle.getAttribute("aria-expanded") === "true") {
+        closeMenu(true);
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (toggle.getAttribute("aria-expanded") !== "true") {
+        return;
+      }
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeMenu(true);
+        return;
+      }
+
+      if (event.key === "Tab") {
+        const focusable = [toggle].concat(menuLinks());
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
         }
       }
+    });
 
-      element.textContent = output;
-      if (progress < 1) {
-        const frameId = window.requestAnimationFrame(frame);
-        scrambleFrames.set(element, frameId);
-      } else {
-        element.textContent = finalText;
-        scrambleFrames.delete(element);
+    window.addEventListener("resize", function () {
+      if (window.innerWidth > 820 && toggle.getAttribute("aria-expanded") === "true") {
+        closeMenu(false);
       }
-    }
-
-    const frameId = window.requestAnimationFrame(frame);
-    scrambleFrames.set(element, frameId);
-  }
-
-  function bindNavScramble() {
-    document.querySelectorAll(".nav-link[data-scramble-text]").forEach(function (link) {
-      function run() {
-        scrambleText(link, link.dataset.scrambleText, 160);
-      }
-      link.addEventListener("pointerenter", run);
-      link.addEventListener("focus", run);
     });
   }
 
-  function setActiveNav(sectionName) {
-    document.querySelectorAll(".nav-link").forEach(function (link) {
-      const active = link.getAttribute("href") === "#" + sectionName;
+  function setActiveNavigation(sectionName) {
+    document.querySelectorAll("[data-section-link]").forEach(function (link) {
+      const active = link.dataset.sectionLink === sectionName;
       link.classList.toggle("is-active", active);
       if (active) {
         link.setAttribute("aria-current", "location");
@@ -620,82 +709,130 @@
     });
   }
 
-  function observeSections() {
+  function updateScrollState() {
+    themeFrame = 0;
+    if (!isHome) {
+      return;
+    }
+
+    const work = byId("work");
+    const contact = byId("contact");
+    const hero = byId("top");
+    const header = byId("site-header");
     const sections = Array.from(document.querySelectorAll("[data-nav-section]"));
-    if (!sections.length) {
+    const viewport = window.innerHeight || 800;
+    const scrollTop = window.scrollY || window.pageYOffset;
+
+    if (!work || !contact || !hero || !header) {
       return;
     }
-    let scheduled = false;
 
-    function update() {
-      scheduled = false;
-      const readingLine = window.scrollY + 56 + window.innerHeight * 0.24;
-      let current = "";
-
-      sections.forEach(function (section) {
-        if (section.offsetTop <= readingLine) {
-          current = section.dataset.navSection;
-        }
-      });
-
-      setActiveNav(current);
+    let darkness;
+    if (reducedMotion.matches) {
+      darkness = scrollTop >= work.offsetTop - viewport * 0.18 &&
+        scrollTop < contact.offsetTop - viewport * 0.18 ? 1 : 0;
+    } else {
+      const sectionPadding = Number.parseFloat(window.getComputedStyle(work).paddingTop) || 160;
+      const boundarySpace = Math.max(120, Math.min(viewport * 0.28, sectionPadding));
+      const darkStart = work.offsetTop - boundarySpace;
+      const darkEnd = work.offsetTop - 20;
+      const lightStart = contact.offsetTop - boundarySpace;
+      const lightEnd = contact.offsetTop - 20;
+      const darkIn = clamp((scrollTop - darkStart) / Math.max(darkEnd - darkStart, 1), 0, 1);
+      const lightOut = clamp((scrollTop - lightStart) / Math.max(lightEnd - lightStart, 1), 0, 1);
+      darkness = darkIn * (1 - lightOut);
     }
+    root.style.setProperty("--dark-progress", darkness.toFixed(3));
 
-    function requestUpdate() {
-      if (!scheduled) {
-        scheduled = true;
-        window.requestAnimationFrame(update);
+    const overHero = scrollTop < hero.offsetHeight - 100;
+    header.classList.toggle("is-over-hero", overHero);
+    header.classList.toggle("is-scrolled", !overHero);
+    header.classList.toggle("is-dark", !overHero && darkness >= 0.5);
+    header.classList.toggle("is-light", !overHero && darkness < 0.5);
+
+    const readingLine = scrollTop + 64 + viewport * 0.25;
+    let current = "";
+    sections.forEach(function (section) {
+      if (section.offsetTop <= readingLine) {
+        current = section.dataset.navSection;
       }
-    }
+    });
+    setActiveNavigation(current);
 
-    window.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate);
-    update();
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) {
+      themeMeta.content = overHero || darkness >= 0.5 ? "#090909" : "#f1f0eb";
+    }
   }
 
-  function startClock() {
-    const clock = byId("local-time");
-    if (!clock || !content.person || !content.person.timezone) {
-      return;
+  function requestScrollUpdate() {
+    if (!themeFrame) {
+      themeFrame = window.requestAnimationFrame(updateScrollState);
     }
-
-    let formatter;
-    try {
-      formatter = new Intl.DateTimeFormat("en-GB", {
-        timeZone: content.person.timezone,
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
-      });
-    } catch (error) {
-      return;
-    }
-
-    function update() {
-      const now = new Date();
-      clock.textContent = formatter.format(now);
-      clock.dateTime = now.toISOString();
-    }
-
-    update();
-    window.setInterval(update, 1000);
   }
 
-  function preventPlaceholderJumps() {
+  function setupScrollState() {
+    if (!isHome) {
+      return;
+    }
+    window.addEventListener("scroll", requestScrollUpdate, { passive: true });
+    window.addEventListener("resize", requestScrollUpdate);
+    window.addEventListener("pageshow", requestScrollUpdate);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(requestScrollUpdate);
+    }
+    updateScrollState();
+  }
+
+  function setupPlaceholderLinks() {
     document.addEventListener("click", function (event) {
-      const link = event.target.closest('a[href="#"]');
-      if (link) {
+      const placeholder = event.target.closest('a[data-placeholder="true"], a[href="#"]');
+      if (placeholder) {
         event.preventDefault();
       }
     });
   }
 
-  function runBoot() {
-    const boot = byId("boot");
-    const screen = byId("boot-screen");
-    const target = byId("hero-media-frame");
-    const progress = byId("boot-progress");
+  function setupPageTransitions() {
+    document.addEventListener("click", function (event) {
+      const link = event.target.closest("a[data-page-transition]");
+      if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+      if (link.target || link.hasAttribute("download") || reducedMotion.matches) {
+        return;
+      }
+      const href = link.getAttribute("href");
+      if (!href) {
+        return;
+      }
+      event.preventDefault();
+      body.classList.add("is-leaving");
+      window.setTimeout(function () {
+        window.location.href = href;
+      }, 280);
+    });
+
+    window.addEventListener("pageshow", function () {
+      body.classList.remove("is-leaving");
+    });
+  }
+
+  function runIntro() {
+    if (!isHome) {
+      return;
+    }
+    const intro = byId("intro");
+    const count = byId("intro-count");
+    const introImage = byId("intro-image");
+    const loader = content.loader || {};
+    const heroImage = content.hero && content.hero.image;
+    const startValue = Number.parseInt(loader.start, 10);
+    const endValue = Number.parseInt(loader.end, 10);
+    const duration = clamp(Number(loader.duration) || 2300, 1800, 2500);
+    const exitDuration = Math.min(620, duration * 0.3);
+    const counterDuration = Math.max(duration - exitDuration - 30, 900);
+    const shouldPlay = root.classList.contains("intro-pending") && !reducedMotion.matches;
     let finished = false;
 
     function finish() {
@@ -703,114 +840,96 @@
         return;
       }
       finished = true;
-      document.body.classList.remove("is-booting", "is-revealing");
-      document.body.classList.add("is-ready");
-      if (boot) {
-        boot.classList.add("is-complete");
-        window.setTimeout(function () {
-          boot.hidden = true;
-        }, 180);
+      root.classList.remove("intro-pending", "intro-revealing");
+      root.classList.add("intro-complete");
+      if (intro) {
+        intro.hidden = true;
       }
+      requestScrollUpdate();
     }
 
-    if (!boot || !screen || reducedMotion.matches) {
+    if (!intro || !shouldPlay) {
       finish();
       return;
     }
 
+    setText("intro-label", loader.label || "ARCHIVE / INITIALIZING");
+    if (count) {
+      count.textContent = String(Number.isFinite(startValue) ? startValue : 0).padStart(3, "0");
+    }
+
+    if (introImage) {
+      introImage.addEventListener("error", function () {
+        introImage.hidden = true;
+        introImage.removeAttribute("src");
+      }, { once: true });
+      if (introImage.complete && introImage.naturalWidth === 0) {
+        introImage.hidden = true;
+        introImage.removeAttribute("src");
+      }
+      if (heroImage && heroImage.src && introImage.getAttribute("src") !== heroImage.src) {
+        introImage.hidden = false;
+        if (heroImage.srcset) {
+          introImage.srcset = heroImage.srcset;
+        }
+        introImage.src = heroImage.src;
+      }
+    }
+
     window.requestAnimationFrame(function () {
-      boot.classList.add("is-on");
+      intro.classList.add("is-active");
     });
 
-    window.setTimeout(function () {
-      boot.classList.add("is-scanning");
-    }, 250);
-
-    window.setTimeout(function () {
-      boot.classList.remove("is-scanning");
-      boot.classList.add("is-reading");
-
-      const bootName = boot.querySelector(".boot__name");
-      const bootRole = boot.querySelector(".boot__role");
-      scrambleText(bootName, (content.boot && content.boot.name) || "AHMAD ALHADIDII", 380);
-      scrambleText(
-        bootRole,
-        (content.boot && content.boot.role) || "ARCHITECTURE / RESEARCH / COMPUTATIONAL DESIGN",
-        460
-      );
-
-      const counterStart = performance.now();
-      function count(now) {
-        const ratio = Math.min((now - counterStart) / 1100, 1);
-        if (progress) {
-          progress.textContent = String(Math.round(ratio * 100)).padStart(3, "0");
-        }
-        if (ratio < 1) {
-          window.requestAnimationFrame(count);
-        }
+    const start = performance.now();
+    function updateCounter(now) {
+      const ratio = clamp((now - start) / counterDuration, 0, 1);
+      if (count) {
+        const from = Number.isFinite(startValue) ? startValue : 0;
+        const to = Number.isFinite(endValue) ? endValue : 100;
+        count.textContent = String(Math.round(from + (to - from) * ratio)).padStart(3, "0");
       }
-      window.requestAnimationFrame(count);
-    }, 600);
+      if (ratio < 1 && !finished) {
+        window.requestAnimationFrame(updateCounter);
+      }
+    }
+    window.requestAnimationFrame(updateCounter);
 
     window.setTimeout(function () {
-      document.body.classList.add("is-revealing");
-      boot.classList.add("is-docking");
+      root.classList.add("intro-revealing");
+      intro.classList.add("is-exiting");
+    }, duration - exitDuration);
 
-      const contentBlock = screen.querySelector(".boot__content");
-      if (contentBlock) {
-        contentBlock.style.opacity = "0";
-      }
+    window.setTimeout(finish, duration);
+    window.setTimeout(finish, Math.min(duration + 180, 2500));
+  }
 
-      if (target && typeof screen.animate === "function") {
-        const from = screen.getBoundingClientRect();
-        const to = target.getBoundingClientRect();
-        screen.animate([
-          {
-            left: from.left + "px",
-            top: from.top + "px",
-            width: from.width + "px",
-            height: from.height + "px",
-            transform: "none",
-            opacity: 1,
-            backgroundColor: "#080808"
-          },
-          {
-            left: to.left + "px",
-            top: to.top + "px",
-            width: to.width + "px",
-            height: to.height + "px",
-            transform: "none",
-            opacity: 0,
-            backgroundColor: "#fafafa"
-          }
-        ], {
-          duration: 600,
-          easing: "cubic-bezier(0.65, 0, 0.35, 1)",
-          fill: "forwards"
-        });
-      } else {
-        screen.style.opacity = "0";
-      }
-    }, 1700);
-
-    window.setTimeout(finish, 2300);
-    window.setTimeout(finish, 2450);
+  function initHome() {
+    runIntro();
+    updateDocumentMeta();
+    renderNavigation();
+    renderSharedIdentity();
+    renderHeroAndProfile();
+    renderCV();
+    renderProjects();
+    renderMethod();
+    renderContactAndFooter();
+    setupScrollState();
   }
 
   function init() {
-    updateDocumentMeta();
-    renderNavigation();
-    renderIdentity();
-    renderProjects();
-    renderMethod();
-    renderCV();
-    renderContact();
-    bindNavScramble();
-    observeSections();
-    startClock();
-    preventPlaceholderJumps();
-    runBoot();
+    setupMobileMenu();
+    setupPlaceholderLinks();
+    setupPageTransitions();
+    if (isHome) {
+      initHome();
+    }
   }
+
+  window.PortfolioUI = {
+    createMediaFrame: createMediaFrame,
+    monitorImage: monitorImage,
+    requestScrollUpdate: requestScrollUpdate
+  };
 
   init();
 })();

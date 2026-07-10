@@ -1,48 +1,45 @@
 # Ahmad Alhadidii — Architecture Portfolio
 
-A static architecture portfolio built with HTML, CSS, and vanilla JavaScript. It has no framework, package manager, build command, or application server. The site is ready for GitHub Pages and also works by opening `index.html` directly from the folder.
+A static, editorial architecture portfolio built with semantic HTML, CSS, and vanilla JavaScript. It has no framework, package manager, build step, or application server. The home page presents Profile, CV, Work, Method, and Contact; one reusable project document renders every project from the shared content data.
+
+## File structure
 
 ```text
 ahmad-portfolio/
-├── index.html
-├── content.js
+├── index.html                  # Home page and section shells
+├── project.html                # Reusable project-detail document
+├── content.js                  # CMS-style content and media data
 ├── README.md
 └── assets/
     ├── css/
-    │   └── style.css
+    │   └── style.css           # Home, detail, responsive, and motion styles
     ├── js/
-    │   └── main.js
-    └── images/
-        ├── hero.jpg
-        ├── project-01-01.jpg
-        ├── project-01-02.jpg
-        └── ...
+    │   ├── main.js             # Home rendering, boot, header, menu, and theme
+    │   └── project.js          # Slug lookup and project-detail rendering
+    ├── images/                 # Hero, portrait, project, and responsive variants
+    └── documents/              # CV and portfolio PDFs when supplied
 ```
 
-The `assets/images/` folder may be created when the first real image is added. Until an expected image exists, the portfolio shows a clean architectural replacement frame with its path and image code.
+The image and document folders can be created when real assets are available. Missing configured images use the site's architectural replacement frame rather than a broken-image icon.
 
-To preview the site, double-click `index.html` or open it from a browser. All internal files use relative paths, so the direct-file version does not need a local server. IBM Plex Mono is requested from Google Fonts when a network connection is available; the site remains usable with its local fallback fonts when offline.
+## Edit content in `content.js`
 
-## 1. Edit `content.js`
+`content.js` is the single content source used by both HTML documents. Layout and behavior belong in the HTML, CSS, and JavaScript files; names, writing, metadata, links, and media paths belong in `siteContent`.
 
-All portfolio writing, project data, CV entries, image paths, and external links belong in the `siteContent` object in `content.js`. The other files control structure, presentation, and interaction.
+The main groups are:
 
-Edit values between quotation marks while preserving property names, commas, brackets, and braces. Save `content.js`, then refresh `index.html`; there is no build step.
-
-The main editable groups are:
-
-- `meta` — browser title and page description
-- `boot` — opening-screen name, role, index label, and progress values
-- `nav` — header labels and section targets
-- `person` — name, display name, role, location, timezone, email, and statement
-- `hero` — hero image, image code, and caption
-- `profile` — biography, facts, and CV link
-- `work` — selected-work section number, title, and accordion labels
-- `projects` — the six editable project slots and their galleries
-- `method` — methods, descriptions, and diagram types
-- `cv` — education, experience, awards, skills, and software
-- `contact` — closing text and contact/PDF links
-- `footer` — copyright, name, and location
+- `meta` — document title and description
+- `loader` — opening-screen labels, counter range, and duration
+- `nav` — the ordered Profile, CV, Work, Method, and Contact navigation
+- `person` — name, discipline, location, timezone, and email
+- `hero` — cover identity, cover image, caption, and responsive sources
+- `profile` — portrait, position statement, profile paragraphs, metadata, and CV link
+- `cv` — structured experience, education, awards, skills, software, languages, certifications, and PDF links
+- `work` — selected-work section labels
+- `projects` — preview and detail content for every project
+- `method` — the five process stages and diagram types
+- `contact` — email, social, and document links
+- `footer` — copyright identity
 
 Keep the name spelling exact wherever it appears:
 
@@ -51,201 +48,244 @@ Ahmad Alhadidii
 AHMAD ALHADIDII
 ```
 
-The `<title>` and description also have static copies in the `<head>` of `index.html` so they remain available before JavaScript runs. Keep those two values synchronized with `siteContent.meta` when changing them.
+Project and link values beginning with `ADD` are deliberate replacement markers, not portfolio claims. Replace them before publishing. Link objects marked `placeholder: true` remain intentionally inactive; after supplying a real destination, set `placeholder` to `false` as well as changing `href` and visible `value` where present.
 
-Each object in `contact.links` uses `label`, `value`, and `href`. `value` is the text displayed beside the label, while `href` is the destination. Replace both placeholder `"#"` values when adding a real LinkedIn, GitHub, portfolio PDF, or CV PDF link.
+The static `<title>` and meta description in each HTML file provide a non-JavaScript fallback. Keep the copies in `index.html`, `project.html`, and `siteContent.meta` synchronized when changing the site identity. Project-specific title and description values are applied by `project.js` after a valid project is resolved.
 
-## 2. Change the hero image
+## Project CMS schema
 
-The hero image is configured in `siteContent.hero`:
+Each object in `siteContent.projects` is one complete project. Array order is the canonical Work order and also determines Previous and Next navigation. Use a unique lowercase ASCII slug with words separated by hyphens.
 
-```js
-hero: {
-  image: "assets/images/hero.jpg",
-  imageLabel: "0.1",
-  caption: "Hero image / replace with selected architectural work"
-}
-```
-
-To use the default path, place the selected image at:
-
-```text
-assets/images/hero.jpg
-```
-
-To use `.webp`, `.png`, or `.avif`, change both the filename and the `image` value so they match exactly. Replace the generic caption with a short description of the work; it is used as image context and may also support alternative text.
-
-If `hero.jpg` is missing, the site intentionally shows an architectural placeholder instead of a broken-image icon.
-
-## 3. What `0.1` means
-
-`0.1` identifies the hero image:
-
-```text
-0.1 = Hero image 01 = assets/images/hero.jpg
-```
-
-Project numbering begins at `1.1`, so the `0` prefix keeps the hero separate from Project 01. Keep `imageLabel: "0.1"` unless the hero image system is intentionally expanded.
-
-## 4. What `1.1`, `1.2`, and `2.1` mean
-
-Project image codes follow `P.I`: the number before the dot is the project, and the number after it is that project's image position. The code is displayed at the bottom-right of its image frame.
-
-```text
-1.1 → Project 01 / Image 01 → assets/images/project-01-01.jpg
-1.2 → Project 01 / Image 02 → assets/images/project-01-02.jpg
-1.3 → Project 01 / Image 03 → assets/images/project-01-03.jpg
-
-2.1 → Project 02 / Image 01 → assets/images/project-02-01.jpg
-2.2 → Project 02 / Image 02 → assets/images/project-02-02.jpg
-2.3 → Project 02 / Image 03 → assets/images/project-02-03.jpg
-
-3.1 → Project 03 / Image 01 → assets/images/project-03-01.jpg
-3.2 → Project 03 / Image 02 → assets/images/project-03-02.jpg
-3.3 → Project 03 / Image 03 → assets/images/project-03-03.jpg
-
-4.1 → Project 04 / Image 01 → assets/images/project-04-01.jpg
-4.2 → Project 04 / Image 02 → assets/images/project-04-02.jpg
-4.3 → Project 04 / Image 03 → assets/images/project-04-03.jpg
-
-5.1 → Project 05 / Image 01 → assets/images/project-05-01.jpg
-5.2 → Project 05 / Image 02 → assets/images/project-05-02.jpg
-5.3 → Project 05 / Image 03 → assets/images/project-05-03.jpg
-
-6.1 → Project 06 / Image 01 → assets/images/project-06-01.jpg
-6.2 → Project 06 / Image 02 → assets/images/project-06-02.jpg
-6.3 → Project 06 / Image 03 → assets/images/project-06-03.jpg
-```
-
-In general, code `P.I` maps to `assets/images/project-PP-II.jpg`, with two-digit project and image numbers in the filename. Paths are case-sensitive after publishing to GitHub Pages.
-
-## 5. Rename project slots
-
-Each object in `siteContent.projects` represents one project. Replace the neutral title while keeping its unique, zero-padded project number:
+The implemented schema is:
 
 ```js
 {
+  id: "project-01",
+  slug: "project-slug",
   number: "01",
-  title: "PROJECT SLOT",
-  subtitle: "Add project subtitle here",
+  title: "PROJECT TITLE",
+  subtitle: "Optional project subtitle",
   year: "2026",
-  type: "Architecture / Research / Visual Work",
-  status: "Editable",
-  description: "Write a short project description here.",
-  details: [
-    "Add note 01 here.",
-    "Add note 02 here.",
-    "Add note 03 here."
-  ]
-}
-```
+  location: "Jordan",
+  type: "Architecture / Research",
+  description: "One concise line for the Work preview.",
+  tags: ["Research", "Systems"],
 
-Change `title`, `subtitle`, `year`, `type`, `status`, `description`, and the `details` strings as needed. The JavaScript automatically builds the compact project row and inline project sheet; no matching project markup needs to be added to `index.html`.
+  previewImage: {
+    src: "assets/images/project-01-preview.jpg",
+    srcset: "assets/images/project-01-preview-960.webp 960w, assets/images/project-01-preview-1600.webp 1600w",
+    sizes: "(max-width: 760px) 100vw, 66vw",
+    alt: "Describe the visible architectural work.",
+    code: "1.0",
+    ratio: "16 / 10",
+    position: "50% 50%"
+  },
 
-## 6. Replace project images
-
-Place each image at the `src` path already assigned in its project object. To replace image `1.1`, add or overwrite:
-
-```text
-assets/images/project-01-01.jpg
-```
-
-Then give it a meaningful caption in `content.js`:
-
-```js
-{
-  code: "1.1",
-  src: "assets/images/project-01-01.jpg",
-  caption: "Ground-floor plan and circulation study"
-}
-```
-
-The image appears after a refresh. If it is missing or cannot load, the replacement frame continues to show the expected path and code. WebP, PNG, and AVIF are supported by modern browsers; update the complete `src` value when changing an extension. Compress large drawings and renders before publishing, while retaining enough resolution for architectural detail.
-
-## 7. Add more images
-
-Add another complete object to the relevant project's `images` array. A fourth image for Project 01 should be:
-
-```js
-{
-  code: "1.4",
-  src: "assets/images/project-01-04.jpg",
-  caption: "Add a meaningful image description"
-}
-```
-
-Then add the matching file at `assets/images/project-01-04.jpg`. Separate adjacent objects with commas and keep every code unique within its project. Reorder the objects to reorder the gallery; remove a complete object to remove an image.
-
-If a seventh project is added, use project number `"07"`, code `7.1`, and path `assets/images/project-07-01.jpg` for its first image.
-
-## 8. Edit CV, experience, awards, skills, and software
-
-The professional record is stored in `siteContent.cv`. Edit the existing entries in place and preserve the current object or array shape used by each group:
-
-```js
-cv: {
-  education: [
-    "Architecture Student — Al-Balqa Applied University"
-  ],
-  experience: [
-    "BIM Lab — Architecture Training",
-    "Publication / Research Support"
-  ],
-  awards: [
-    "Environmental Legacy Makers Award — 1st Place"
-  ],
-  skills: [
-    "Research-Based Design",
-    "Concept Development",
-    "Spatial Storytelling"
-  ],
-  software: [
-    "Rhino",
-    "Grasshopper",
-    "Revit"
-  ],
-  downloadLink: {
-    label: "CV / PDF",
-    href: "#"
+  detail: {
+    metadata: {
+      status: "Academic",
+      role: "Architectural Designer",
+      team: "Individual project"
+    },
+    introduction: {
+      statement: "Short concept statement.",
+      question: "The project question or problem.",
+      response: "The main spatial response."
+    },
+    information: {
+      research: "Project-specific research summary.",
+      process: "Project-specific process summary.",
+      designSystem: "Project-specific design-system summary.",
+      technicalDevelopment: "Project-specific technical summary.",
+      outcome: "Project-specific outcome."
+    },
+    images: [
+      {
+        code: "1.1",
+        src: "assets/images/project-01-01.jpg",
+        srcset: "assets/images/project-01-01-960.webp 960w, assets/images/project-01-01-1800.webp 1800w",
+        sizes: "100vw",
+        width: 1800,
+        height: 1125,
+        ratio: "16 / 10",
+        position: "50% 50%",
+        type: "drawing",
+        alt: "Describe the drawing, plan, section, or image.",
+        caption: "Ground-floor plan and circulation study",
+        layout: "full"
+      },
+      {
+        code: "1.2",
+        src: "assets/images/project-01-02.jpg",
+        alt: "Describe the visible work.",
+        caption: "Section and environmental logic",
+        layout: "half"
+      }
+    ]
   }
 }
 ```
 
-All five CV categories are arrays of strings. Add, remove, or reorder complete strings to change their display order. Keep dates, institutions, offices, roles, and award names concise. `cv.downloadLink` and `profile.cvLink` each use `{ label, href }`; update those links and the contact CV link when a real PDF is available. A relative PDF path such as `assets/Ahmad-Alhadidii-CV.pdf` works when the PDF is committed with the site; a full `https://` URL can point to an externally hosted file.
+`layout: "full"` spans the project publication width; adjacent `layout: "half"` items form a controlled two-column sequence where space allows. Keep every `alt` value specific to what is visible; captions explain why an image matters. Media objects support optional `srcset`, `sizes`, `width`, `height`, `ratio`, `position`, `type`, `caption`, and `code` values. Empty optional fields are omitted by the renderer rather than printed as `undefined`.
 
-## 9. Publish with GitHub Pages
+The detail hero is resolved in this order: `detail.hero`, top-level `hero`, `previewImage`, top-level `preview`, then the first detail/project image. The current records use `previewImage` as both the Work preview and detail opening cover. Add a separate `detail.hero` object when the full project needs a different crop or source.
 
-1. Create a GitHub repository and place `index.html`, `content.js`, `README.md`, and the complete `assets` folder at its root.
-2. Commit and push the files to the `main` branch.
-3. Open the repository on GitHub and go to **Settings → Pages**.
-4. Under **Build and deployment**, choose **Deploy from a branch**.
-5. Select the `main` branch and `/ (root)` folder, then save.
-6. Wait for deployment to complete and open the Pages URL GitHub provides.
+For more complex future publications, the renderer also accepts structured `detail.narrative` blocks and information arrays. The primary editable schema above remains the simplest shape for the six current projects.
 
-Do not rename `index.html`; GitHub Pages uses it as the entry document. Because the site uses relative paths, it works both as a user site and inside a repository subpath. Check filename capitalization carefully—GitHub Pages is case-sensitive even when local Windows previews are not.
+To add a project:
 
-No build action or dependency installation is required. Opening `index.html` directly remains the quickest local check; a static server is optional.
+1. Duplicate one complete object in `siteContent.projects`.
+2. Assign a unique `slug` and zero-padded `number`.
+3. Replace every preview, detail metadata, introduction, information, and image value.
+4. Add the matching images and responsive variants.
+5. Open its generated Work link and verify Previous/Next order.
 
-## 10. Change the fonts
+Do not add matching project markup to `index.html` or create another detail HTML file. Both views are generated from the shared object.
 
-The site intentionally uses two font-family variables near the top of `assets/css/style.css`:
+## Project URLs and invalid slugs
 
-```css
---font-main: "Suisse Int'l", "Suisse Intl", "Suisse International", "Helvetica Neue", Arial, sans-serif;
---font-mono: "IBM Plex Mono", "Roboto Mono", monospace;
+Every Work preview is a normal link to the reusable template:
+
+```text
+project.html?project=project-slug
 ```
 
-`--font-main` controls names, headings, project titles, and paragraph text. Suisse is not included or imported; if a licensed Suisse family is installed on the visitor's device, the browser can use it. Otherwise the stack falls back to Helvetica Neue, Arial, and the system sans-serif. Do not upload or redistribute paid Suisse font files without an appropriate webfont license.
+`project.js` reads the `project` query parameter, finds the matching `slug` in `siteContent.projects`, and renders that project's publication-style detail page. For compatibility it can also resolve the project's `id`, zero-padded number, or array index and accepts `slug` or `id` as fallback query-parameter names; the canonical public link remains `?project=<slug>`. Query strings work when navigating from a direct `file://` preview and on GitHub Pages because the scripts and assets use relative paths.
 
-`--font-mono` controls navigation, metadata, image codes, CV labels, and other small technical text. IBM Plex Mono is the only externally requested font and is loaded in `index.html` from Google Fonts. To change it, update both the Google Fonts `<link>` and `--font-mono`, while retaining a local monospace fallback.
+An absent, unknown, or malformed slug does not silently load the first project. The template displays a deliberate Project Not Found state with a link back to `index.html#work`.
 
-## 11. Why only two fonts are used
+Changing a slug changes its public URL. Update any external links or bookmarks that use the previous value. Slugs must be unique; duplicate slugs make project selection ambiguous. Previous and Next navigation follows the array order and wraps at either end; Project Index returns to `index.html#work`.
 
-The two-font system keeps the portfolio calm and recognizably architectural:
+## Hero, portrait, and responsive images
 
-- The Suisse-style sans-serif stack gives project writing, headings, and identity text a neutral professional hierarchy.
-- IBM Plex Mono distinguishes coordinates, labels, image codes, navigation, and CV metadata without turning the site into a terminal interface.
-- Limiting the design to these roles improves consistency, loading performance, and typographic discipline.
-- System fallbacks keep the direct-open and offline experience readable without bundling licensed font files.
+The fallback image paths are:
 
-Avoid adding decorative, rounded, display, or extra UI typefaces. Adjust weight, size, spacing, and layout within the two existing families instead.
+```text
+assets/images/hero-cover.jpg
+assets/images/portrait.jpg
+assets/images/project-01-preview.jpg
+assets/images/project-01-01.jpg
+assets/images/project-01-02.jpg
+```
+
+The filename is not hard-coded as a rule: the authoritative path is the relevant `src` value in `content.js`. A consistent responsive naming convention is recommended:
+
+```text
+hero-cover-960.webp
+hero-cover-1600.webp
+hero-cover-2400.webp
+
+portrait-480.webp
+portrait-800.webp
+
+project-01-preview-960.webp
+project-01-preview-1600.webp
+project-01-01-1200.webp
+project-01-01-2400.webp
+project-01-02-960.webp
+project-01-02-1800.webp
+```
+
+List each available variant in that media object's `srcset`, including its real width descriptor, and set an appropriate `sizes` value. Keep a broadly supported JPEG fallback in `src`. Do not list a file that has not been added.
+
+The home hero and project-detail opening image load eagerly at high priority. Portraits, Work previews below the fold, drawings, and later project images load lazily. The CSS media frames reserve stable aspect ratios so replacing an image does not cause layout shift. Compress renders and drawings while preserving enough detail for architectural review.
+
+## CV data: verified limits
+
+No CV reference image or CV PDF was present in the supplied files. The website therefore uses only the professional information that could be verified from the available text:
+
+- Architecture Student — Al-Balqa Applied University
+- BIM Lab — Architecture Training
+- Publication / Research Support
+- Environmental Legacy Makers Award — 1st Place
+- The supplied design-strength, technical-skill, and software names
+
+Dates, locations, institutions beyond the one named above, responsibility descriptions, proficiency levels, additional experience, awards, and certifications must not be inferred. Add them only after checking the source CV exactly.
+
+`cv.languages` and `cv.certifications` intentionally remain empty arrays until verified information is supplied. Their editorial groups remain visible with a neutral dash so the structure is ready without implying unsupported facts. Empty data is preferable to invented professional claims.
+
+CV records use structured objects rather than display-only row strings. Preserve the existing property names for index, role or qualification, institution, location, date, and description. Leave an unverified optional value empty; do not substitute generic copy.
+
+## Contact links and PDFs
+
+Replace placeholder destinations in `profile.cvLink`, `cv.links`, and `contact.links`. A typical local document setup is:
+
+```js
+links: {
+  view: {
+    label: "VIEW CV",
+    href: "assets/documents/Ahmad-Alhadidii-CV.pdf",
+    placeholder: false
+  },
+  download: {
+    label: "DOWNLOAD CV / PDF",
+    href: "assets/documents/Ahmad-Alhadidii-CV.pdf",
+    placeholder: false
+  }
+}
+```
+
+Then add the actual file at the same case-sensitive path. Use the equivalent pattern for `assets/documents/Ahmad-Alhadidii-Portfolio.pdf`.
+
+Contact destinations should use:
+
+- `mailto:` for email
+- complete `https://` URLs for LinkedIn, GitHub, and Instagram
+- relative `assets/documents/...` URLs for committed PDFs, or complete HTTPS URLs for externally hosted documents
+
+Update both the visible `value` and the destination `href`, then set `placeholder: false`. Do not publish links whose destination is still `#` or empty. If an external link opens a new tab, retain `rel="noopener noreferrer"`.
+
+## Opening sequence and session behavior
+
+The black calibration/loading sequence belongs only to `index.html`. It plays once per browser session, lasts approximately 1.8–2.5 seconds, counts from `000` to `100`, and progressively reveals the hero. A marker in `sessionStorage` prevents it from replaying on same-session reloads or after visiting a project and returning home.
+
+Project pages never play the boot sequence. Reduced-motion visitors skip it. If storage is blocked or unavailable—possible in restrictive direct-file browser settings—the site fails safely by revealing the page instead of repeatedly trapping the visitor in the loader.
+
+Close the tab/browser session or clear `portfolio:intro:v3` from browser session storage when the first-visit animation needs to be tested again. If the sequence is intentionally revised, version this key in both the inline head check and the documentation.
+
+## Scroll theme, mobile navigation, and accessibility
+
+The home page transitions from an off-white Profile/CV environment to a near-black Work/Method environment and returns to off-white near Contact. The scroll handler updates the theme through animation-frame scheduling; the adaptive header changes foreground and surface treatment to maintain contrast.
+
+The fixed header is transparent over the hero and gains a restrained surface after scrolling. On small screens, the navigation is controlled by a real menu button with `aria-expanded` and `aria-controls`. The menu closes on Escape, link activation, or return to a desktop width, and focus returns to the button.
+
+When editing the site:
+
+- Keep the section and navigation order `PROFILE`, `CV`, `WORK`, `METHOD`, `CONTACT`.
+- Preserve semantic headings, landmarks, figure captions, visible focus styles, the skip link, and meaningful image alternatives.
+- Keep links and menu controls keyboard accessible with comfortable touch targets.
+- Verify text, dividers, focus indicators, and the header against both light and dark backgrounds.
+- Do not remove reserved media ratios; they prevent layout shift.
+- Respect `prefers-reduced-motion`; boot, reveal, transition, and hover movement should become immediate or stop.
+- Test at approximately 360, 768, and 1440 pixels wide and confirm there is no horizontal overflow or tiny technical text.
+
+## Preview locally
+
+The quickest preview is to open `index.html` directly. Follow any Work preview link to test `project.html?project=...`; no server is required because the site uses classic deferred scripts and relative paths.
+
+A local static server is optional and can make URL inspection more familiar. From the project root, use any static server you already trust, then open its `index.html`. There is no install or build command specific to this project.
+
+IBM Plex Mono is requested from Google Fonts when a network connection is available. Local font fallbacks keep the site readable offline.
+
+Before publishing, test:
+
+- the home section order and active navigation
+- first-load and same-session boot behavior
+- the light/dark/light scroll transition
+- every project URL, including an invalid slug
+- Previous, Work Index, and Next navigation
+- missing-image fallbacks and responsive source selection
+- mobile menu keyboard behavior and focus return
+- reduced motion, document links, social links, and both PDFs
+- browser console output and horizontal overflow
+
+## Publish with GitHub Pages
+
+1. Keep `index.html`, `project.html`, `content.js`, `README.md`, and the complete `assets` folder at the repository root.
+2. Commit and push them to the `main` branch.
+3. In the repository, open **Settings → Pages**.
+4. Under **Build and deployment**, select **Deploy from a branch**.
+5. Select `main` and `/ (root)`, then save.
+6. Open the generated Pages URL and repeat the preview checks above.
+
+Do not rename `index.html`; GitHub Pages uses it as the entry document. Keep internal paths relative, such as `assets/images/hero-cover.jpg` and `project.html?project=project-slug`. Leading-slash paths such as `/assets/...` break repository-subpath deployments and direct-file previews. Filename capitalization must match exactly because GitHub Pages is case-sensitive even when a local Windows preview is not.
