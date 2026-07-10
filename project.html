@@ -1,82 +1,110 @@
 <!doctype html>
-<html lang="en" class="no-js" data-page="project">
+<html lang="en" class="no-js loader-skipped" data-page="project">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Selected architecture, research, and computational design project by Ahmad Alhadidii.">
-  <meta name="theme-color" content="#0a0a0a">
+  <meta name="theme-color" content="#ffffff">
 
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Project — Ahmad Alhadidii">
+  <meta property="og:title" content="Selected Project — Ahmad Alhadidii">
   <meta property="og:description" content="Selected architecture, research, and computational design project by Ahmad Alhadidii.">
 
-  <title>Project — Ahmad Alhadidii</title>
+  <title>Selected Project — Ahmad Alhadidii</title>
 
+  <script src="content.js"></script>
   <script>
-    document.documentElement.classList.remove("no-js");
-    document.documentElement.classList.add("js", "intro-skipped");
+    (function () {
+      var root = document.documentElement;
+      var params = new URLSearchParams(window.location.search);
+      var key = params.get("project") || params.get("slug") || params.get("id") || "";
+      var normalizedKey = String(key).trim().toLowerCase();
+      var projects = window.siteContent && Array.isArray(window.siteContent.projects)
+        ? window.siteContent.projects
+        : [];
+      var project = projects.find(function (item, index) {
+        return [
+          item.slug,
+          item.id,
+          item.number,
+          String(index + 1),
+          String(index + 1).padStart(2, "0")
+        ].some(function (alias) {
+          return String(alias || "").trim().toLowerCase() === normalizedKey;
+        });
+      });
+      var theme = project && project.theme === "manmatic" ? "manmatic" : "light";
+      var themeColor = document.querySelector('meta[name="theme-color"]');
+
+      root.classList.remove("no-js");
+      root.classList.add("js");
+      root.dataset.initialTheme = theme;
+      if (themeColor) themeColor.setAttribute("content", theme === "manmatic" ? "#0a0a0a" : "#ffffff");
+    })();
   </script>
 
+  <style>
+    html, body, main { background: #ffffff; color: #111111; }
+    html[data-initial-theme="manmatic"],
+    html[data-initial-theme="manmatic"] body,
+    html[data-initial-theme="manmatic"] main { background: #0a0a0a; color: #f2f2f2; }
+  </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
 
-  <script src="content.js" defer></script>
   <script src="assets/js/main.js" defer></script>
   <script src="assets/js/project.js" defer></script>
 </head>
-<body class="project-page">
-  <noscript>
-    <style>
-      .mobile-toggle { display: none !important; }
-      .site-shell { opacity: 1 !important; visibility: visible !important; }
-    </style>
-  </noscript>
+<body class="project-page" data-site-theme="light">
+  <noscript><style>.nav-toggle { display: none !important; }</style></noscript>
 
   <a class="skip-link" href="#main-content">Skip to project content</a>
 
-  <div class="theme-layer" aria-hidden="true"></div>
-
-  <div class="site-shell page page--project" id="site-shell">
+  <div class="site-shell">
     <header class="site-header" id="site-header">
-      <div class="site-header__inner page-grid shell">
-        <a class="site-header__name" href="index.html#top" aria-label="Ahmad Alhadidii, return to portfolio home">AHMAD ALHADIDII</a>
+      <div class="site-header__inner page-width">
+        <a class="site-header__name" href="index.html#index" aria-label="Ahmad Alhadidii, return to portfolio index">AHMAD ALHADIDII</a>
 
-        <button class="mobile-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">
-          <span class="mobile-toggle__open">MENU</span>
-          <span class="mobile-toggle__close">CLOSE</span>
+        <p class="running-header" aria-hidden="true"><span id="running-header-text">PROJECT ARCHIVE / SELECTED WORK / 2026</span></p>
+
+        <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">
+          <span class="nav-toggle__open">MENU</span>
+          <span class="nav-toggle__close">CLOSE</span>
         </button>
 
         <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation">
-          <a href="index.html#profile" data-section-link="profile"><span>01</span>PROFILE</a>
-          <a href="index.html#cv" data-section-link="cv"><span>02</span>CV</a>
-          <a class="is-active" href="index.html#work" data-section-link="work" aria-current="location"><span>03</span>WORK</a>
-          <a href="index.html#method" data-section-link="method"><span>04</span>METHOD</a>
-          <a href="index.html#contact" data-section-link="contact"><span>05</span>CONTACT</a>
+          <a href="index.html#index"><span data-scramble>INDEX</span></a>
+          <a href="index.html#profile"><span data-scramble>PROFILE</span></a>
+          <a href="index.html#cv"><span data-scramble>CV</span></a>
+          <a class="is-active" href="index.html#work" aria-current="location"><span data-scramble>WORK</span></a>
+          <a href="index.html#contact"><span data-scramble>CONTACT</span></a>
         </nav>
       </div>
     </header>
 
     <main id="main-content" tabindex="-1">
       <article class="project-detail" id="project-detail">
-        <div class="project-detail__loading page-grid shell" id="project-loading" role="status">
-          <p class="eyebrow">LOADING PROJECT</p>
+        <div class="project-detail__loading page-width" id="project-loading" role="status">
+          <p>LOADING PROJECT</p>
         </div>
 
         <noscript>
-          <section class="project-detail__fallback page-grid shell" aria-labelledby="project-script-title">
-            <p class="eyebrow">PROJECT ARCHIVE</p>
-            <h1 id="project-script-title">JAVASCRIPT IS REQUIRED TO DISPLAY THIS PROJECT</h1>
-            <p>The project information is stored in the portfolio content file and rendered into this reusable page.</p>
-            <a class="text-link" href="index.html#work">RETURN TO PROJECT INDEX</a>
+          <section class="project-detail__error page-width" aria-labelledby="script-required-title">
+            <p>PROJECT ARCHIVE</p>
+            <h1 id="script-required-title">PROJECT DATA NEEDS JAVASCRIPT</h1>
+            <p>The complete project index and all core portfolio information remain available on the homepage.</p>
+            <a href="index.html#work">RETURN TO SELECTED WORK</a>
           </section>
         </noscript>
       </article>
     </main>
 
-    <footer class="site-footer">
-      <div class="page-grid shell" id="footer-copy">©2026 — AHMAD ALHADIDII — JORDAN</div>
+    <footer class="site-footer page-width">
+      <p>© 2026 AHMAD ALHADIDII</p>
+      <p>AS-SALT, JORDAN</p>
+      <a href="index.html#index">PORTFOLIO INDEX <span aria-hidden="true">↗</span></a>
     </footer>
   </div>
 </body>

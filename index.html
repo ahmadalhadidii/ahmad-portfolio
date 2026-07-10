@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Architecture, research, and computational design portfolio by Ahmad Alhadidii.">
-  <meta name="theme-color" content="#0b0b0a">
+  <meta name="description" content="Architecture, design research, and computational design portfolio by Ahmad Alhadidii.">
+  <meta name="theme-color" content="#ffffff">
 
   <title>Ahmad Alhadidii — Architecture Portfolio</title>
 
@@ -14,243 +14,450 @@
       root.classList.remove("no-js");
       root.classList.add("js");
 
-      var shouldPlay = false;
+      var play = false;
       try {
-        var key = "portfolio:intro:v3";
-        var seen = sessionStorage.getItem(key);
-        var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        shouldPlay = !seen && !reduce;
-        if (shouldPlay) sessionStorage.setItem(key, "1");
+        var key = "portfolio:intro:editorial-v1";
+        var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        play = !sessionStorage.getItem(key) && !reduced;
+        if (play) sessionStorage.setItem(key, "1");
       } catch (error) {
-        shouldPlay = false;
+        play = false;
       }
 
-      root.classList.add(shouldPlay ? "intro-pending" : "intro-skipped");
+      root.classList.add(play ? "loader-pending" : "loader-skipped");
       window.setTimeout(function () {
-        if (root.classList.contains("intro-pending")) {
-          root.classList.remove("intro-pending");
-          root.classList.add("intro-skipped");
+        if (root.classList.contains("loader-pending")) {
+          root.classList.remove("loader-pending");
+          root.classList.add("loader-skipped");
         }
-      }, 3000);
+      }, 2200);
     })();
   </script>
+
+  <style>
+    html, body { background: #ffffff; }
+    .loader-skipped .loader { display: none; }
+    .loader-pending body { overflow: hidden; }
+    .loader-pending .site-shell { opacity: 0; visibility: hidden; }
+  </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="preload" href="assets/images/hero-cover.jpg" as="image">
+  <link rel="preload" href="assets/images/architecture-of-elsewhere-2400.jpg" as="image">
   <link rel="stylesheet" href="assets/css/style.css">
 
   <script src="content.js" defer></script>
   <script src="assets/js/main.js" defer></script>
 </head>
 <body class="home-page">
-  <div class="intro" id="intro" role="status" aria-label="Opening Ahmad Alhadidii architecture portfolio">
-    <div class="intro__visual" aria-hidden="true">
-      <img id="intro-image" src="assets/images/hero-cover.jpg" alt="">
-      <div class="intro__grid"></div>
-    </div>
-    <div class="intro__scan" aria-hidden="true"></div>
-    <span class="intro__mark intro__mark--tl" aria-hidden="true">CAL / 00.00</span>
-    <span class="intro__mark intro__mark--tr" aria-hidden="true">ARCHIVE / JO</span>
-    <span class="intro__mark intro__mark--bl" aria-hidden="true">31.9539° N / 35.9106° E</span>
-    <span class="intro__mark intro__mark--br" aria-hidden="true">FRAME / H.01</span>
-    <div class="intro__readout" aria-hidden="true">
-      <p id="intro-label">ARCHIVE / INITIALIZING</p>
-      <p class="intro__count"><span id="intro-count">000</span><span>/ 100</span></p>
+  <div class="loader" id="loader" role="status" aria-live="polite" aria-label="Loading Ahmad Alhadidii architecture portfolio">
+    <div class="loader__inner page-width">
+      <p class="loader__name" aria-label="Ahmad Alhadidii">
+        <span id="loader-name" aria-hidden="true">AHMAD ALHADIDII</span>
+      </p>
+      <div class="loader__roles" aria-hidden="true">
+        <p>ARCHITECTURAL DESIGNER</p>
+        <p>DESIGN RESEARCHER</p>
+        <p>COMPUTATIONAL DESIGN EXPLORER</p>
+      </div>
+      <div class="loader__meta" aria-hidden="true">
+        <p>AS-SALT / JORDAN</p>
+        <p>PORTFOLIO / 2026</p>
+      </div>
+      <div class="loader__progress" aria-hidden="true">
+        <span class="loader__track"><span class="loader__bar" id="loader-bar"></span></span>
+        <p><span id="loader-count">000</span> / 100</p>
+      </div>
     </div>
   </div>
 
   <noscript>
     <style>
-      .intro { display: none !important; }
+      .loader { display: none !important; }
       .site-shell { opacity: 1 !important; visibility: visible !important; }
-      .mobile-toggle { display: none !important; }
+      .nav-toggle { display: none !important; }
     </style>
   </noscript>
 
   <a class="skip-link" href="#main-content">Skip to content</a>
 
-  <div class="theme-layer" aria-hidden="true"></div>
-
   <div class="site-shell" id="site-shell">
-    <header class="site-header is-over-hero" id="site-header">
-      <div class="site-header__inner page-grid">
-        <a class="site-header__name" href="#top" aria-label="Ahmad Alhadidii, return to top">AHMAD ALHADIDII</a>
+    <header class="site-header" id="site-header">
+      <div class="site-header__inner page-width">
+        <a class="site-header__name" href="#index" aria-label="Ahmad Alhadidii, back to index">AHMAD ALHADIDII</a>
 
-        <button class="mobile-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">
-          <span class="mobile-toggle__open">MENU</span>
-          <span class="mobile-toggle__close">CLOSE</span>
+        <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">
+          <span class="nav-toggle__open">MENU</span>
+          <span class="nav-toggle__close">CLOSE</span>
         </button>
 
         <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation">
-          <a href="#profile" data-section-link="profile"><span>01</span>PROFILE</a>
-          <a href="#cv" data-section-link="cv"><span>02</span>CV</a>
-          <a href="#work" data-section-link="work"><span>03</span>WORK</a>
-          <a href="#method" data-section-link="method"><span>04</span>METHOD</a>
-          <a href="#contact" data-section-link="contact"><span>05</span>CONTACT</a>
+          <a href="#index" data-section-link="index" aria-current="location"><span data-scramble>INDEX</span></a>
+          <a href="#profile" data-section-link="profile"><span data-scramble>PROFILE</span></a>
+          <a href="#cv" data-section-link="cv"><span data-scramble>CV</span></a>
+          <a href="#work" data-section-link="work"><span data-scramble>WORK</span></a>
+          <a href="#contact" data-section-link="contact"><span data-scramble>CONTACT</span></a>
         </nav>
       </div>
     </header>
 
     <main id="main-content" tabindex="-1">
-      <section class="hero" id="top" aria-labelledby="hero-name">
-        <figure class="hero__media media-frame is-pending" id="hero-media">
-          <img id="hero-image" src="assets/images/hero-cover.jpg" alt="ADD HERO IMAGE DESCRIPTION" fetchpriority="high" decoding="async">
-          <div class="media-fallback media-fallback--hero" aria-hidden="true">
-            <svg viewBox="0 0 1200 800" preserveAspectRatio="none">
-              <path d="M0 0H1200V800H0ZM150 0V800M300 0V800M450 0V800M600 0V800M750 0V800M900 0V800M1050 0V800M0 100H1200M0 200H1200M0 300H1200M0 400H1200M0 500H1200M0 600H1200M0 700H1200"/>
-              <path class="strong" d="M0 0L1200 800M1200 0L0 800M600 0V800M0 400H1200"/>
-              <circle cx="600" cy="400" r="112"/>
-            </svg>
-            <div class="media-fallback__label">
-              <span>ADD COVER ARTWORK</span>
-              <span id="hero-path">assets/images/hero-cover.jpg</span>
-            </div>
-            <span class="media-code" id="hero-code">H.01</span>
+      <section class="opening page-width" id="index" data-nav-section="index" aria-labelledby="opening-name">
+        <div class="opening__grid">
+          <h1 class="opening__name" id="opening-name" aria-label="Ahmad Alhadidii">
+            <span data-scramble data-scramble-entry aria-hidden="true">AHMAD ALHADIDII</span>
+          </h1>
+          <div class="opening__roles">
+            <p>ARCHITECTURAL DESIGNER</p>
+            <p>DESIGN RESEARCHER</p>
+            <p>COMPUTATIONAL DESIGN EXPLORER</p>
           </div>
+          <div class="opening__meta">
+            <p>AS-SALT, JORDAN</p>
+            <p>SELECTED WORKS / 2025–2026</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="lead-visual page-width" aria-label="Opening architectural visual">
+        <figure class="image-frame image-reveal lead-visual__figure" data-image-reveal>
+          <div class="image-frame__crop">
+            <img
+              src="assets/images/architecture-of-elsewhere-2400.jpg"
+              srcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w"
+              sizes="(max-width: 760px) calc(100vw - 36px), min(1480px, calc(100vw - 64px))"
+              width="2400"
+              height="1293"
+              alt="Architecture of Elsewhere collage combining a white architectural model with planetary studies, technical line drawings, and a dark research field."
+              fetchpriority="high"
+              decoding="async"
+              data-parallax>
+          </div>
+          <figcaption>PORTFOLIO FIELD / ARCHITECTURE OF ELSEWHERE / 2026</figcaption>
         </figure>
+      </section>
 
-        <div class="hero__shade" aria-hidden="true"></div>
-        <div class="hero__content page-grid">
-          <p class="hero__concept" id="hero-concept">ARCHITECTURE OF ELSEWHERE</p>
-          <div class="hero__identity">
-            <h1 id="hero-name">AHMAD ALHADIDII</h1>
-            <p id="hero-discipline">ARCHITECTURE / RESEARCH / COMPUTATIONAL DESIGN</p>
-          </div>
-          <div class="hero__edition">
-            <p id="hero-edition">SELECTED WORKS 2025–2026</p>
-            <p id="hero-location">BASED IN JORDAN</p>
-          </div>
-          <a class="hero__scroll" href="#profile">
-            <span id="hero-scroll-label">SCROLL TO ENTER</span>
-            <span class="hero__scroll-line" aria-hidden="true"></span>
-          </a>
+      <section class="manifesto page-width" aria-labelledby="manifesto-title">
+        <h2 class="manifesto__title" id="manifesto-title" aria-label="Architecture of Elsewhere">
+          <span data-scramble aria-hidden="true">ARCHITECTURE OF ELSEWHERE</span>
+        </h2>
+        <p class="manifesto__text reading-text" data-reading-text>A way of thinking that begins with uncertainty and searches for the hidden order within it. Systems, patterns, and relationships are traced across different fields, then translated into architecture. What first appears fragmented gains coherence; what remains abstract gains structure, presence, and place.</p>
+      </section>
+
+      <section class="section profile page-width" id="profile" data-nav-section="profile" aria-labelledby="profile-title">
+        <header class="section-heading">
+          <p class="section-heading__number">01</p>
+          <h2 id="profile-title" aria-label="Profile"><span data-scramble aria-hidden="true">PROFILE</span></h2>
+          <p class="section-heading__note">POSITION / PRACTICE / CONTEXT</p>
+        </header>
+
+        <div class="profile__layout">
+          <p class="profile__statement reading-text" data-reading-text>Architecture student with a research-based approach, drawing from systems, contexts, human experience, and emerging technologies to shape meaningful spatial and visual responses. Interested in computational tools, AI, cultural and contextual references, and collaborative environments where ideas are questioned, exchanged, and developed collectively.</p>
+
+          <dl class="profile__meta">
+            <div><dt>NAME</dt><dd>Ahmad Alhadidii</dd></div>
+            <div><dt>EDUCATION</dt><dd>Bachelor of Architecture Candidate<br>Al-Balqa Applied University</dd></div>
+            <div><dt>ROLE 01</dt><dd>Architectural Designer</dd></div>
+            <div><dt>ROLE 02</dt><dd>Design Researcher</dd></div>
+            <div><dt>ROLE 03</dt><dd>Computational Design Explorer</dd></div>
+            <div><dt>LOCATION</dt><dd>As-Salt, Jordan</dd></div>
+            <div><dt>BIRTH DATE</dt><dd>31.08.2003</dd></div>
+          </dl>
         </div>
       </section>
 
-      <section class="section profile" id="profile" aria-labelledby="profile-title" data-nav-section="profile">
-        <div class="section__inner page-grid">
-          <header class="section-heading">
-            <p class="section-heading__number">01</p>
-            <h2 id="profile-title">PROFILE</h2>
-            <p class="section-heading__note">POSITION / PRACTICE / CONTEXT</p>
-          </header>
+      <section class="section cv page-width" id="cv" data-nav-section="cv" aria-labelledby="cv-title">
+        <header class="section-heading">
+          <p class="section-heading__number">02</p>
+          <h2 id="cv-title" aria-label="Curriculum vitae"><span data-scramble aria-hidden="true">CV</span></h2>
+          <p class="section-heading__note">EDUCATION / PRACTICE / RECOGNITION</p>
+        </header>
 
-          <div class="profile__layout">
-            <figure class="profile__portrait media-frame is-pending" id="portrait-media">
-              <img id="portrait-image" src="assets/images/portrait.jpg" alt="ADD PORTRAIT DESCRIPTION" loading="lazy" decoding="async">
-              <div class="media-fallback" aria-hidden="true">
-                <svg viewBox="0 0 600 800" preserveAspectRatio="none">
-                  <path d="M0 0H600V800H0ZM100 0V800M200 0V800M300 0V800M400 0V800M500 0V800M0 100H600M0 200H600M0 300H600M0 400H600M0 500H600M0 600H600M0 700H600"/>
-                  <path class="strong" d="M0 0L600 800M600 0L0 800M300 0V800M0 400H600"/>
-                </svg>
-                <div class="media-fallback__label">
-                  <span>ADD PORTRAIT</span>
-                  <span id="portrait-path">assets/images/portrait.jpg</span>
+        <div class="cv__identity" aria-label="Personal and contact information">
+          <div>
+            <p class="cv__identity-name">AHMAD ALHADIDII</p>
+            <p>ARCHITECTURAL DESIGNER · DESIGN RESEARCHER · COMPUTATIONAL DESIGN EXPLORER</p>
+          </div>
+          <dl>
+            <div><dt>BORN</dt><dd>31.08.2003</dd></div>
+            <div><dt>LOCATION</dt><dd>As-Salt, Jordan</dd></div>
+          </dl>
+          <address>
+            <a href="mailto:ahmadalhadidii@manmatic.institute">ahmadalhadidii@manmatic.institute</a>
+            <a href="mailto:alhadidiahamd@gmail.com">alhadidiahamd@gmail.com</a>
+          </address>
+        </div>
+
+        <div class="cv__layout">
+          <div class="cv__main">
+            <section class="cv-group" aria-labelledby="experience-heading">
+              <h3 id="experience-heading"><span>[002]</span> EXPERIENCE</h3>
+
+              <article class="cv-entry">
+                <header class="cv-entry__header">
+                  <div>
+                    <p class="cv-entry__index">[002.01]</p>
+                    <h4>Architectural Intern</h4>
+                    <p>BIM Lab — BIM Consultancy &amp; Engineering Services Company</p>
+                  </div>
+                  <p class="cv-entry__context">Amman, Jordan<br>Aug 2025 — Oct 2025</p>
+                </header>
+                <p class="cv-entry__note">Supervised by Eng. Shaker Khulief</p>
+                <ol class="indexed-list">
+                  <li>Worked on architectural plans, elevations, and design development tasks.</li>
+                  <li>Assisted with light design modifications under supervision.</li>
+                  <li>Produced architectural drawings, presentation visuals, and AI-assisted renderings.</li>
+                  <li>Gained practical exposure to basic BIM workflows, architectural detailing, and office documentation.</li>
+                </ol>
+              </article>
+
+              <article class="cv-entry">
+                <header class="cv-entry__header">
+                  <div>
+                    <p class="cv-entry__index">[002.02]</p>
+                    <h4>Gaza Documentation Book</h4>
+                    <p>Collaborative Publication Project</p>
+                  </div>
+                  <p class="cv-entry__context">Amman, Jordan</p>
+                </header>
+                <ol class="indexed-list">
+                  <li>Conducted image and archival research for the publication.</li>
+                  <li>Wrote selected book sections using referenced material.</li>
+                  <li>Reviewed and corrected inaccurate information during editing.</li>
+                  <li>Organised and refined text files for the final publication layout.</li>
+                </ol>
+              </article>
+            </section>
+
+            <section class="cv-group" aria-labelledby="education-heading">
+              <h3 id="education-heading"><span>[003]</span> EDUCATION</h3>
+              <article class="cv-row">
+                <div><p class="cv-entry__index">[003.01]</p><h4>Bachelor of Architecture — Candidate</h4><p>Al-Balqa Applied University · Jordan — Salt</p></div>
+                <p>2021 — 2026</p>
+              </article>
+              <article class="cv-row">
+                <div><p class="cv-entry__index">[003.02]</p><h4>High School Certificate</h4><p>King Abdullah II School for Excellence · Jordan — Salt</p></div>
+                <p>2019 — 2020</p>
+              </article>
+            </section>
+
+            <section class="cv-group" aria-labelledby="awards-heading">
+              <h3 id="awards-heading"><span>[004]</span> AWARDS &amp; COMPETITIONS</h3>
+              <article class="award-primary">
+                <div>
+                  <p class="cv-entry__index">PRIMARY AWARD</p>
+                  <h4>1st Place — ELMA: Environmental Legacy Makers Award</h4>
+                  <p>Royal Society for the Conservation of Nature and UN-Habitat</p>
                 </div>
-                <span class="media-code" id="portrait-code">P.01</span>
+                <p>Amman, Jordan<br>2026</p>
+              </article>
+              <div class="competition-list">
+                <h4>Participated in local and international architecture/design competitions, including:</h4>
+                <ul>
+                  <li><span>The Drawing Board: Sadahalli Quarry</span><span>India</span></li>
+                  <li><span>Heritage &amp; Archaeology Diwan 9, with two projects</span><span>Jordan</span></li>
+                  <li><span>Vez River SPA Builder Architecture Competition</span><span>Portugal</span></li>
+                  <li><span>Al-Mashrabiya Challenge</span><span>Jordan</span></li>
+                  <li><span>Heritage Corner Competition</span><span>Egypt</span></li>
+                </ul>
               </div>
-              <figcaption>PORTRAIT / REPLACE IN CONTENT.JS</figcaption>
-            </figure>
+            </section>
 
-            <blockquote class="profile__statement" id="profile-statement">I work across architecture, research, and computational design, translating complex systems, contexts, and relationships into spatial structures.</blockquote>
-
-            <div class="profile__copy prose" id="profile-copy">
-              <p>My work begins with questions, evidence, and relationships rather than form alone. Through research, visual communication, and computational tools, I develop spatial responses that are legible in purpose, grounded in context, and open to testing and refinement.</p>
-              <p>I am interested in architecture shaped not only by image, but by the systems, memories, uses, and hidden forms of logic that give it structure.</p>
-            </div>
-
-            <div class="profile__meta">
-              <p class="micro-label">PROFILE INDEX</p>
-              <dl id="profile-metadata">
-                <div><dt>NAME</dt><dd>Ahmad Alhadidii</dd></div>
-                <div><dt>EDUCATION</dt><dd>Architecture student — Al-Balqa Applied University</dd></div>
-                <div><dt>ROLE 01</dt><dd>Architectural Designer</dd></div>
-                <div><dt>ROLE 02</dt><dd>Design Researcher</dd></div>
-                <div><dt>ROLE 03</dt><dd>Computational Design Explorer</dd></div>
-                <div><dt>LOCATION</dt><dd>Based in Jordan</dd></div>
-              </dl>
-              <a class="inline-link" id="profile-cv-link" href="#">CV / PDF <span aria-hidden="true">↗</span></a>
-            </div>
+            <section class="cv-group" aria-labelledby="certifications-heading">
+              <h3 id="certifications-heading"><span>[005]</span> CERTIFICATIONS</h3>
+              <ul class="certification-list">
+                <li><span>Climate Stories Exchange — Virtual Program</span><span>Fall 2024</span></li>
+                <li><span>Communication Skills Certificate</span><span>Queen Rania Al-Abdullah Center</span></li>
+                <li><span>DELF A2 — French Language Certificate</span></li>
+                <li><span>Training Guide for Dialogue &amp; Volunteer Clubs</span><span>King Abdullah II Fund</span></li>
+              </ul>
+            </section>
           </div>
+
+          <aside class="cv__support" aria-label="Software, design strengths, technical skills, languages and contact links">
+            <section class="support-group" aria-labelledby="software-heading">
+              <h3 id="software-heading">SOFTWARE I USE</h3>
+              <ul class="rating-list">
+                <li><span>Rhinoceros 3D</span><span class="rating" role="img" aria-label="Rhinoceros 3D proficiency: 5 out of 5"><span aria-hidden="true"><b>+</b><b>+</b><b>+</b><b>+</b><b>+</b></span></span></li>
+                <li><span>Grasshopper</span><span class="rating" role="img" aria-label="Grasshopper proficiency: 4 out of 5"><span aria-hidden="true"><b>+</b><b>+</b><b>+</b><b>+</b><i>+</i></span></span></li>
+                <li><span>Revit Autodesk</span><span class="rating" role="img" aria-label="Revit Autodesk proficiency: 3 out of 5"><span aria-hidden="true"><b>+</b><b>+</b><b>+</b><i>+</i><i>+</i></span></span></li>
+                <li><span>AutoCAD</span><span class="rating" role="img" aria-label="AutoCAD proficiency: 5 out of 5"><span aria-hidden="true"><b>+</b><b>+</b><b>+</b><b>+</b><b>+</b></span></span></li>
+                <li><span>Unreal Engine</span><span class="rating" role="img" aria-label="Unreal Engine proficiency: 3 out of 5"><span aria-hidden="true"><b>+</b><b>+</b><b>+</b><i>+</i><i>+</i></span></span></li>
+                <li><span>D5 Render</span><span class="rating" role="img" aria-label="D5 Render proficiency: 4 out of 5"><span aria-hidden="true"><b>+</b><b>+</b><b>+</b><b>+</b><i>+</i></span></span></li>
+                <li><span>V-Ray Render</span><span class="rating" role="img" aria-label="V-Ray Render proficiency: 2 out of 5"><span aria-hidden="true"><b>+</b><b>+</b><i>+</i><i>+</i><i>+</i></span></span></li>
+                <li><span>Photoshop</span><span class="rating" role="img" aria-label="Photoshop proficiency: 5 out of 5"><span aria-hidden="true"><b>+</b><b>+</b><b>+</b><b>+</b><b>+</b></span></span></li>
+              </ul>
+            </section>
+
+            <section class="support-group" aria-labelledby="strengths-heading">
+              <h3 id="strengths-heading">DESIGN STRENGTHS</h3>
+              <ul class="technical-list">
+                <li>Research-Based Design</li>
+                <li>Spatial Storytelling</li>
+                <li>Cultural &amp; Contextual Analysis</li>
+                <li>Computational Design Thinking</li>
+                <li>Collaborative Design Process</li>
+              </ul>
+            </section>
+
+            <section class="support-group" aria-labelledby="skills-heading">
+              <h3 id="skills-heading">TECHNICAL SKILLS</h3>
+              <ul class="technical-list">
+                <li>Computational &amp; Parametric Design</li>
+                <li>BIM Documentation &amp; Digital Workflows</li>
+                <li>Model Making &amp; Physical Prototyping</li>
+                <li>Post-Production &amp; Graphic Design</li>
+                <li>AI-Assisted Design Workflows</li>
+                <li>Urban Documentation &amp; Analysis</li>
+                <li>Presentation &amp; Communication</li>
+              </ul>
+            </section>
+
+            <section class="support-group" aria-labelledby="languages-heading">
+              <h3 id="languages-heading">LANGUAGES</h3>
+              <ul class="rating-list">
+                <li><span>Arabic</span><span class="rating" role="img" aria-label="Arabic proficiency: 5 out of 5"><span aria-hidden="true"><b>+</b><b>+</b><b>+</b><b>+</b><b>+</b></span></span></li>
+                <li><span>English</span><span class="rating" role="img" aria-label="English proficiency: 4 out of 5"><span aria-hidden="true"><b>+</b><b>+</b><b>+</b><b>+</b><i>+</i></span></span></li>
+                <li><span>French</span><span class="rating" role="img" aria-label="French proficiency: 2 out of 5"><span aria-hidden="true"><b>+</b><b>+</b><i>+</i><i>+</i><i>+</i></span></span></li>
+              </ul>
+            </section>
+
+            <section class="support-group cv-contact" aria-labelledby="cv-contact-heading">
+              <h3 id="cv-contact-heading">CONTACT</h3>
+              <address>
+                <a href="mailto:ahmadalhadidii@manmatic.institute">ahmadalhadidii@manmatic.institute</a>
+                <a href="mailto:alhadidiahamd@gmail.com">alhadidiahamd@gmail.com</a>
+                <a href="tel:+962790652697">0790652697</a>
+                <a href="https://www.linkedin.com/in/ahmad-alhadidii-97b796290/" target="_blank" rel="noopener noreferrer">LinkedIn / Ahmad Alhadidii</a>
+                <a href="https://www.instagram.com/ahmad.alhadidii/" target="_blank" rel="noopener noreferrer">Instagram / @ahmad.alhadidii</a>
+              </address>
+            </section>
+          </aside>
         </div>
       </section>
 
-      <section class="section cv" id="cv" aria-labelledby="cv-title" data-nav-section="cv">
-        <div class="section__inner page-grid">
-          <header class="section-heading">
-            <p class="section-heading__number">02</p>
-            <h2 id="cv-title">CV</h2>
-            <p class="section-heading__note">EDUCATION / PRACTICE / RECOGNITION</p>
-          </header>
+      <section class="section work page-width" id="work" data-nav-section="work" aria-labelledby="work-title">
+        <header class="section-heading">
+          <p class="section-heading__number">03</p>
+          <h2 id="work-title" aria-label="Selected work"><span data-scramble aria-hidden="true">SELECTED WORK</span></h2>
+          <p class="section-heading__note">PROJECT INDEX / 2026</p>
+        </header>
 
-          <div class="cv__actions" id="cv-actions">
-            <a class="inline-link" href="#">VIEW CV <span aria-hidden="true">↗</span></a>
-            <a class="inline-link" href="#">DOWNLOAD CV / PDF <span aria-hidden="true">↓</span></a>
-          </div>
+        <p class="work__intro reading-text" data-reading-text>Selected architecture, research, mapping, environmental design, and speculative drawing projects developed in 2026.</p>
 
-          <div class="cv__layout">
-            <div class="cv__main" id="cv-main" aria-label="Experience, education, awards and competitions"></div>
-            <aside class="cv__support" id="cv-support" aria-label="Software, strengths, skills, languages and certifications"></aside>
-          </div>
+        <div class="project-index" aria-label="Selected projects">
+          <article class="project-row">
+            <a class="project-row__link" href="project.html?project=project-01">
+              <p class="project-row__number" data-scramble aria-hidden="true">001</p>
+              <div class="project-row__copy">
+                <h3>ManMaTIC Institute</h3>
+                <p>A research-based institute exploring how humans and intelligent systems collaborate, negotiate, and deploy decisions in real environments.</p>
+                <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>LOCATION</dt><dd>Aqaba</dd></div><div><dt>TYPE</dt><dd>Research Institute</dd></div><div><dt>ROLE</dt><dd>Architecture, research, systems thinking, visual communication</dd></div></dl>
+              </div>
+              <figure class="project-row__media image-reveal" data-image-reveal>
+                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" srcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" sizes="(max-width: 760px) calc(100vw - 36px), 48vw" width="1400" height="755" alt="Architecture of Elsewhere visual field for the ManMaTIC Institute, combining architectural, planetary, and systems imagery." loading="lazy" decoding="async"></div>
+                <figcaption>ARCHITECTURE OF ELSEWHERE / MANMATIC</figcaption>
+              </figure>
+              <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
+            </a>
+          </article>
 
-          <noscript>
-            <div class="no-script-copy">
-              <p>Experience: BIM Lab — Architecture Training; Publication / Research Support.</p>
-              <p>Education: Architecture Student — Al-Balqa Applied University.</p>
-              <p>Award: Environmental Legacy Makers Award — 1st Place.</p>
-            </div>
-          </noscript>
+          <article class="project-row">
+            <a class="project-row__link" href="project.html?project=project-02">
+              <p class="project-row__number" data-scramble aria-hidden="true">002</p>
+              <div class="project-row__copy">
+                <h3>From Concrete Fatigue to Green Asset</h3>
+                <p>A staircase transformation proposal turning daily urban infrastructure into environmental and social value.</p>
+                <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>LOCATION</dt><dd>Amman</dd></div><div><dt>TYPE</dt><dd>Urban Intervention</dd></div><div><dt>ROLE</dt><dd>Concept, environmental strategy, visual communication</dd></div></dl>
+              </div>
+              <figure class="project-row__media project-row__media--left image-reveal" data-image-reveal>
+                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="755" alt="Shared Architecture of Elsewhere portfolio visual field, shown while project-specific imagery is unavailable." loading="lazy" decoding="async"></div>
+                <figcaption>SHARED PORTFOLIO VISUAL / ARCHITECTURE OF ELSEWHERE</figcaption>
+              </figure>
+              <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
+            </a>
+          </article>
+
+          <article class="project-row">
+            <a class="project-row__link" href="project.html?project=project-03">
+              <p class="project-row__number" data-scramble aria-hidden="true">003</p>
+              <div class="project-row__copy">
+                <h3>Ground of Continuity</h3>
+                <p>A cultural map reading Jordan as a ground of continuity between memory, borders, routes, and shared regional identity.</p>
+                <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>LOCATION</dt><dd>Jordan</dd></div><div><dt>TYPE</dt><dd>Cultural Map / Visual Research</dd></div><div><dt>ROLE</dt><dd>Mapping, cultural research, graphic composition</dd></div></dl>
+              </div>
+              <figure class="project-row__media project-row__media--right image-reveal" data-image-reveal>
+                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="755" alt="Shared Architecture of Elsewhere portfolio visual field, shown while project-specific imagery is unavailable." loading="lazy" decoding="async"></div>
+                <figcaption>SHARED PORTFOLIO VISUAL / ARCHITECTURE OF ELSEWHERE</figcaption>
+              </figure>
+              <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
+            </a>
+          </article>
+
+          <article class="project-row">
+            <a class="project-row__link" href="project.html?project=project-04">
+              <p class="project-row__number" data-scramble aria-hidden="true">004</p>
+              <div class="project-row__copy">
+                <h3>The Mechanics of Becoming</h3>
+                <p>A spatial timeline of human and machine evolution, carved as a threshold between tools, bodies, and complex systems.</p>
+                <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>TYPE</dt><dd>Drawing / Human–Machine History</dd></div><div><dt>ROLE</dt><dd>Concept, digital painting, architectural narrative</dd></div></dl>
+              </div>
+              <figure class="project-row__media project-row__media--top image-reveal" data-image-reveal>
+                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="755" alt="Shared Architecture of Elsewhere portfolio visual field, shown while project-specific imagery is unavailable." loading="lazy" decoding="async"></div>
+                <figcaption>SHARED PORTFOLIO VISUAL / ARCHITECTURE OF ELSEWHERE</figcaption>
+              </figure>
+              <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
+            </a>
+          </article>
+
+          <article class="project-row">
+            <a class="project-row__link" href="project.html?project=project-05">
+              <p class="project-row__number" data-scramble aria-hidden="true">005</p>
+              <div class="project-row__copy">
+                <h3>The Quarry That Folds Inward</h3>
+                <p>A museum concept where the quarry folds inward, turning stone, water, shadow, and void into spatial memory.</p>
+                <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>TYPE</dt><dd>Museum / Stone Memory</dd></div><div><dt>ROLE</dt><dd>Concept, atmosphere, spatial storytelling</dd></div></dl>
+              </div>
+              <figure class="project-row__media project-row__media--bottom image-reveal" data-image-reveal>
+                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="755" alt="Shared Architecture of Elsewhere portfolio visual field, shown while project-specific imagery is unavailable." loading="lazy" decoding="async"></div>
+                <figcaption>SHARED PORTFOLIO VISUAL / ARCHITECTURE OF ELSEWHERE</figcaption>
+              </figure>
+              <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
+            </a>
+          </article>
         </div>
       </section>
 
-      <section class="section work" id="work" aria-labelledby="work-title" data-nav-section="work">
-        <div class="section__inner page-grid">
-          <header class="section-heading section-heading--work">
-            <p class="section-heading__number">03</p>
-            <h2 id="work-title">WORK</h2>
-            <p class="section-heading__note">SELECTED PROJECTS / 2025–2026</p>
-          </header>
-          <div class="project-previews" id="project-previews" aria-label="Selected projects"></div>
-          <noscript>
-            <p class="no-script-copy">Project previews require JavaScript to connect the editable project data to the reusable detail template.</p>
-          </noscript>
-        </div>
-      </section>
+      <section class="section contact page-width" id="contact" data-nav-section="contact" aria-labelledby="contact-title">
+        <header class="section-heading">
+          <p class="section-heading__number">04</p>
+          <h2 id="contact-title" aria-label="Contact"><span data-scramble aria-hidden="true">CONTACT</span></h2>
+          <p class="section-heading__note">AS-SALT / JORDAN</p>
+        </header>
 
-      <section class="section method" id="method" aria-labelledby="method-title" data-nav-section="method">
-        <div class="section__inner page-grid">
-          <header class="section-heading section-heading--method">
-            <p class="section-heading__number">04</p>
-            <h2 id="method-title">METHOD</h2>
-            <p class="section-heading__note">FROM QUESTION TO COMMUNICATION</p>
-          </header>
-          <div class="method__sequence" id="method-sequence"></div>
-        </div>
-      </section>
-
-      <section class="section contact" id="contact" aria-labelledby="contact-title" data-nav-section="contact">
-        <div class="section__inner page-grid">
-          <header class="section-heading">
-            <p class="section-heading__number">05</p>
-            <h2 id="contact-title">CONTACT</h2>
-            <p class="section-heading__note" id="contact-availability">JORDAN / OPEN TO PROFESSIONAL OPPORTUNITIES</p>
-          </header>
-
-          <div class="contact__layout">
-            <p class="contact__identity">AHMAD ALHADIDII<br>ARCHITECTURE / RESEARCH / COMPUTATIONAL DESIGN</p>
-            <nav class="contact__links" id="contact-links" aria-label="Contact and document links"></nav>
+        <div class="contact__layout">
+          <div>
+            <p class="contact__name">AHMAD ALHADIDII</p>
+            <p class="contact__statement reading-text" data-reading-text>Architecture, design research, and computational exploration developed through clear systems, contextual reading, and collaborative exchange.</p>
+            <p class="contact__roles">ARCHITECTURAL DESIGNER<br>DESIGN RESEARCHER<br>COMPUTATIONAL DESIGN EXPLORER</p>
+            <p class="contact__location">AS-SALT, JORDAN</p>
           </div>
+          <address class="contact__links">
+            <a href="mailto:ahmadalhadidii@manmatic.institute"><span>EMAIL 01</span><span>ahmadalhadidii@manmatic.institute</span></a>
+            <a href="mailto:alhadidiahamd@gmail.com"><span>EMAIL 02</span><span>alhadidiahamd@gmail.com</span></a>
+            <a href="tel:+962790652697"><span>PHONE</span><span>0790652697</span></a>
+            <a href="https://www.linkedin.com/in/ahmad-alhadidii-97b796290/" target="_blank" rel="noopener noreferrer"><span>LINKEDIN</span><span>Ahmad Alhadidii ↗</span></a>
+            <a href="https://www.instagram.com/ahmad.alhadidii/" target="_blank" rel="noopener noreferrer"><span>INSTAGRAM</span><span>@ahmad.alhadidii ↗</span></a>
+          </address>
         </div>
       </section>
     </main>
 
-    <footer class="site-footer">
-      <div class="page-grid">
-        <p id="footer-text">©2026 — AHMAD ALHADIDII — JORDAN</p>
-        <a href="#top">BACK TO TOP ↑</a>
-      </div>
+    <footer class="site-footer page-width">
+      <p>© 2026 AHMAD ALHADIDII</p>
+      <p>AS-SALT, JORDAN</p>
+      <a href="#index">BACK TO TOP <span aria-hidden="true">↑</span></a>
     </footer>
   </div>
 </body>
