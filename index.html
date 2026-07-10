@@ -1,229 +1,250 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ahmad Al Hadidii — Architecture Portfolio</title>
-<meta name="description" content="Architecture, design research, computational thinking, and visual systems portfolio by Ahmad Al Hadidii.">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Architecture, research, and computational design portfolio of Ahmad Alhadidii, based in Jordan.">
+  <meta name="theme-color" content="#ffffff">
 
-<!-- Open Graph -->
-<meta property="og:title" content="Ahmad Al Hadidii — Architecture Portfolio">
-<meta property="og:description" content="Architecture, design research, computational thinking, and visual systems portfolio by Ahmad Al Hadidii.">
-<meta property="og:type" content="website">
-<meta property="og:image" content="assets/images/hero-01.jpg">
+  <title>Ahmad Alhadidii — Architecture Portfolio</title>
 
-<meta name="theme-color" content="#f5f3ee">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
 
-<!-- Favicon placeholder: replace with a real favicon.ico in the root folder -->
-<!-- <link rel="icon" href="favicon.ico"> -->
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="assets/css/style.css">
+  <script src="content.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
 </head>
-<body class="is-loading">
+<body class="is-booting">
+  <div class="boot" id="boot" role="status" aria-label="Opening Ahmad Alhadidii architecture portfolio">
+    <div class="boot__screen" id="boot-screen">
+      <div class="boot__scan" aria-hidden="true"></div>
+      <span class="boot__coordinate boot__coordinate--tl" aria-hidden="true">00 / 00</span>
+      <span class="boot__coordinate boot__coordinate--tr" aria-hidden="true">31.9539° N</span>
+      <span class="boot__coordinate boot__coordinate--bl" aria-hidden="true">35.9106° E</span>
+      <span class="boot__coordinate boot__coordinate--br" aria-hidden="true">JO / 2026</span>
 
-<!-- ================= LOADER ================= -->
-<div id="binary-loader" class="binary-loader" aria-label="Loading portfolio">
-  <canvas id="binary-canvas" class="binary-canvas" aria-hidden="true"></canvas>
-
-  <div class="binary-loader__grid" aria-hidden="true"></div>
-
-  <div class="binary-loader__corner binary-loader__corner--tl">AH / PORTFOLIO</div>
-  <div class="binary-loader__corner binary-loader__corner--tr">JO / FIELD INDEX</div>
-  <div class="binary-loader__corner binary-loader__corner--bl">SYSTEM BOOT / 2026</div>
-  <div class="binary-loader__corner binary-loader__corner--br">ARCHITECTURE + COMPUTATION</div>
-
-  <div class="binary-loader__center">
-    <div class="binary-loader__name" data-loader-scramble="AHMAD AL HADIDII">AHMAD AL HADIDII</div>
-    <div class="binary-loader__meta" data-loader-scramble="ARCHITECTURE / RESEARCH / COMPUTATION">ARCHITECTURE / RESEARCH / COMPUTATION</div>
-    <div class="binary-loader__status" id="binary-loader-status">INITIALIZING FIELD STRUCTURE</div>
-    <div class="binary-loader__progress">
-      <span id="binary-loader-progress">000</span>
-      <span class="binary-loader__progress-symbol" aria-hidden="true">%</span>
+      <div class="boot__content">
+        <p class="boot__name" data-boot-scramble="AHMAD ALHADIDII">AHMAD ALHADIDII</p>
+        <p class="boot__role" data-boot-scramble="ARCHITECTURE / RESEARCH / COMPUTATIONAL DESIGN">ARCHITECTURE / RESEARCH / COMPUTATIONAL DESIGN</p>
+        <p class="boot__index">JO / PORTFOLIO INDEX</p>
+        <p class="boot__progress" aria-hidden="true">000 → <span id="boot-progress">000</span></p>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ================= GRID BG ================= -->
-<div class="bg-grid" aria-hidden="true"></div>
+  <noscript>
+    <style>
+      .boot { display: none !important; }
+      .page { opacity: 1 !important; visibility: visible !important; }
+      body { overflow: auto !important; }
+      .hero-media__image { display: none !important; }
+      .hero-media .image-placeholder { display: grid !important; }
+    </style>
+  </noscript>
 
-<!-- ================= HEADER ================= -->
-<header class="site-header" id="siteHeader">
-  <div class="header-inner">
-    <a href="#top" class="header-name" id="headerName">AHMAD AL HADIDII</a>
-    <nav class="main-nav" id="mainNav" aria-label="Primary">
-      <!-- injected -->
-    </nav>
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
-      <span></span><span></span>
-    </button>
-  </div>
-</header>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
-<main id="top">
+  <div class="page" id="page">
+    <header class="site-header" id="site-header">
+      <div class="site-header__inner shell">
+        <a class="site-header__name" href="#top" aria-label="Ahmad Alhadidii, return to top">AHMAD ALHADIDII</a>
+        <nav class="site-nav" aria-label="Primary navigation">
+          <a class="nav-link" href="#profile" data-scramble-text="PROFILE">PROFILE</a>
+          <a class="nav-link" href="#work" data-scramble-text="WORK">WORK</a>
+          <a class="nav-link" href="#method" data-scramble-text="METHOD">METHOD</a>
+          <a class="nav-link" href="#cv" data-scramble-text="CV">CV</a>
+          <a class="nav-link" href="#contact" data-scramble-text="CONTACT">CONTACT</a>
+        </nav>
+      </div>
+    </header>
 
-  <!-- ================= HERO ================= -->
-  <section class="hero" id="hero">
-    <div class="hero-top">
-      <h1 class="hero-name" id="heroName" aria-label="Ahmad Al Hadidii">
-        <!-- injected lines -->
-      </h1>
-      <div class="hero-image-wrap">
-        <div class="hero-image placeholder-block" id="heroImage" data-label="IMAGE / REPLACE">
-          <img src="assets/images/hero-01.jpg" alt="Ahmad Al Hadidii — architectural study" id="heroImageTag">
+    <main id="main-content">
+      <section class="hero shell" id="top" aria-labelledby="hero-name">
+        <div class="hero__heading grid-12">
+          <div class="hero__identity">
+            <p class="eyebrow">ARCHITECTURE PORTFOLIO / JO</p>
+            <h1 class="hero__name" id="hero-name">AHMAD ALHADIDII</h1>
+            <p class="hero__role" id="hero-role">Architecture / Research / Computational Design</p>
+          </div>
+
+          <ul class="hero__meta" aria-label="Portfolio details">
+            <li id="hero-location">BASED IN JORDAN</li>
+            <li id="hero-years">SELECTED WORKS 2025–2026</li>
+            <li id="hero-availability">AVAILABLE FOR INTERNSHIPS / COLLABORATIONS</li>
+          </ul>
         </div>
-      </div>
-    </div>
 
-    <div class="hero-meta-row">
-      <div class="hero-meta-item">
-        <span class="mono-label">[LOCATION]</span>
-        <span id="heroLocation">JO</span>
-      </div>
-      <div class="hero-meta-item">
-        <span class="mono-label">[LOCAL TIME]</span>
-        <span id="heroTime">--:--</span>
-      </div>
-      <div class="hero-meta-item">
-        <span class="mono-label">[TODAY]</span>
-        <span id="heroDate">--</span>
-      </div>
-    </div>
+        <div class="hero__composition grid-12">
+          <figure class="hero-media image-frame is-pending" id="hero-media-frame">
+            <img class="hero-media__image" id="hero-image" src="assets/images/hero.jpg" alt="Selected architectural work by Ahmad Alhadidii">
+            <div class="image-placeholder" id="hero-placeholder" aria-hidden="true">
+              <svg class="construction-grid" viewBox="0 0 800 450" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M100 0V450M200 0V450M300 0V450M400 0V450M500 0V450M600 0V450M700 0V450M0 90H800M0 180H800M0 270H800M0 360H800"/>
+                <path class="construction-grid__strong" d="M0 0L800 450M800 0L0 450M400 0V450M0 225H800"/>
+                <circle cx="400" cy="225" r="56"/>
+              </svg>
+              <div class="image-placeholder__copy">
+                <span>REPLACE IMAGE</span>
+                <span id="hero-placeholder-path">assets/images/hero.jpg</span>
+              </div>
+              <span class="image-placeholder__code image-code">0.1</span>
+            </div>
+            <figcaption class="image-caption">
+              <span id="hero-caption">Hero image / replace with selected architectural work</span>
+              <span class="image-code" id="hero-image-code">0.1</span>
+            </figcaption>
+          </figure>
 
-    <p class="hero-subtitle" id="heroSubtitle"></p>
-
-    <p class="hero-statement" id="heroStatement" data-scramble></p>
-
-    <p class="hero-footnote" id="heroFootnote"></p>
-  </section>
-
-  <!-- ================= WORK ================= -->
-  <section class="section" id="work">
-    <p class="section-caption mono-label">A FEW PROJECTS, DRAWINGS, AND RESEARCH-BASED SYSTEMS DEVELOPED RECENTLY.</p>
-
-    <div class="section-split">
-      <div class="section-title-sticky">
-        <h2 class="split-title" id="workTitle" aria-label="Selected Works">
-          <!-- injected -->
-        </h2>
-        <span class="mono-label section-index">[PROJECT INDEX]</span>
-      </div>
-
-      <div class="project-list" id="projectList">
-        <!-- injected rows -->
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= METHOD ================= -->
-  <section class="section" id="method">
-    <div class="section-split">
-      <div class="section-title-sticky">
-        <span class="mono-label" id="methodLabel"></span>
-        <h2 class="split-title" id="methodTitle" aria-label="Method"></h2>
-      </div>
-
-      <div class="section-content">
-        <p class="section-headline" id="methodHeadline" data-scramble></p>
-        <p class="section-intro" id="methodIntro"></p>
-        <div class="point-grid" id="methodGrid">
-          <!-- injected -->
+          <div class="hero__statement-wrap">
+            <p class="eyebrow">POSITION / 00.1</p>
+            <p class="hero__statement" id="hero-statement">I read beneath the surface of disorder — tracing the quiet systems, patterns, and relationships that shape what first appears random, and reveal the hidden logic that gives scattered things their structure.</p>
+            <div class="hero__datum" aria-label="Local time in Jordan">
+              <span>AMMAN / LOCAL TIME</span>
+              <time id="local-time" datetime="">--:--:--</time>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- ================= CAPABILITIES ================= -->
-  <section class="section" id="capabilities">
-    <div class="section-split">
-      <div class="section-title-sticky">
-        <span class="mono-label" id="capabilitiesLabel"></span>
-        <h2 class="split-title" id="capabilitiesTitle" aria-label="Capabilities"></h2>
-      </div>
+      <section class="section shell" id="profile" aria-labelledby="profile-title" data-nav-section="profile">
+        <header class="section-heading grid-12">
+          <h2 id="profile-title">01 — PROFILE</h2>
+          <p>IDENTITY / CONTEXT / INTENT</p>
+        </header>
 
-      <div class="section-content">
-        <p class="section-intro" id="capabilitiesIntro"></p>
-        <div class="row-list" id="capabilitiesList">
-          <!-- injected -->
+        <div class="profile grid-12">
+          <aside class="profile__identity">
+            <p class="eyebrow">AHMAD ALHADIDII</p>
+            <p>Architecture student and architectural designer based in Jordan.</p>
+            <a class="text-link" id="profile-cv-link" href="#">CV / PDF <span aria-hidden="true">↗</span></a>
+          </aside>
+
+          <div class="profile__main">
+            <div class="profile__copy" id="profile-copy">
+              <p>I’m Ahmad Alhadidii, an architecture student and architectural designer based in Jordan.</p>
+              <p>My work is driven by an interest in how ideas, contexts, human experiences, and emerging technologies can shape meaningful spatial responses. I approach architecture through research, systems, and visual communication, often exploring references beyond architecture before translating them into spatial and graphic form.</p>
+              <p>I’m drawn to architecture defined not only by image, but by purpose, memory, use, and contextual logic.</p>
+            </div>
+
+            <ul class="profile__facts" id="profile-facts" aria-label="Profile quick facts">
+              <li><span>01</span>Architecture student — Al-Balqa Applied University</li>
+              <li><span>02</span>Architecture / Research / Computational Design</li>
+              <li><span>03</span>Interested in systems, spatial logic, visual communication, and emerging technologies</li>
+              <li><span>04</span>Based in Jordan</li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- ================= PROFILE / ABOUT ================= -->
-  <section class="section" id="profile">
-    <div class="section-split profile-split">
-      <div class="section-title-sticky">
-        <span class="mono-label" id="profileLabel"></span>
-        <h2 class="split-title" id="profileTitle" aria-label="About"></h2>
-      </div>
+      <section class="section shell" id="work" aria-labelledby="work-title" data-nav-section="work">
+        <header class="section-heading grid-12">
+          <h2 id="work-title">02 — SELECTED WORK</h2>
+          <p>EDITABLE PROJECT INDEX / 2025–2026</p>
+        </header>
 
-      <div class="section-content">
-        <h3 class="profile-heading" id="profileHeading"></h3>
-        <p class="profile-intro" id="profileIntro"></p>
-        <div id="profileBody" class="profile-body"></div>
-        <ul class="fact-list" id="profileFacts"></ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= CONTACT ================= -->
-  <section class="section" id="contact">
-    <span class="mono-label" id="contactLabel"></span>
-    <h2 class="contact-title" id="contactTitle" aria-label="Good work starts with clear structure"></h2>
-
-    <div class="contact-links" id="contactLinks">
-      <!-- injected -->
-    </div>
-  </section>
-
-</main>
-
-<!-- ================= FOOTER ================= -->
-<footer class="site-footer">
-  <div class="footer-row">
-    <span id="footerLeft"></span>
-    <span id="footerCenter"></span>
-    <span id="footerRight"></span>
-  </div>
-  <div class="footer-row footer-sub mono-label">
-    <span id="footerLocation">JO</span>
-    <span id="footerTimeLabel">LOCAL TIME</span>
-    <span id="footerToday">TODAY</span>
-  </div>
-</footer>
-
-<!-- ================= PROJECT MODAL ================= -->
-<div class="modal" id="projectModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
-  <div class="modal-backdrop" id="modalBackdrop"></div>
-  <div class="modal-panel">
-    <button class="modal-close" id="modalClose" aria-label="Close project details">
-      <span>CLOSE</span> <span aria-hidden="true">&times;</span>
-    </button>
-    <div class="modal-scroll">
-      <div class="modal-image placeholder-block" id="modalImageWrap" data-label="IMAGE / REPLACE">
-        <img id="modalImage" src="" alt="">
-      </div>
-      <div class="modal-body">
-        <span class="mono-label" id="modalNumber"></span>
-        <h2 class="modal-title" id="modalTitle"></h2>
-        <div class="modal-meta-row mono-label">
-          <span id="modalCategory"></span>
-          <span id="modalYear"></span>
+        <div class="work-intro grid-12">
+          <p>Six project sheets prepared as editable slots. Replace each title, description, and coded image path in <code>content.js</code>.</p>
+          <p class="eyebrow">SELECT A ROW TO OPEN</p>
         </div>
-        <p class="modal-role mono-label" id="modalRole"></p>
-        <p class="modal-description" id="modalDescription"></p>
-        <ul class="modal-points" id="modalPoints"></ul>
-        <div class="modal-chips" id="modalChips"></div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<script src="content.js"></script>
-<script src="assets/js/main.js"></script>
+        <div class="project-index" id="project-list" aria-label="Selected work index"></div>
+
+        <noscript>
+          <ol class="project-fallback">
+            <li>01 — PROJECT SLOT — Architecture / Research / Visual Work — 2026</li>
+            <li>02 — PROJECT SLOT — Architecture / Research / Visual Work — 2026</li>
+            <li>03 — PROJECT SLOT — Architecture / Research / Visual Work — 2026</li>
+            <li>04 — PROJECT SLOT — Architecture / Research / Visual Work — 2026</li>
+            <li>05 — PROJECT SLOT — Architecture / Research / Visual Work — 2026</li>
+            <li>06 — PROJECT SLOT — Architecture / Research / Visual Work — 2026</li>
+          </ol>
+        </noscript>
+      </section>
+
+      <section class="section shell" id="method" aria-labelledby="method-title" data-nav-section="method">
+        <header class="section-heading grid-12">
+          <h2 id="method-title">03 — METHOD / TOOLS</h2>
+          <p>RESEARCH / SYSTEM / TRANSLATION</p>
+        </header>
+
+        <div class="method-intro grid-12">
+          <p>Architecture approached as an ordered field of context, relationships, and decisions — moving from research to spatial logic and precise communication.</p>
+        </div>
+
+        <div class="method-list" id="method-list"></div>
+
+        <noscript>
+          <ol class="method-fallback">
+            <li>Research-Based Design</li>
+            <li>Spatial Systems</li>
+            <li>Computational Thinking</li>
+            <li>Parametric Logic</li>
+            <li>Visual Communication</li>
+            <li>BIM + Documentation</li>
+          </ol>
+        </noscript>
+      </section>
+
+      <section class="section shell" id="cv" aria-labelledby="cv-title" data-nav-section="cv">
+        <header class="section-heading grid-12">
+          <h2 id="cv-title">04 — CV / EXPERIENCE</h2>
+          <p>EDUCATION / PRACTICE / RECOGNITION</p>
+        </header>
+
+        <div class="cv-intro grid-12">
+          <p>A concise working record. All entries remain editable from the CV object in <code>content.js</code>.</p>
+          <a class="text-link" id="cv-download-link" href="#">DOWNLOAD CV / PDF <span aria-hidden="true">↗</span></a>
+        </div>
+
+        <div class="cv-table" id="cv-table">
+          <section class="cv-group">
+            <h3>EDUCATION</h3>
+            <p>Architecture Student — Al-Balqa Applied University</p>
+          </section>
+          <section class="cv-group">
+            <h3>EXPERIENCE</h3>
+            <p>BIM Lab — Architecture Training</p>
+            <p>Publication / Research Support</p>
+          </section>
+          <section class="cv-group">
+            <h3>AWARDS</h3>
+            <p>Environmental Legacy Makers Award — 1st Place</p>
+          </section>
+          <section class="cv-group">
+            <h3>SKILLS</h3>
+            <p>Research-Based Design / Concept Development / Spatial Storytelling / Computational Thinking / Visual Communication / BIM Documentation</p>
+          </section>
+          <section class="cv-group">
+            <h3>SOFTWARE</h3>
+            <p>Rhino / Grasshopper / Revit / AutoCAD / Photoshop / Illustrator / D5 Render / Canva</p>
+          </section>
+        </div>
+      </section>
+
+      <section class="section section--contact shell" id="contact" aria-labelledby="contact-title" data-nav-section="contact">
+        <header class="section-heading grid-12">
+          <h2 id="contact-title">05 — CONTACT</h2>
+          <p>JORDAN / OPEN TO CONVERSATION</p>
+        </header>
+
+        <div class="contact grid-12">
+          <p class="contact__statement" id="contact-statement">For internships, collaborations, competitions, or selected visual work.</p>
+          <nav class="contact__links" id="contact-links" aria-label="Contact links">
+            <a href="mailto:alhadidiahamd@gmail.com"><span>EMAIL</span><span>alhadidiahamd@gmail.com</span></a>
+            <a href="#"><span>LINKEDIN</span><span>—</span></a>
+            <a href="#"><span>GITHUB</span><span>—</span></a>
+            <a href="#"><span>PORTFOLIO PDF</span><span>—</span></a>
+            <a href="#"><span>CV PDF</span><span>—</span></a>
+          </nav>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell" id="footer-copy">©2026 — AHMAD ALHADIDII — JORDAN</div>
+    </footer>
+  </div>
 </body>
 </html>
