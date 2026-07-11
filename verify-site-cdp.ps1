@@ -1,66 +1,140 @@
 $ErrorActionPreference = 'Stop'
 
 $chrome = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
-$outDir = Join-Path $env:TEMP 'ahmad-portfolio-editorial-check'
+$repoRoot = (Resolve-Path '.').Path
+$outDir = Join-Path $env:TEMP 'ahmad-portfolio-contract-check'
 $runId = Get-Date -Format 'yyyyMMdd-HHmmssfff'
 $profile = Join-Path $outDir ("profile-$runId")
 $homeUrl = ([System.Uri]::new((Resolve-Path '.\index.html').Path)).AbsoluteUri
 $projectBaseUrl = ([System.Uri]::new((Resolve-Path '.\project.html').Path)).AbsoluteUri
+$process = $null
+$ws = $null
+$profileCreated = $false
+$script:assertionCount = 0
+$script:cdpId = 0
+$script:cdpEvents = [System.Collections.ArrayList]::new()
+
+function Assert-State([bool]$condition, [string]$message) {
+  if (-not $condition) { throw $message }
+  $script:assertionCount++
+}
+
+function Assert-SourceContract {
+  $sourceFiles = @(
+    '.\index.html',
+    '.\project.html',
+    '.\content.js',
+    '.\assets\css\style.css',
+    '.\assets\js\main.js',
+    '.\assets\js\project.js'
+  )
+  $missing = @($sourceFiles | Where-Object { -not (Test-Path -LiteralPath $_) })
+  Assert-State ($missing.Count -eq 0) ("Missing source files: {0}" -f ($missing -join ', '))
+
+  $sourceText = ($sourceFiles | ForEach-Object {
+    Get-Content -Raw -LiteralPath $_
+  }) -join [Environment]::NewLine
+
+  $forbiddenPatterns = @(
+    'portfolio:monitor-boot',
+    '\bsessionStorage\b',
+    '\blocalStorage\b',
+    'Source\s+Serif',
+    '\bArchitecture\s+student\b',
+    '\bArchitectural\s+student\b',
+    '\bStudent\s+architect\b',
+    '\bComputational\s+Design\s+Explorer\b',
+    'Bachelor\s+of\s+Architecture.{0,24}\bCandidate\b'
+  )
+  foreach ($pattern in $forbiddenPatterns) {
+    Assert-State (-not [regex]::IsMatch($sourceText, $pattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)) ("Forbidden source text remains: {0}" -f $pattern)
+  }
+
+  foreach ($htmlPath in @('.\index.html', '.\project.html')) {
+    $html = Get-Content -Raw -LiteralPath $htmlPath
+    Assert-State ($html -match 'IBM\+Plex\+Sans' -and $html -match 'IBM\+Plex\+Mono') ("The two-font import is incomplete in {0}." -f $htmlPath)
+    Assert-State ($html -match 'id="loader-progress"[^>]*>000<' -and $html -match 'id="loader-progress-secondary"[^>]*>000<') ("The loader does not begin at 000 in {0}." -f $htmlPath)
+  }
+
+  $css = Get-Content -Raw -LiteralPath '.\assets\css\style.css'
+  Assert-State ($css -match '--font-sans\s*:\s*"IBM Plex Sans"' -and $css -match '--font-mono\s*:\s*"IBM Plex Mono"') 'The CSS font tokens do not resolve to IBM Plex Sans and IBM Plex Mono.'
+  $fontDeclarations = [regex]::Matches($css, 'font-family\s*:\s*([^;}{]+)', [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+  $badFontDeclarations = @($fontDeclarations | Where-Object {
+    $value = $_.Groups[1].Value
+    $value -notmatch 'var\(--font-(?:sans|mono)\)' -and
+    $value -notmatch 'IBM Plex (?:Sans|Mono)' -and
+    $value -notmatch 'inherit'
+  } | ForEach-Object { $_.Value.Trim() })
+  Assert-State ($badFontDeclarations.Count -eq 0) ("Unexpected font-family declarations: {0}" -f ($badFontDeclarations -join '; '))
+
+  $index = Get-Content -Raw -LiteralPath '.\index.html'
+  $projectRows = [regex]::Matches($index, 'data-project-id="(project-\d{2})"')
+  $rowIds = @($projectRows | ForEach-Object { $_.Groups[1].Value })
+  Assert-State (($rowIds -join ',') -eq 'project-05,project-01,project-02,project-03,project-04') 'The homepage project archive order changed unexpectedly.'
+  Assert-State ([regex]::Matches($index, 'data-manmatic-field').Count -eq 1) 'The homepage must contain one ManMaTIC activation field.'
+  Assert-State ($index -match 'data-visual-slider' -and $index -match 'data-visual-prev' -and $index -match 'data-visual-next') 'The Visual Studies slider controls are missing from the source.'
+
+  $mainScript = Get-Content -Raw -LiteralPath '.\assets\js\main.js'
+  Assert-State ($mainScript -match 'prefers-reduced-motion' -and $mainScript -match 'data-reading-text' -and $mainScript -match 'reading-word') 'Reduced-motion or word-level reading logic is missing.'
+  Assert-State ($mainScript -match 'data-showreel-slide' -and $mainScript -match 'data-visual-slider') 'Showreel or Visual Studies behavior is missing.'
+}
+
 $viewports = @(
-  @{ Name = '1920x1080'; Width = 1920; Height = 1080; Mobile = $false },
-  @{ Name = '1440x900'; Width = 1440; Height = 900; Mobile = $false },
-  @{ Name = '1366x768'; Width = 1366; Height = 768; Mobile = $false },
-  @{ Name = '1024x768'; Width = 1024; Height = 768; Mobile = $false },
-  @{ Name = '768x1024'; Width = 768; Height = 1024; Mobile = $true },
-  @{ Name = '430x932'; Width = 430; Height = 932; Mobile = $true },
-  @{ Name = '390x844'; Width = 390; Height = 844; Mobile = $true },
-  @{ Name = '360x800'; Width = 360; Height = 800; Mobile = $true }
+  @{ Name = '320x568'; Width = 320; Height = 568; Mobile = $true; Touch = $true },
+  @{ Name = '360x640'; Width = 360; Height = 640; Mobile = $true; Touch = $true },
+  @{ Name = '360x800'; Width = 360; Height = 800; Mobile = $true; Touch = $true },
+  @{ Name = '375x667'; Width = 375; Height = 667; Mobile = $true; Touch = $true },
+  @{ Name = '375x812'; Width = 375; Height = 812; Mobile = $true; Touch = $true },
+  @{ Name = '390x844'; Width = 390; Height = 844; Mobile = $true; Touch = $true },
+  @{ Name = '393x852'; Width = 393; Height = 852; Mobile = $true; Touch = $true },
+  @{ Name = '412x915'; Width = 412; Height = 915; Mobile = $true; Touch = $true },
+  @{ Name = '428x926'; Width = 428; Height = 926; Mobile = $true; Touch = $true },
+  @{ Name = '768x1024'; Width = 768; Height = 1024; Mobile = $true; Touch = $true },
+  @{ Name = '810x1080'; Width = 810; Height = 1080; Mobile = $true; Touch = $true },
+  @{ Name = '820x1180'; Width = 820; Height = 1180; Mobile = $true; Touch = $true },
+  @{ Name = '1024x1366'; Width = 1024; Height = 1366; Mobile = $true; Touch = $true },
+  @{ Name = '667x375'; Width = 667; Height = 375; Mobile = $true; Touch = $true },
+  @{ Name = '844x390'; Width = 844; Height = 390; Mobile = $true; Touch = $true },
+  @{ Name = '915x412'; Width = 915; Height = 412; Mobile = $true; Touch = $true },
+  @{ Name = '1024x768'; Width = 1024; Height = 768; Mobile = $true; Touch = $true },
+  @{ Name = '1366x1024'; Width = 1366; Height = 1024; Mobile = $true; Touch = $true },
+  @{ Name = '1280x720'; Width = 1280; Height = 720; Mobile = $false; Touch = $false },
+  @{ Name = '1280x800'; Width = 1280; Height = 800; Mobile = $false; Touch = $false },
+  @{ Name = '1366x768'; Width = 1366; Height = 768; Mobile = $false; Touch = $false },
+  @{ Name = '1440x900'; Width = 1440; Height = 900; Mobile = $false; Touch = $false },
+  @{ Name = '1536x864'; Width = 1536; Height = 864; Mobile = $false; Touch = $false },
+  @{ Name = '1920x1080'; Width = 1920; Height = 1080; Mobile = $false; Touch = $false },
+  @{ Name = '2560x1440'; Width = 2560; Height = 1440; Mobile = $false; Touch = $false }
 )
 
-New-Item -ItemType Directory -Force -Path $outDir | Out-Null
-
-$process = Start-Process -FilePath $chrome -ArgumentList @(
-  '--headless=new',
-  '--disable-gpu',
-  '--disable-background-timer-throttling',
-  '--disable-backgrounding-occluded-windows',
-  '--disable-renderer-backgrounding',
-  '--hide-scrollbars',
-  '--no-first-run',
-  '--allow-file-access-from-files',
-  '--remote-debugging-port=0',
-  '--remote-allow-origins=*',
-  "--user-data-dir=$profile",
-  'about:blank'
-) -PassThru -WindowStyle Hidden
-
-$portFile = Join-Path $profile 'DevToolsActivePort'
-$deadline = (Get-Date).AddSeconds(15)
-while (-not (Test-Path -LiteralPath $portFile) -and (Get-Date) -lt $deadline) {
-  Start-Sleep -Milliseconds 100
-}
-if (-not (Test-Path -LiteralPath $portFile)) { throw 'Chrome DevTools endpoint did not start.' }
-
-$port = [int](Get-Content -LiteralPath $portFile | Select-Object -First 1)
-$targets = Invoke-RestMethod -Uri "http://127.0.0.1:$port/json/list"
-$target = $targets | Where-Object { $_.type -eq 'page' } | Select-Object -First 1
-if (-not $target) { throw 'No page target was available.' }
-
-$ws = [System.Net.WebSockets.ClientWebSocket]::new()
-$null = $ws.ConnectAsync([System.Uri]$target.webSocketDebuggerUrl, [System.Threading.CancellationToken]::None).GetAwaiter().GetResult()
-$script:cdpId = 0
+$desktopViewport = $viewports | Where-Object { $_.Name -eq '1440x900' } | Select-Object -First 1
+$phoneViewport = $viewports | Where-Object { $_.Name -eq '390x844' } | Select-Object -First 1
+$smallPhoneViewport = $viewports | Where-Object { $_.Name -eq '320x568' } | Select-Object -First 1
+$expectedSlugs = @('project-05', 'project-01', 'project-02', 'project-03', 'project-04')
+$expectedNumbers = @('001', '002', '003', '004', '005')
 
 function Receive-CdpMessage {
-  $buffer = New-Object byte[] 1048576
+  $buffer = New-Object byte[] 65536
   $stream = [System.IO.MemoryStream]::new()
-  do {
-    $segment = [System.ArraySegment[byte]]::new($buffer)
-    $received = $ws.ReceiveAsync($segment, [System.Threading.CancellationToken]::None).GetAwaiter().GetResult()
-    if ($received.Count -gt 0) { $stream.Write($buffer, 0, $received.Count) }
-  } until ($received.EndOfMessage)
-  $text = [System.Text.Encoding]::UTF8.GetString($stream.ToArray())
-  $stream.Dispose()
-  return $text
+  $cancellation = [System.Threading.CancellationTokenSource]::new(20000)
+  try {
+    do {
+      $segment = [System.ArraySegment[byte]]::new($buffer)
+      $received = $ws.ReceiveAsync($segment, $cancellation.Token).GetAwaiter().GetResult()
+      if ($received.MessageType -eq [System.Net.WebSockets.WebSocketMessageType]::Close) {
+        throw 'Chrome closed the DevTools connection unexpectedly.'
+      }
+      if ($received.Count -gt 0) { $stream.Write($buffer, 0, $received.Count) }
+    } until ($received.EndOfMessage)
+    return [System.Text.Encoding]::UTF8.GetString($stream.ToArray())
+  }
+  catch [System.OperationCanceledException] {
+    throw 'Timed out waiting for a Chrome DevTools response.'
+  }
+  finally {
+    $cancellation.Dispose()
+    $stream.Dispose()
+  }
 }
 
 function Invoke-Cdp([string]$method, $params = $null) {
@@ -68,39 +142,75 @@ function Invoke-Cdp([string]$method, $params = $null) {
   $id = $script:cdpId
   $payload = @{ id = $id; method = $method }
   if ($null -ne $params) { $payload.params = $params }
-  $json = $payload | ConvertTo-Json -Depth 30 -Compress
+  $json = $payload | ConvertTo-Json -Depth 40 -Compress
   $bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
   $segment = [System.ArraySegment[byte]]::new($bytes)
   $null = $ws.SendAsync($segment, [System.Net.WebSockets.WebSocketMessageType]::Text, $true, [System.Threading.CancellationToken]::None).GetAwaiter().GetResult()
-  do {
+
+  while ($true) {
     $message = Receive-CdpMessage
     $response = $message | ConvertFrom-Json
-  } until ($response.id -eq $id)
-  if ($response.error) { throw ("CDP {0} failed: {1}" -f $method, $response.error.message) }
-  return $response.result
+    $idProperty = $response.PSObject.Properties['id']
+    if ($null -ne $idProperty -and [int]$response.id -eq $id) {
+      if ($response.error) { throw ("CDP {0} failed: {1}" -f $method, $response.error.message) }
+      return $response.result
+    }
+    if ($response.method) {
+      $null = $script:cdpEvents.Add($response)
+    }
+  }
 }
 
 function Evaluate([string]$expression) {
   $result = Invoke-Cdp 'Runtime.evaluate' @{
     expression = $expression
     returnByValue = $true
+    awaitPromise = $true
+  }
+  if ($result.exceptionDetails) {
+    $description = $result.exceptionDetails.text
+    if ($result.exceptionDetails.exception.description) {
+      $description = $result.exceptionDetails.exception.description
+    }
+    throw ("Browser evaluation failed: {0}" -f $description)
   }
   return $result.result.value
 }
 
+function Evaluate-Json([string]$expression) {
+  $value = Evaluate $expression
+  if ($null -eq $value -or $value -eq '') { return $null }
+  if ($value -is [string]) { return $value | ConvertFrom-Json }
+  return $value
+}
+
 function Navigate([string]$url) {
+  $urlLiteral = ConvertTo-Json -InputObject $url -Compress
   $null = Invoke-Cdp 'Page.navigate' @{ url = $url }
-  for ($i = 0; $i -lt 120; $i++) {
+  for ($i = 0; $i -lt 160; $i++) {
     try {
-      if ([bool](Evaluate 'document.readyState !== "loading"')) { return }
+      if ([bool](Evaluate "location.href === $urlLiteral && document.readyState !== 'loading'")) { return }
     } catch {}
     Start-Sleep -Milliseconds 100
   }
   throw "Page did not finish parsing: $url"
 }
 
-function Wait-For([string]$expression, [string]$message) {
-  for ($i = 0; $i -lt 120; $i++) {
+function Reload-Page {
+  $previousTimeOrigin = Evaluate 'performance.timeOrigin'
+  $timeOriginLiteral = ConvertTo-Json -InputObject $previousTimeOrigin -Compress
+  $null = Invoke-Cdp 'Page.reload' @{ ignoreCache = $true }
+  for ($i = 0; $i -lt 160; $i++) {
+    try {
+      if ([bool](Evaluate "performance.timeOrigin !== $timeOriginLiteral && document.readyState !== 'loading'")) { return }
+    } catch {}
+    Start-Sleep -Milliseconds 100
+  }
+  throw 'Page did not finish parsing after reload.'
+}
+
+function Wait-For([string]$expression, [string]$message, [int]$attempts = 160) {
+  for ($i = 0; $i -lt $attempts; $i++) {
     try {
       if ([bool](Evaluate $expression)) { return }
     } catch {}
@@ -118,671 +228,1118 @@ function Set-Viewport($viewport) {
     screenWidth = [int]$viewport.Width
     screenHeight = [int]$viewport.Height
   }
+  $null = Invoke-Cdp 'Emulation.setTouchEmulationEnabled' @{
+    enabled = [bool]$viewport.Touch
+    maxTouchPoints = $(if ($viewport.Touch) { 5 } else { 1 })
+  }
 }
 
-function Save-FullScreenshot([string]$name) {
-  $layout = Invoke-Cdp 'Page.getLayoutMetrics'
-  $content = $layout.cssContentSize
-  $height = [Math]::Min([double]$content.height, 30000)
-  $path = Join-Path $outDir ("$runId-$name.png")
-  $result = Invoke-Cdp 'Page.captureScreenshot' @{
-    format = 'png'
-    fromSurface = $true
-    captureBeyondViewport = $true
-    clip = @{
-      x = 0
-      y = 0
-      width = [double]$content.width
-      height = $height
-      scale = 1
+function Clear-CdpEvents {
+  $script:cdpEvents.Clear()
+}
+
+function Flush-CdpEvents {
+  $null = Evaluate 'true'
+  Start-Sleep -Milliseconds 40
+  $null = Evaluate 'true'
+}
+
+function Test-LocalPageUrl([string]$url) {
+  if ([string]::IsNullOrWhiteSpace($url)) { return $false }
+  try {
+    $uri = [System.Uri]$url
+    return $uri.IsFile -or $uri.Scheme -eq 'data' -or $uri.Scheme -eq 'blob'
+  } catch {
+    return $false
+  }
+}
+
+function Assert-No-PageErrors([string]$label) {
+  Flush-CdpEvents
+  $requestUrls = @{}
+  $problems = [System.Collections.Generic.List[string]]::new()
+  foreach ($event in @($script:cdpEvents)) {
+    switch ($event.method) {
+      'Network.requestWillBeSent' {
+        $requestUrls[[string]$event.params.requestId] = [string]$event.params.request.url
+      }
+      'Runtime.exceptionThrown' {
+        $details = [string]$event.params.exceptionDetails.text
+        if ($event.params.exceptionDetails.exception.description) {
+          $details = [string]$event.params.exceptionDetails.exception.description
+        }
+        $problems.Add("runtime exception: $details")
+      }
+      'Runtime.consoleAPICalled' {
+        if ([string]$event.params.type -eq 'error') {
+          $parts = @($event.params.args | ForEach-Object {
+            if ($null -ne $_.value) { [string]$_.value } elseif ($_.description) { [string]$_.description } else { [string]$_.type }
+          })
+          $problems.Add("console.error: $($parts -join ' ')")
+        }
+      }
+      'Log.entryAdded' {
+        if ([string]$event.params.entry.level -eq 'error') {
+          $entryUrl = [string]$event.params.entry.url
+          $entrySource = [string]$event.params.entry.source
+          if ($entrySource -ne 'network' -or (Test-LocalPageUrl $entryUrl)) {
+            $problems.Add("browser log: $([string]$event.params.entry.text)")
+          }
+        }
+      }
+      'Network.loadingFailed' {
+        if (-not [bool]$event.params.canceled -and [string]$event.params.errorText -ne 'net::ERR_ABORTED') {
+          $url = $requestUrls[[string]$event.params.requestId]
+          if (Test-LocalPageUrl $url) {
+            $problems.Add("resource failed: $url ($([string]$event.params.errorText))")
+          }
+        }
+      }
+      'Network.responseReceived' {
+        $status = [double]$event.params.response.status
+        if ($status -ge 400 -and (Test-LocalPageUrl ([string]$event.params.response.url))) {
+          $problems.Add("HTTP ${status}: $([string]$event.params.response.url)")
+        }
+      }
     }
   }
-  [System.IO.File]::WriteAllBytes($path, [System.Convert]::FromBase64String($result.data))
-  return $path
+  Assert-State ($problems.Count -eq 0) ("{0} emitted browser errors: {1}" -f $label, ($problems -join ' | '))
 }
 
-function Save-ViewportScreenshot([string]$name) {
-  $path = Join-Path $outDir ("$runId-$name.png")
-  $result = Invoke-Cdp 'Page.captureScreenshot' @{
-    format = 'png'
-    fromSurface = $true
-    captureBeyondViewport = $false
-  }
-  [System.IO.File]::WriteAllBytes($path, [System.Convert]::FromBase64String($result.data))
-  return $path
+function Install-DocumentProbe {
+  $probeScript = @'
+(() => {
+  const state = {
+    timeOrigin: performance.timeOrigin,
+    loader: [],
+    windowErrors: [],
+    unhandledRejections: []
+  };
+  Object.defineProperty(window, "__portfolioContractProbe", {
+    value: state,
+    configurable: false,
+    enumerable: false,
+    writable: false
+  });
+
+  let lastLoaderKey = "";
+  const sampleLoader = () => {
+    const loader = document.getElementById("loader");
+    const progress = document.getElementById("loader-progress");
+    if (!loader || !progress) return;
+    const value = String(progress.textContent || "").trim();
+    if (!/^\d{3}$/.test(value)) return;
+    const bar = document.getElementById("loader-progress-bar");
+    const entry = {
+      value,
+      hidden: Boolean(loader.hidden),
+      ariaHidden: loader.getAttribute("aria-hidden") || "",
+      pending: document.documentElement.classList.contains("loader-pending"),
+      bar: bar ? bar.style.transform || "" : "",
+      at: Math.round(performance.now())
+    };
+    const key = [entry.value, entry.hidden, entry.ariaHidden, entry.pending, entry.bar].join("|");
+    if (key !== lastLoaderKey) {
+      state.loader.push(entry);
+      lastLoaderKey = key;
+    }
+  };
+
+  new MutationObserver(sampleLoader).observe(document, {
+    subtree: true,
+    childList: true,
+    characterData: true,
+    attributes: true,
+    attributeFilter: ["class", "hidden", "aria-hidden", "style"]
+  });
+  document.addEventListener("readystatechange", sampleLoader, true);
+  document.addEventListener("DOMContentLoaded", sampleLoader, true);
+  window.addEventListener("load", sampleLoader, true);
+  window.addEventListener("error", (event) => {
+    if (event.target !== window) return;
+    state.windowErrors.push(String(event.error && event.error.stack || event.message || "window error"));
+  }, true);
+  window.addEventListener("unhandledrejection", (event) => {
+    state.unhandledRejections.push(String(event.reason && event.reason.stack || event.reason || "unhandled rejection"));
+  });
+})();
+'@
+  $null = Invoke-Cdp 'Page.addScriptToEvaluateOnNewDocument' @{ source = $probeScript }
 }
 
-function Assert-State([bool]$condition, [string]$message) {
-  if (-not $condition) { throw $message }
-}
-
-function Home-State {
+function Wait-For-AppReady([string]$label) {
   $expression = @'
-(function () {
-  function query(selector) { return document.querySelector(selector); }
-  function rect(element) {
-    if (!element) return null;
-    var value = element.getBoundingClientRect();
-    return { left: value.left, top: value.top, right: value.right, bottom: value.bottom, width: value.width, height: value.height };
-  }
-  function style(element) { return element ? getComputedStyle(element) : null; }
-  function pixels(value) { var parsed = parseFloat(value); return Number.isFinite(parsed) ? parsed : 0; }
-  function lineCount(element) {
-    if (!element) return 0;
-    var range = document.createRange();
-    range.selectNodeContents(element);
-    var tops = [];
-    Array.from(range.getClientRects()).filter(function (item) {
-      return item.width > 1 && item.height > 1;
-    }).forEach(function (item) {
-      if (!tops.some(function (top) { return Math.abs(top - item.top) < 2; })) tops.push(item.top);
-    });
-    return tops.length;
-  }
-  function normalizedText(element) {
-    return element ? (element.innerText || element.textContent || "").replace(/\s+/g, " ").trim() : "";
-  }
-  function precedes(first, second) {
-    return !!(first && second && (first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING));
-  }
-  function transformScale(element) {
-    if (!element) return 0;
-    var transform = style(element).transform;
-    if (!transform || transform === "none") return 1;
-    try {
-      var matrix = new DOMMatrixReadOnly(transform);
-      return Math.max(Math.hypot(matrix.a, matrix.b), Math.hypot(matrix.c, matrix.d));
-    } catch (error) {
-      return 99;
-    }
-  }
-
-  var opening = query(".opening");
-  var identity = query(".opening__identity");
-  var monitor = query("[data-broadcast-monitor]");
-  var screen = query("[data-monitor-screen]");
-  var concept = query(".opening__concept");
-  var firstBoard = query("[data-opening-board]");
-  var title = query(".manifesto__title");
-  var manifesto = query(".manifesto__text");
-  var profile = query(".profile__statement");
-  var marker = query("[data-section-marker]");
-  var markerHeading = marker ? marker.querySelector("h2") : null;
-  var contactName = query(".contact__name");
-  var contactStatement = query(".contact__statement");
-  var contactBand = query(".contact__band");
-  var titleStyle = style(title);
-  var manifestoStyle = style(manifesto);
-  var profileStyle = style(profile);
-  var markerStyle = style(markerHeading);
-  var nameStyle = style(contactName);
-  var statementStyle = style(contactStatement);
-  var openingRect = rect(opening);
-  var monitorRect = rect(monitor);
-  var screenRect = rect(screen);
-  var boardStyle = style(firstBoard);
-  var researchWord = Array.from(document.querySelectorAll(".profile__statement .reading-word")).find(function (word) {
-    return (word.textContent || "").toLowerCase() === "research-based";
-  });
-  var rowElements = Array.from(document.querySelectorAll(".project-row"));
-  var projects = window.siteContent && Array.isArray(window.siteContent.projects) ? window.siteContent.projects : [];
-  var sectionDimensions = ["profile", "cv", "work", "contact"].map(function (id) {
-    var element = document.getElementById(id);
-    var computed = style(element);
-    return { id: id, minHeight: pixels(computed && computed.minHeight), height: computed ? computed.height : "" };
-  });
-  var markerRect = rect(markerHeading);
-  var nameRect = rect(contactName);
-  var statementRect = rect(contactStatement);
-  var bandRect = rect(contactBand);
-  var headerRect = rect(query(".site-header"));
-  var boardRect = rect(firstBoard);
-
-  return JSON.stringify({
-    width: innerWidth,
-    height: innerHeight,
-    scrollWidth: document.documentElement.scrollWidth,
-    clientWidth: document.documentElement.clientWidth,
-    bodyBackground: style(document.body).backgroundColor,
-    bodyColor: style(document.body).color,
-    siteTheme: document.body.dataset.siteTheme || "",
-    h1Count: document.querySelectorAll("main h1").length,
-    rows: rowElements.length,
-    validRows: document.querySelectorAll('.project-row__link[href^="project.html?project=project-"]').length,
-    navLabels: Array.from(document.querySelectorAll(".site-nav a")).map(function (link) { return (link.dataset.sectionLink || "").toUpperCase(); }),
-    badLinks: document.querySelectorAll('a[href="#"]').length,
-    brokenInternalLinks: Array.from(document.querySelectorAll('a[href^="#"]')).filter(function (link) { return !document.querySelector(link.getAttribute("href")); }).length,
-    duplicateIds: Array.from(document.querySelectorAll("[id]")).map(function (item) { return item.id; }).filter(function (id, index, ids) { return ids.indexOf(id) !== index; }).length,
-    emptyLinks: Array.from(document.querySelectorAll("a")).filter(function (link) { return !(link.textContent || "").trim() && !link.getAttribute("aria-label"); }).length,
-    ratings: document.querySelectorAll('.rating[aria-label*="out of 5"]').length,
-    firstEmail: !!query('a[href="mailto:ahmadalhadidii@manmatic.institute"]'),
-    secondEmail: !!query('a[href="mailto:alhadidiahamd@gmail.com"]'),
-    phone: !!query('a[href="tel:+962790652697"]'),
-    linkedIn: !!query('a[href="https://www.linkedin.com/in/ahmad-alhadidii-97b796290/"]'),
-    instagram: !!query('a[href="https://www.instagram.com/ahmad.alhadidii/"]'),
-    themeColor: query('meta[name="theme-color"]') ? query('meta[name="theme-color"]').getAttribute("content") : "",
-    menuExpanded: query("#nav-toggle") ? query("#nav-toggle").getAttribute("aria-expanded") : "",
-    sectionDimensions: sectionDimensions,
-    monitor: {
-      count: document.querySelectorAll("[data-broadcast-monitor]").length,
-      screenCount: document.querySelectorAll("[data-monitor-screen]").length,
-      width: monitorRect ? monitorRect.width : 0,
-      widthRatio: monitorRect && openingRect ? monitorRect.width / openingRect.width : 0,
-      screenRatio: screenRect && screenRect.height ? screenRect.width / screenRect.height : 0,
-      slideCount: document.querySelectorAll("[data-showreel-slide]").length,
-      activeSlides: document.querySelectorAll("[data-showreel-slide].is-active").length,
-      localImages: Array.from(document.querySelectorAll("[data-showreel-slide] img")).every(function (image) {
-        return !/^https?:/i.test(image.getAttribute("src") || "");
-      }),
-      toggle: !!query("[data-showreel-toggle]"),
-      toggleIsButton: !!query("button[data-showreel-toggle]"),
-      described: !!(monitor && monitor.getAttribute("aria-describedby") && document.getElementById(monitor.getAttribute("aria-describedby"))),
-      order: precedes(identity, monitor) && precedes(monitor, concept)
-    },
-    openingImage: {
-      complete: !!(firstBoard && firstBoard.complete && firstBoard.naturalWidth > 0 && firstBoard.naturalHeight > 0),
-      naturalRatio: firstBoard && firstBoard.naturalHeight ? firstBoard.naturalWidth / firstBoard.naturalHeight : 0,
-      objectFit: boardStyle ? boardStyle.objectFit : "",
-      objectPosition: boardStyle ? boardStyle.objectPosition : "",
-      transformScale: transformScale(firstBoard),
-      belowHeader: !!(boardRect && headerRect && boardRect.top >= headerRect.bottom - 1)
-    },
-    typography: {
-      titleSize: pixels(titleStyle && titleStyle.fontSize),
-      titleLines: lineCount(title),
-      titleWidthRatio: rect(title) && openingRect ? rect(title).width / openingRect.width : 0,
-      titleHasBreak: !!(title && title.querySelector("br")),
-      manifestoSize: pixels(manifestoStyle && manifestoStyle.fontSize),
-      manifestoLines: lineCount(manifesto),
-      manifestoWidthRatio: rect(manifesto) && openingRect ? rect(manifesto).width / openingRect.width : 0,
-      manifestoLineHeight: manifestoStyle ? pixels(manifestoStyle.lineHeight) / Math.max(1, pixels(manifestoStyle.fontSize)) : 0,
-      profileSize: pixels(profileStyle && profileStyle.fontSize),
-      profileWidthRatio: rect(profile) && rect(document.getElementById("profile")) ? rect(profile).width / rect(document.getElementById("profile")).width : 0,
-      profileHyphens: profileStyle ? profileStyle.hyphens : "",
-      profileOverflowWrap: profileStyle ? profileStyle.overflowWrap : "",
-      profileWordBreak: profileStyle ? profileStyle.wordBreak : "",
-      researchWordLines: researchWord ? lineCount(researchWord) : 1,
-      projectTitleMax: Math.max.apply(null, [0].concat(Array.from(document.querySelectorAll(".project-row__copy h3")).map(function (heading) { return pixels(style(heading).fontSize); })))
-    },
-    projectOrder: {
-      dataSlugs: projects.map(function (project) { return project.slug; }),
-      dataNumbers: projects.map(function (project) { return project.number; }),
-      rowIds: rowElements.map(function (row) { return row.dataset.projectId || ""; }),
-      rowNumbers: rowElements.map(function (row) { return normalizedText(row.querySelector(".project-row__number")); }),
-      rowHrefs: rowElements.map(function (row) { var link = row.querySelector(".project-row__link"); return link ? link.getAttribute("href") : ""; }),
-      firstText: normalizedText(rowElements[0]),
-      secondText: normalizedText(rowElements[1])
-    },
-    contact: {
-      markerCount: document.querySelectorAll("[data-section-marker]").length,
-      markerText: normalizedText(markerHeading).replace(/\s*\/\s*/, " / "),
-      markerSize: pixels(markerStyle && markerStyle.fontSize),
-      markerFont: markerStyle ? markerStyle.fontFamily : "",
-      markerDisplay: markerStyle ? markerStyle.display : "",
-      markerAlign: markerStyle ? markerStyle.alignItems : "",
-      hasDisconnectedHeading: !!query("#contact .section-heading"),
-      leftMarkerName: markerRect && nameRect ? Math.abs(markerRect.left - nameRect.left) : 999,
-      leftNameStatement: nameRect && statementRect ? Math.abs(nameRect.left - statementRect.left) : 999,
-      leftStatementBand: statementRect && bandRect ? Math.abs(statementRect.left - bandRect.left) : 999,
-      markerNameGap: markerRect && nameRect ? nameRect.top - markerRect.bottom : 999,
-      nameStatementGap: nameRect && statementRect ? statementRect.top - nameRect.bottom : 999,
-      statementBandGap: statementRect && bandRect ? bandRect.top - statementRect.bottom : 999,
-      nameSize: pixels(nameStyle && nameStyle.fontSize),
-      nameLines: lineCount(contactName),
-      nameLineHeight: nameStyle ? pixels(nameStyle.lineHeight) / Math.max(1, pixels(nameStyle.fontSize)) : 0,
-      statementSize: pixels(statementStyle && statementStyle.fontSize),
-      statementLineHeight: statementStyle ? pixels(statementStyle.lineHeight) / Math.max(1, pixels(statementStyle.fontSize)) : 0,
-      statementWidth: statementRect ? statementRect.width : 0,
-      bandColumns: contactBand ? style(contactBand).gridTemplateColumns : ""
-    }
-  });
+(() => {
+  const loader = document.getElementById("loader");
+  return document.documentElement.classList.contains("loader-complete") &&
+    document.documentElement.classList.contains("motion-ready") &&
+    loader && loader.hidden && loader.getAttribute("aria-hidden") === "true";
 })()
 '@
-  return (Evaluate $expression) | ConvertFrom-Json
+  Wait-For $expression ("{0} did not leave the loader and become motion-ready." -f $label) 180
 }
 
-function Theme-State {
-  $expression = @'
+function Assert-LoaderCycle([string]$label, [int]$minimumDistinctSamples = 5) {
+  Wait-For 'window.__portfolioContractProbe && window.__portfolioContractProbe.loader.length > 0' ("{0} did not expose loader samples." -f $label) 40
+  Wait-For-AppReady $label
+  $probe = Evaluate-Json 'JSON.stringify(window.__portfolioContractProbe)'
+  $samples = @($probe.loader)
+  Assert-State ($samples.Count -ge $minimumDistinctSamples) ("{0} produced too few loader samples ({1})." -f $label, $samples.Count)
+  Assert-State ([string]$samples[0].value -eq '000') ("{0} did not begin at 000; first sample was {1}." -f $label, $samples[0].value)
+
+  $numericValues = @($samples | ForEach-Object { [int]$_.value })
+  $distinctValues = @($numericValues | Select-Object -Unique)
+  Assert-State ($distinctValues.Count -ge $minimumDistinctSamples) ("{0} did not visibly stage loader progress." -f $label)
+  Assert-State ($numericValues -contains 100) ("{0} never reached 100." -f $label)
+  Assert-State (@($numericValues | Where-Object { $_ -gt 0 -and $_ -lt 100 }).Count -gt 0) ("{0} jumped directly from 000 to 100." -f $label)
+
+  for ($index = 1; $index -lt $numericValues.Count; $index++) {
+    Assert-State ($numericValues[$index] -ge $numericValues[$index - 1]) ("{0} loader progress moved backward at sample {1}." -f $label, $index)
+  }
+
+  $zeroVisible = @($samples | Where-Object { [string]$_.value -eq '000' -and -not [bool]$_.hidden -and [string]$_.ariaHidden -ne 'true' })
+  $hundredVisible = @($samples | Where-Object { [string]$_.value -eq '100' -and -not [bool]$_.hidden })
+  Assert-State ($zeroVisible.Count -gt 0) ("{0} did not visibly present 000." -f $label)
+  Assert-State ($hundredVisible.Count -gt 0) ("{0} hid the loader before visibly presenting 100." -f $label)
+  Assert-State (@($samples | Where-Object { [string]$_.value -eq '100' -and [string]$_.bar -match 'scaleX\(1(?:\.0+)?\)' }).Count -gt 0) ("{0} progress line did not reach 100%." -f $label)
+  Assert-State (@($probe.windowErrors).Count -eq 0 -and @($probe.unhandledRejections).Count -eq 0) ("{0} recorded an uncaught window error or rejection." -f $label)
+
+  $finalState = Evaluate-Json @'
 JSON.stringify({
-  theme: document.body.dataset.siteTheme || "",
-  background: getComputedStyle(document.body).backgroundColor,
-  color: getComputedStyle(document.body).color,
-  themeLine: getComputedStyle(document.body).getPropertyValue("--theme-line").trim().toLowerCase(),
-  headerColor: getComputedStyle(document.querySelector(".site-header__name")).color,
-  headerBorder: getComputedStyle(document.querySelector(".site-header")).borderBottomColor,
-  runningHeader: (document.getElementById("running-header-text") || {}).textContent || "",
-  themeColor: document.querySelector('meta[name="theme-color"]') ? document.querySelector('meta[name="theme-color"]').getAttribute("content") : ""
+  progress: document.getElementById("loader-progress").textContent.trim(),
+  secondary: document.getElementById("loader-progress-secondary").textContent.trim(),
+  state: document.getElementById("loader-state").textContent.trim(),
+  phase: document.getElementById("loader-phase").textContent.trim(),
+  hidden: document.getElementById("loader").hidden,
+  pending: document.documentElement.classList.contains("loader-pending"),
+  complete: document.documentElement.classList.contains("loader-complete")
 })
 '@
-  return (Evaluate $expression) | ConvertFrom-Json
+  Assert-State ($finalState.progress -eq '100' -and $finalState.secondary -eq '100') ("{0} final counters are not 100." -f $label)
+  Assert-State ($finalState.state -eq 'FIELD ACTIVE' -and $finalState.phase -eq 'SYSTEM READY') ("{0} did not reach its final ready labels." -f $label)
+  Assert-State ($finalState.hidden -and -not $finalState.pending -and $finalState.complete) ("{0} did not settle into the complete state." -f $label)
+  return $probe
 }
 
 function Center-Element([string]$selector) {
-  $escaped = $selector.Replace('\', '\\').Replace('"', '\"')
-  $null = Evaluate ('(function(){var element=document.querySelector("' + $escaped + '");if(!element)return false;document.documentElement.style.scrollBehavior="auto";var rect=element.getBoundingClientRect();window.scrollTo(0,window.scrollY+rect.top-(window.innerHeight-rect.height)/2);return true;})()')
-}
-
-function Reduced-Motion-State {
-  $expression = @'
-(function () {
-  function visibleReveal(item) {
-    var crop = item.querySelector(".image-frame__crop") || item;
-    var computed = getComputedStyle(crop);
-    return parseFloat(computed.opacity || "1") >= 0.99 &&
-      (computed.clipPath === "none" || /inset\((0(px)?\s*){4}\)/.test(computed.clipPath)) &&
-      (computed.transform === "none" || computed.transform === "matrix(1, 0, 0, 1, 0, 0)");
-  }
-  var active = document.querySelector("[data-showreel-slide].is-active");
-  var loader = document.getElementById("loader");
-  return JSON.stringify({
-    loaderSkipped: !document.documentElement.classList.contains("loader-pending") && (!loader || loader.hidden || getComputedStyle(loader).display === "none" || getComputedStyle(loader).visibility === "hidden"),
-    activeFrame: active ? active.getAttribute("data-frame") : "",
-    activeSlides: document.querySelectorAll("[data-showreel-slide].is-active").length,
-    videosPaused: Array.from(document.querySelectorAll("video")).every(function (video) { return video.paused; }),
-    revealsVisible: Array.from(document.querySelectorAll("[data-image-reveal]")).every(visibleReveal),
-    revealStates: Array.from(document.querySelectorAll("[data-image-reveal]")).map(function (item) {
-      var crop = item.querySelector(".image-frame__crop") || item;
-      var computed = getComputedStyle(crop);
-      return { opacity: computed.opacity, clip: computed.clipPath, transform: computed.transform, visible: visibleReveal(item) };
-    }),
-    runningAnimations: document.getAnimations().filter(function (animation) { return animation.playState === "running"; }).length,
-    readingFullyDark: Array.from(document.querySelectorAll(".reading-word")).every(function (word) {
-      return getComputedStyle(word).color === getComputedStyle(document.body).color;
-    }),
-    smoothScrollDisabled: getComputedStyle(document.documentElement).scrollBehavior === "auto"
-  });
+  $selectorLiteral = ConvertTo-Json -InputObject $selector -Compress
+  $scrollExpression = @"
+(() => {
+  const target = document.querySelector($selectorLiteral);
+  if (!target) return false;
+  document.documentElement.style.scrollBehavior = "auto";
+  target.scrollIntoView({ block: "center", inline: "nearest", behavior: "auto" });
+  return true;
 })()
-'@
-  return (Evaluate $expression) | ConvertFrom-Json
+"@
+  $found = [bool](Evaluate $scrollExpression)
+  Assert-State $found ("Could not find scroll target: {0}." -f $selector)
+  $centeredExpression = @"
+(() => {
+  const target = document.querySelector($selectorLiteral);
+  if (!target) return false;
+  const bounds = target.getBoundingClientRect();
+  return bounds.bottom > innerHeight * 0.2 && bounds.top < innerHeight * 0.8;
+})()
+"@
+  Wait-For $centeredExpression ("Could not center scroll target: {0}." -f $selector) 40
 }
 
-function Project-State {
+function Place-Element([string]$selector, [double]$viewportFraction) {
+  $selectorLiteral = ConvertTo-Json -InputObject $selector -Compress
+  $fractionLiteral = $viewportFraction.ToString([System.Globalization.CultureInfo]::InvariantCulture)
+  $scrollExpression = @"
+(() => {
+  const target = document.querySelector($selectorLiteral);
+  if (!target) return false;
+  document.documentElement.style.scrollBehavior = "auto";
+  const documentTop = target.getBoundingClientRect().top + scrollY;
+  scrollTo({ top: Math.max(0, documentTop - innerHeight * $fractionLiteral), behavior: "auto" });
+  return true;
+})()
+"@
+  $found = [bool](Evaluate $scrollExpression)
+  Assert-State $found ("Could not find positioned scroll target: {0}." -f $selector)
+  $positionedExpression = @"
+(() => {
+  const target = document.querySelector($selectorLiteral);
+  if (!target) return false;
+  return Math.abs(target.getBoundingClientRect().top - innerHeight * $fractionLiteral) < 8;
+})()
+"@
+  Wait-For $positionedExpression ("Scroll position did not settle for {0}." -f $selector) 50
+  Start-Sleep -Milliseconds 80
+}
+
+function Assert-HomeStructure {
   $expression = @'
-(function () {
-  var hero = document.querySelector(".project-hero__media img");
-  var links = Array.from(document.querySelectorAll(".project-navigation__link"));
-  return JSON.stringify({
-    title: document.title,
-    key: document.body.dataset.project || null,
-    siteTheme: document.body.dataset.siteTheme || "",
+JSON.stringify((() => {
+  const rows = Array.from(document.querySelectorAll(".project-row[data-project-id]"));
+  const projects = window.siteContent && Array.isArray(window.siteContent.projects)
+    ? window.siteContent.projects
+    : [];
+  const studies = window.siteContent && Array.isArray(window.siteContent.visualStudies)
+    ? window.siteContent.visualStudies
+    : [];
+  const ids = Array.from(document.querySelectorAll("[id]"), node => node.id);
+  const internalLinks = Array.from(document.querySelectorAll('a[href^="#"]'));
+  const externalLinks = Array.from(document.querySelectorAll('a[target="_blank"]'));
+  return {
+    home: document.body.classList.contains("home-page"),
     h1Count: document.querySelectorAll("main h1").length,
-    header: document.querySelectorAll(".project-header").length,
-    hero: document.querySelectorAll(".project-hero__media img").length,
-    heroComplete: !!(hero && hero.complete && hero.naturalWidth > 0),
-    heroFit: hero ? getComputedStyle(hero).objectFit : "",
-    overview: document.querySelectorAll(".project-copy-section").length,
-    navigation: links.length,
-    navHrefs: links.map(function (link) { return link.getAttribute("href") || ""; }),
-    navTitles: links.map(function (link) { return (link.textContent || "").replace(/\s+/g, " ").trim(); }),
-    badLinks: document.querySelectorAll('a[href="#"]').length,
-    background: getComputedStyle(document.body).backgroundColor,
-    color: getComputedStyle(document.body).color,
-    themeLine: getComputedStyle(document.body).getPropertyValue("--theme-line").trim().toLowerCase(),
-    scrollWidth: document.documentElement.scrollWidth,
-    clientWidth: document.documentElement.clientWidth
-  });
-})()
+    rowIds: rows.map(row => row.dataset.projectId || ""),
+    rowNumbers: rows.map(row => (row.querySelector(".project-row__number")?.textContent || "").trim()),
+    rowHrefs: rows.map(row => row.querySelector(".project-row__link")?.getAttribute("href") || ""),
+    rowImages: rows.map(row => Boolean(row.querySelector(".project-row__media img"))),
+    dataIds: projects.map(project => project.slug || project.id || ""),
+    dataNumbers: projects.map(project => String(project.number || "")),
+    duplicateIds: ids.filter((id, index) => ids.indexOf(id) !== index),
+    brokenInternalLinks: internalLinks.filter(link => {
+      const href = link.getAttribute("href");
+      return href !== "#" && !document.querySelector(href);
+    }).map(link => link.getAttribute("href")),
+    emptyLinks: Array.from(document.querySelectorAll("a")).filter(link =>
+      !(link.textContent || "").trim() && !link.getAttribute("aria-label")
+    ).length,
+    unsafeExternalLinks: externalLinks.filter(link => {
+      const rel = (link.getAttribute("rel") || "").toLowerCase().split(/\s+/);
+      return !rel.includes("noopener") || !rel.includes("noreferrer");
+    }).length,
+    showreelSlides: document.querySelectorAll("[data-showreel-slide]").length,
+    showreelActive: document.querySelectorAll("[data-showreel-slide].is-active").length,
+    sliderDataCount: studies.length,
+    loaderBinaryRemoved: !document.querySelector(".loader__binary")
+  };
+})())
 '@
-  return (Evaluate $expression) | ConvertFrom-Json
+  $state = Evaluate-Json $expression
+  Assert-State $state.home 'The homepage body contract is missing.'
+  Assert-State ($state.h1Count -eq 1) 'The homepage must have one main h1.'
+  Assert-State ((@($state.rowIds) -join ',') -eq ($expectedSlugs -join ',')) 'Homepage project IDs are out of archive order.'
+  Assert-State ((@($state.rowNumbers) -join ',') -eq ($expectedNumbers -join ',')) 'Homepage project numbers are out of archive order.'
+  $expectedHrefs = @($expectedSlugs | ForEach-Object { "project.html?project=$_" })
+  Assert-State ((@($state.rowHrefs) -join ',') -eq ($expectedHrefs -join ',')) 'Homepage project routes do not match the archive.'
+  Assert-State ((@($state.dataIds) -join ',') -eq ($expectedSlugs -join ',') -and (@($state.dataNumbers) -join ',') -eq ($expectedNumbers -join ',')) 'Central project data does not match homepage order and numbering.'
+  Assert-State (-not (@($state.rowImages) -contains $false)) 'At least one homepage project entry has no cover image.'
+  Assert-State (@($state.duplicateIds).Count -eq 0 -and $state.emptyLinks -eq 0 -and @($state.brokenInternalLinks).Count -eq 0) 'The homepage contains duplicate IDs, empty links, or broken internal fragments.'
+  Assert-State ($state.unsafeExternalLinks -eq 0) 'A new-tab external link is missing noopener/noreferrer.'
+  Assert-State ($state.showreelSlides -ge 5 -and $state.showreelActive -eq 1) 'The homepage showreel frame structure is incomplete.'
+  Assert-State ($state.sliderDataCount -ge 5) 'Visual Studies must contain at least five data entries.'
+  Assert-State $state.loaderBinaryRemoved 'Loader binary elements were not removed after completion.'
 }
 
-try {
-  $null = Invoke-Cdp 'Page.enable'
-  $null = Invoke-Cdp 'Runtime.enable'
-  $null = Invoke-Cdp 'Page.addScriptToEvaluateOnNewDocument' @{
-    source = @'
-(function () {
-  var audit = window.__portfolioLoaderAudit = { pendingAt: null, releasedAt: null };
-  var timer = 0;
-  function visuallyReleased(loader) {
-    if (!loader || loader.hidden) return true;
-    var computed = getComputedStyle(loader);
-    return computed.display === "none" || computed.visibility === "hidden" || parseFloat(computed.opacity || "1") < 0.02;
+function Assert-ProjectImages {
+  foreach ($slug in $expectedSlugs) {
+    $selector = ".project-row[data-project-id='$slug']"
+    Center-Element $selector
+    $selectorLiteral = ConvertTo-Json -InputObject $selector -Compress
+    $readyExpression = @"
+(() => {
+  const row = document.querySelector($selectorLiteral);
+  const figure = row && row.querySelector(".project-row__media");
+  const image = figure && figure.querySelector("img");
+  if (!row || !figure || !image) return false;
+  const bounds = image.getBoundingClientRect();
+  const style = getComputedStyle(image);
+  return image.complete && image.naturalWidth > 0 && image.naturalHeight > 0 &&
+    bounds.width > 40 && bounds.height > 24 && style.display !== "none" &&
+    style.visibility !== "hidden" && Number(style.opacity) > 0.5 &&
+    !figure.classList.contains("is-media-missing");
+})()
+"@
+    Wait-For $readyExpression ("Project cover did not become visibly available: {0}." -f $slug) 120
+    $imageState = Evaluate-Json @"
+JSON.stringify((() => {
+  const row = document.querySelector($selectorLiteral);
+  const figure = row.querySelector(".project-row__media");
+  const image = figure.querySelector("img");
+  return {
+    local: !/^https?:/i.test(image.getAttribute("src") || ""),
+    alt: image.getAttribute("alt") || "",
+    revealed: figure.classList.contains("is-visible"),
+    width: image.getBoundingClientRect().width,
+    height: image.getBoundingClientRect().height
+  };
+})())
+"@
+    Assert-State $imageState.local ("Project cover uses a remote source: {0}." -f $slug)
+    Assert-State (-not [string]::IsNullOrWhiteSpace([string]$imageState.alt)) ("Project cover lacks alt text: {0}." -f $slug)
+    Assert-State ($imageState.revealed -and $imageState.width -gt 40 -and $imageState.height -gt 24) ("Project cover reveal did not complete: {0}." -f $slug)
   }
-  function check() {
-    var root = document.documentElement;
-    if (!root) return;
-    var pending = root.classList.contains("loader-pending");
-    if (pending && audit.pendingAt === null) audit.pendingAt = performance.now();
-    if (audit.pendingAt !== null && !pending && visuallyReleased(document.getElementById("loader"))) {
-      audit.releasedAt = performance.now();
-      if (timer) window.clearInterval(timer);
+}
+
+function Assert-ShowreelChanges {
+  Center-Element '[data-broadcast-monitor]'
+  Wait-For 'document.querySelector("[data-showreel-fallback]")?.dataset.showreelInitialized === "true"' 'The showreel did not initialize.' 60
+  $initialFrame = [string](Evaluate 'document.querySelector("[data-showreel-fallback]").dataset.activeFrame || document.getElementById("showreel-frame").textContent.trim()')
+  $initialFrameLiteral = ConvertTo-Json -InputObject $initialFrame -Compress
+  $changeExpression = @"
+(() => {
+  const reel = document.querySelector("[data-showreel-fallback]");
+  const frame = reel && (reel.dataset.activeFrame || document.getElementById("showreel-frame")?.textContent.trim());
+  return reel && reel.dataset.playing === "true" && frame && frame !== $initialFrameLiteral;
+})()
+"@
+  Wait-For $changeExpression 'The opening showreel remained on one frame.' 70
+  $changedState = Evaluate-Json @'
+JSON.stringify((() => {
+  const reel = document.querySelector("[data-showreel-fallback]");
+  const slides = Array.from(reel.querySelectorAll("[data-showreel-slide]"));
+  const active = slides.filter(slide => slide.classList.contains("is-active"));
+  return {
+    frame: reel.dataset.activeFrame || "",
+    playing: reel.dataset.playing || "",
+    active: active.length,
+    ariaVisible: slides.filter(slide => slide.getAttribute("aria-hidden") === "false").length,
+    status: document.getElementById("showreel-status")?.textContent.trim() || "",
+    togglePressed: document.getElementById("showreel-toggle")?.getAttribute("aria-pressed") || ""
+  };
+})())
+'@
+  Assert-State ($changedState.frame -ne $initialFrame -and $changedState.playing -eq 'true') 'The showreel frame/readout did not advance.'
+  Assert-State ($changedState.active -eq 1 -and $changedState.ariaVisible -eq 1) 'The showreel does not expose exactly one active frame.'
+  Assert-State ($changedState.status -match '^PLAYING' -and $changedState.togglePressed -eq 'false') 'Showreel playing controls are inconsistent.'
+
+  $null = Evaluate 'document.getElementById("showreel-toggle").click(); true'
+  Wait-For 'document.querySelector("[data-showreel-fallback]").dataset.playing === "false" && document.getElementById("showreel-toggle").getAttribute("aria-pressed") === "true"' 'The showreel pause control failed.' 30
+  $null = Evaluate 'document.getElementById("showreel-toggle").click(); true'
+  Wait-For 'document.querySelector("[data-showreel-fallback]").dataset.playing === "true" && document.getElementById("showreel-toggle").getAttribute("aria-pressed") === "false"' 'The showreel play control failed.' 30
+}
+
+function Assert-VisualSlider {
+  Center-Element '[data-visual-slider]'
+  Wait-For 'document.querySelector("[data-visual-slider]")?.dataset.visualInitialized === "true"' 'The Visual Studies slider did not initialize.' 60
+  $state = Evaluate-Json @'
+JSON.stringify((() => {
+  const slider = document.querySelector("[data-visual-slider]");
+  const slides = Array.from(slider.querySelectorAll(".visual-slide"));
+  const previous = slider.querySelector("[data-visual-prev]");
+  const next = slider.querySelector("[data-visual-next]");
+  const size = button => {
+    const bounds = button.getBoundingClientRect();
+    return { width: bounds.width, height: bounds.height };
+  };
+  return {
+    dataCount: window.siteContent.visualStudies.length,
+    slideCount: slides.length,
+    current: slider.querySelector("[data-visual-current]")?.textContent.trim() || "",
+    total: slider.querySelector("[data-visual-total]")?.textContent.trim() || "",
+    active: slides.filter(slide => slide.classList.contains("is-active")).length,
+    ariaVisible: slides.filter(slide => slide.getAttribute("aria-hidden") === "false").length,
+    localImages: slides.every(slide => !/^https?:/i.test(slide.querySelector("img")?.getAttribute("src") || "")),
+    altImages: slides.every(slide => Boolean((slide.querySelector("img")?.getAttribute("alt") || "").trim())),
+    previous: size(previous),
+    next: size(next),
+    tabindex: slider.getAttribute("tabindex") || ""
+  };
+})())
+'@
+  Assert-State ($state.dataCount -ge 5 -and $state.slideCount -eq $state.dataCount) 'Visual Studies slide count does not match its data array or is below five.'
+  Assert-State ($state.current -eq '01' -and [int]$state.total -eq $state.dataCount) 'Visual Studies initial current/total values are incorrect.'
+  Assert-State ($state.active -eq 1 -and $state.ariaVisible -eq 1) 'Visual Studies does not expose exactly one active slide.'
+  Assert-State ($state.localImages -and $state.altImages) 'Visual Studies requires local images with alt text.'
+  Assert-State ($state.previous.width -ge 44 -and $state.previous.height -ge 44 -and $state.next.width -ge 44 -and $state.next.height -ge 44) 'Visual Studies controls are smaller than 44 by 44 pixels.'
+  Assert-State ($state.tabindex -eq '0') 'Visual Studies is not keyboard focusable.'
+
+  $null = Evaluate 'document.querySelector("[data-visual-next]").click(); true'
+  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "02"' 'Visual Studies next control failed.' 30
+  $null = Evaluate 'document.querySelector("[data-visual-prev]").click(); true'
+  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'Visual Studies previous control failed.' 30
+  $lastValue = ([int]$state.dataCount).ToString('00')
+  $lastValueLiteral = ConvertTo-Json -InputObject $lastValue -Compress
+  $null = Evaluate 'document.querySelector("[data-visual-slider]").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true, cancelable: true })); true'
+  Wait-For "document.querySelector('[data-visual-current]').textContent.trim() === $lastValueLiteral" 'Visual Studies ArrowLeft wrapping failed.' 30
+  $null = Evaluate 'document.querySelector("[data-visual-slider]").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true })); true'
+  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'Visual Studies ArrowRight wrapping failed.' 30
+}
+
+function Get-ReadingSnapshot([string]$selector = '[data-reading-text]') {
+  $selectorLiteral = ConvertTo-Json -InputObject $selector -Compress
+  $expression = @"
+JSON.stringify((() => {
+  const element = document.querySelector($selectorLiteral);
+  const words = element ? Array.from(element.querySelectorAll(".reading-word")) : [];
+  const values = words.map(word => {
+    const inline = parseFloat(word.style.getPropertyValue("--reading-progress"));
+    const computed = parseFloat(getComputedStyle(word).getPropertyValue("--reading-progress"));
+    return Number.isFinite(inline) ? inline : Number.isFinite(computed) ? computed : 0;
+  });
+  const colors = words.map(word => getComputedStyle(word).color);
+  const allVisible = words.every(word => {
+    const bounds = word.getBoundingClientRect();
+    const style = getComputedStyle(word);
+    return bounds.width > 0 && bounds.height > 0 && style.display !== "none" &&
+      style.visibility !== "hidden" && Number(style.opacity) > 0.9;
+  });
+  const average = values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
+  const quarter = Math.max(1, Math.floor(values.length / 4));
+  const mean = list => list.length ? list.reduce((sum, value) => sum + value, 0) / list.length : 0;
+  return {
+    prepared: element?.dataset.readingPrepared || "",
+    count: words.length,
+    values,
+    colors,
+    average,
+    minimum: values.length ? Math.min(...values) : 0,
+    maximum: values.length ? Math.max(...values) : 0,
+    upcoming: values.filter(value => value <= 0.2).length,
+    current: values.filter(value => value > 0.2 && value < 0.82).length,
+    completed: values.filter(value => value >= 0.82).length,
+    firstQuarter: mean(values.slice(0, quarter)),
+    lastQuarter: mean(values.slice(-quarter)),
+    distinctColors: new Set(colors).size,
+    allVisible
+  };
+})())
+"@
+  return Evaluate-Json $expression
+}
+
+function Assert-ReadingProgression {
+  $selector = '.manifesto__text[data-reading-text]'
+  Wait-For 'document.querySelectorAll(".manifesto__text .reading-word").length >= 20' 'The manifesto was not prepared into word-level reading spans.' 50
+
+  Place-Element $selector 0.92
+  $early = Get-ReadingSnapshot $selector
+  Assert-State ($early.prepared -eq 'true' -and $early.count -ge 20) 'The manifesto word-level reading contract is incomplete.'
+  Assert-State ($early.allVisible -and $early.average -lt 0.3) 'Upcoming manifesto words are not visibly pale before the reading line.'
+
+  $middle = $null
+  $middleFraction = 0.0
+  foreach ($fraction in @(0.70, 0.64, 0.58, 0.52, 0.46, 0.40, 0.34, 0.28)) {
+    Place-Element $selector $fraction
+    $candidate = Get-ReadingSnapshot $selector
+    if ($candidate.upcoming -gt 0 -and $candidate.current -gt 0 -and $candidate.completed -gt 0) {
+      $middle = $candidate
+      $middleFraction = $fraction
+      break
     }
   }
-  timer = window.setInterval(check, 8);
-  window.setTimeout(function () {
-    if (timer) window.clearInterval(timer);
-  }, 2500);
-  document.addEventListener("DOMContentLoaded", check, { once: true });
-  check();
+  Assert-State ($null -ne $middle) 'No scroll position exposed completed, active, and upcoming manifesto words together.'
+  Assert-State ($middle.distinctColors -ge 3 -and $middle.firstQuarter -gt ($middle.lastQuarter + 0.08)) 'Manifesto progression is not moving through individual words in reading order.'
+  Assert-State $middle.allVisible 'Manifesto words became hidden during reading progression.'
+
+  Place-Element $selector 0.18
+  $late = Get-ReadingSnapshot $selector
+  Assert-State ($late.average -gt ($middle.average + 0.12) -and $late.average -gt 0.72) 'Scrolling forward did not darken the manifesto toward completion.'
+
+  Place-Element $selector $middleFraction
+  $reverseMiddle = Get-ReadingSnapshot $selector
+  Assert-State ([Math]::Abs([double]$reverseMiddle.average - [double]$middle.average) -lt 0.12) 'Returning to the same reading position did not restore comparable word progress.'
+
+  Place-Element $selector 0.92
+  $reverseEarly = Get-ReadingSnapshot $selector
+  Assert-State ($reverseEarly.average -lt ($reverseMiddle.average - 0.12)) 'Scrolling upward did not reverse manifesto word progression.'
+  Assert-State ([Math]::Abs([double]$reverseEarly.average - [double]$early.average) -lt 0.12) 'Reversed manifesto progression did not return to its pale initial state.'
+  Assert-State $reverseEarly.allVisible 'Manifesto words became invisible after reverse scrolling.'
+}
+
+function Assert-ManmaticThemeInversion {
+  Center-Element '.project-row[data-manmatic-field]'
+  Wait-For '(document.body.classList.contains("is-manmatic-active") || document.body.dataset.siteTheme === "manmatic") && document.querySelector("meta[name=theme-color]").content.toLowerCase() === "#0a0a0a"' 'The global ManMaTIC state did not activate.' 50
+  Start-Sleep -Milliseconds 1050
+  $dark = Evaluate-Json @'
+JSON.stringify((() => {
+  const bodyStyle = getComputedStyle(document.body);
+  const htmlStyle = getComputedStyle(document.documentElement);
+  const headerStyle = getComputedStyle(document.querySelector(".site-header"));
+  const shellStyle = getComputedStyle(document.querySelector(".site-shell"));
+  const row = document.querySelector(".project-row[data-manmatic-field]");
+  const rowStyle = getComputedStyle(row);
+  const readingWord = document.querySelector(".reading-word");
+  const numbers = color => (color.match(/[\d.]+/g) || []).map(Number);
+  const luminance = color => {
+    const values = numbers(color);
+    if (values.length < 3) return -1;
+    return values[0] * 0.2126 + values[1] * 0.7152 + values[2] * 0.0722;
+  };
+  return {
+    active: document.body.classList.contains("is-manmatic-active") || document.body.dataset.siteTheme === "manmatic",
+    bodyBackground: bodyStyle.backgroundColor,
+    bodyColor: bodyStyle.color,
+    htmlBackground: htmlStyle.backgroundColor,
+    headerBackground: headerStyle.backgroundColor,
+    headerColor: headerStyle.color,
+    shellBackground: shellStyle.backgroundColor,
+    rowBackground: rowStyle.backgroundColor,
+    backgroundToken: bodyStyle.getPropertyValue("--background").trim(),
+    textToken: bodyStyle.getPropertyValue("--text-primary").trim(),
+    bodyBackgroundLight: luminance(bodyStyle.backgroundColor),
+    bodyTextLight: luminance(bodyStyle.color),
+    htmlBackgroundLight: luminance(htmlStyle.backgroundColor),
+    headerBackgroundLight: luminance(headerStyle.backgroundColor),
+    headerTextLight: luminance(headerStyle.color),
+    rowBackgroundLight: luminance(rowStyle.backgroundColor),
+    readingLight: readingWord ? luminance(getComputedStyle(readingWord).color) : -1,
+    themeColor: document.querySelector('meta[name="theme-color"]')?.content || ""
+  };
+})())
+'@
+  Assert-State $dark.active 'The body does not expose a ManMaTIC global state.'
+  Assert-State ($dark.bodyBackgroundLight -ge 0 -and $dark.bodyBackgroundLight -lt 30 -and $dark.bodyTextLight -gt 180) 'The page body did not invert to dark with light text.'
+  Assert-State ($dark.htmlBackgroundLight -ge 0 -and $dark.htmlBackgroundLight -lt 30) 'The root canvas remained light during ManMaTIC inversion.'
+  Assert-State ($dark.headerBackgroundLight -ge 0 -and $dark.headerBackgroundLight -lt 35 -and $dark.headerTextLight -gt 150) 'The header did not participate in the ManMaTIC inversion.'
+  Assert-State ($dark.rowBackgroundLight -ge 0 -and $dark.rowBackgroundLight -lt 30 -and $dark.themeColor.ToLower() -eq '#0a0a0a') 'The ManMaTIC field or browser theme color is not dark.'
+  Assert-State ($dark.readingLight -gt 150) 'Completed reading text did not adapt to the globally inverted theme.'
+
+  $null = Evaluate 'window.scrollBy(0, 24); true'
+  Start-Sleep -Milliseconds 180
+  Assert-State ([bool](Evaluate 'document.body.classList.contains("is-manmatic-active") || document.body.dataset.siteTheme === "manmatic"')) 'The ManMaTIC state flickered inside its active range.'
+
+  Center-Element '.project-row[data-project-index="03"]'
+  Wait-For '!document.body.classList.contains("is-manmatic-active") && document.body.dataset.siteTheme !== "manmatic" && document.querySelector("meta[name=theme-color]").content.toLowerCase() === "#ffffff"' 'The page did not leave the ManMaTIC state.' 50
+  Start-Sleep -Milliseconds 1050
+  $light = Evaluate-Json @'
+JSON.stringify((() => {
+  const bodyStyle = getComputedStyle(document.body);
+  const htmlStyle = getComputedStyle(document.documentElement);
+  const numbers = color => (color.match(/[\d.]+/g) || []).map(Number);
+  const luminance = color => {
+    const values = numbers(color);
+    return values.length >= 3 ? values[0] * 0.2126 + values[1] * 0.7152 + values[2] * 0.0722 : -1;
+  };
+  return {
+    bodyBackgroundLight: luminance(bodyStyle.backgroundColor),
+    bodyTextLight: luminance(bodyStyle.color),
+    htmlBackgroundLight: luminance(htmlStyle.backgroundColor)
+  };
+})())
+'@
+  Assert-State ($light.bodyBackgroundLight -gt 235 -and $light.bodyTextLight -lt 60 -and $light.htmlBackgroundLight -gt 235) 'The page did not return to its light theme after ManMaTIC.'
+}
+
+function Assert-HeadingComplete([string]$selector, [string]$label) {
+  Center-Element $selector
+  $selectorLiteral = ConvertTo-Json -InputObject $selector -Compress
+  $completeExpression = @"
+(() => {
+  const container = document.querySelector($selectorLiteral);
+  if (!container) return false;
+  const texts = Array.from(container.querySelectorAll(".heading-motion__text"));
+  return container.classList.contains("is-heading-visible") &&
+    container.classList.contains("is-heading-settled") &&
+    !container.classList.contains("is-heading-scanning") && texts.length > 0 &&
+    texts.every(text => {
+      const expected = text.dataset.pointerText || text.dataset.scrambleText || "";
+      return expected && text.textContent.trim() === expected.trim();
+    });
+})()
+"@
+  Wait-For $completeExpression ("Heading did not settle: {0}." -f $label) 80
+  $state = Evaluate-Json @"
+JSON.stringify((() => {
+  const container = document.querySelector($selectorLiteral);
+  const texts = Array.from(container.querySelectorAll(".heading-motion__text"));
+  const bounds = container.getBoundingClientRect();
+  const code = container.querySelector(".section-heading__code, h2 > span:not(.pointer-scan)");
+  const note = container.querySelector(".section-heading__note");
+  const rule = container.querySelector(".contact__marker-rule");
+  const pseudo = getComputedStyle(container, "::before");
+  const visible = node => !node || (getComputedStyle(node).visibility !== "hidden" && Number(getComputedStyle(node).opacity) > 0.9);
+  return {
+    width: bounds.width,
+    left: bounds.left,
+    right: bounds.right,
+    texts: texts.length,
+    textOverflow: texts.some(text => text.scrollWidth > text.clientWidth + 2 && text.clientWidth > 0),
+    codeVisible: visible(code),
+    noteVisible: visible(note),
+    ruleWidth: rule ? rule.getBoundingClientRect().width : parseFloat(pseudo.width) || 0,
+    ruleTransform: rule ? getComputedStyle(rule).transform : pseudo.transform,
+    scanning: container.classList.contains("is-heading-scanning")
+  };
+})())
+"@
+  Assert-State ($state.texts -gt 0 -and -not $state.textOverflow -and -not $state.scanning) ("Heading is clipped, overflowing, or still scanning: {0}." -f $label)
+  Assert-State ($state.left -ge -1 -and $state.right -le (([int](Evaluate 'innerWidth')) + 1)) ("Heading leaves the viewport: {0}." -f $label)
+  Assert-State ($state.codeVisible -and $state.noteVisible) ("Heading code or technical note is not visible: {0}." -f $label)
+  if ($selector -match 'section-heading|contact__marker') {
+    Assert-State ($state.ruleWidth -gt 12 -and $state.ruleTransform -notmatch 'matrix\(0') ("Heading rule did not finish expanding: {0}." -f $label)
+  }
+}
+
+function Assert-AllHeadingCompletion {
+  $headings = @(
+    @{ Selector = '.opening__name'; Label = 'opening Ahmad Alhadidii' },
+    @{ Selector = '.manifesto__title'; Label = 'Architecture of Elsewhere' },
+    @{ Selector = '#profile .section-heading'; Label = 'Profile' },
+    @{ Selector = '#cv .section-heading'; Label = 'Curriculum Vitae' },
+    @{ Selector = '#work .section-heading'; Label = 'Selected Work' },
+    @{ Selector = '#visual-studies .section-heading'; Label = 'Visual Studies' },
+    @{ Selector = '#contact .contact__marker'; Label = 'Contact' },
+    @{ Selector = '.closing-identity'; Label = 'closing Ahmad Alhadidii' }
+  )
+  foreach ($heading in $headings) {
+    Assert-HeadingComplete $heading.Selector $heading.Label
+  }
+  foreach ($slug in $expectedSlugs) {
+    Assert-HeadingComplete ".project-row[data-project-id='$slug']" ("project title {0}" -f $slug)
+  }
+}
+
+function Assert-ResponsiveLayout($viewport, [string]$label) {
+  Set-Viewport $viewport
+  $width = [int]$viewport.Width
+  $height = [int]$viewport.Height
+  Wait-For "innerWidth === $width && innerHeight === $height" ("Viewport metrics did not settle for {0} at {1}." -f $label, $viewport.Name) 40
+  $null = Evaluate 'document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, 0); true'
+  Start-Sleep -Milliseconds 180
+  $state = Evaluate-Json @'
+JSON.stringify((() => {
+  const home = document.body.classList.contains("home-page");
+  const width = innerWidth;
+  const visible = element => {
+    const style = getComputedStyle(element);
+    return style.display !== "none" && style.visibility !== "hidden";
+  };
+  const selector = home
+    ? ".site-header__inner, main > section, .broadcast-monitor, .project-row, .visual-slider, .contact__band, .closing-identity, .site-footer"
+    : ".site-header__inner, .project-header, .project-hero, .project-copy-section, .project-navigation, .site-footer";
+  const boundsViolations = Array.from(document.querySelectorAll(selector)).filter(visible).filter(element => {
+    const bounds = element.getBoundingClientRect();
+    return bounds.width > 0 && (bounds.left < -1.5 || bounds.right > width + 1.5);
+  }).map(element => element.className || element.tagName);
+  const headings = Array.from(document.querySelectorAll("h1, h2, h3")).filter(visible);
+  const headingOverflow = headings.filter(heading => heading.clientWidth > 0 && heading.scrollWidth > heading.clientWidth + 2).map(heading => (heading.textContent || "").trim().slice(0, 80));
+  const emails = Array.from(document.querySelectorAll('a[href^="mailto:"]')).filter(visible);
+  const emailOverflow = emails.filter(email => {
+    const bounds = email.getBoundingClientRect();
+    return bounds.left < -1.5 || bounds.right > width + 1.5 || email.scrollWidth > email.clientWidth + 2;
+  }).map(email => email.textContent.trim());
+  const monitor = document.querySelector(".broadcast-monitor");
+  const monitorBounds = monitor ? monitor.getBoundingClientRect() : null;
+  const nav = document.getElementById("primary-navigation");
+  const toggle = document.getElementById("nav-toggle");
+  const toggleBounds = toggle ? toggle.getBoundingClientRect() : null;
+  const sliderButtons = Array.from(document.querySelectorAll("[data-visual-prev], [data-visual-next]"));
+  const sliderTargets = sliderButtons.map(button => {
+    const bounds = button.getBoundingClientRect();
+    return { width: bounds.width, height: bounds.height };
+  });
+  const projectImages = Array.from(document.querySelectorAll(".project-row__media img, .project-hero img"));
+  return {
+    width: innerWidth,
+    height: innerHeight,
+    rootScrollWidth: document.documentElement.scrollWidth,
+    bodyScrollWidth: document.body.scrollWidth,
+    bodyScrollHeight: document.body.scrollHeight,
+    boundsViolations,
+    headingOverflow,
+    emailOverflow,
+    monitorLeft: monitorBounds ? monitorBounds.left : 0,
+    monitorRight: monitorBounds ? monitorBounds.right : 0,
+    monitorWidth: monitorBounds ? monitorBounds.width : 0,
+    navAriaHidden: nav?.getAttribute("aria-hidden") ?? "",
+    navVisible: nav ? visible(nav) : false,
+    toggleVisible: toggle ? visible(toggle) : false,
+    toggleWidth: toggleBounds ? toggleBounds.width : 0,
+    toggleHeight: toggleBounds ? toggleBounds.height : 0,
+    menuOpen: document.body.classList.contains("menu-open"),
+    sliderTargets,
+    badProjectImages: projectImages.filter(image => {
+      const bounds = image.getBoundingClientRect();
+      return bounds.width <= 0 || bounds.height <= 0;
+    }).length,
+    loaderHidden: Boolean(document.getElementById("loader")?.hidden)
+  };
+})())
+'@
+  Assert-State ($state.width -eq $width -and $state.height -eq $height) ("Browser viewport mismatch for {0} at {1}." -f $label, $viewport.Name)
+  Assert-State ($state.rootScrollWidth -le ($width + 1) -and $state.bodyScrollWidth -le ($width + 1)) ("Horizontal overflow for {0} at {1}: root {2}, body {3}, viewport {4}." -f $label, $viewport.Name, $state.rootScrollWidth, $state.bodyScrollWidth, $width)
+  Assert-State (@($state.boundsViolations).Count -eq 0) ("Key layout bounds leave the viewport for {0} at {1}: {2}." -f $label, $viewport.Name, (@($state.boundsViolations) -join ', '))
+  Assert-State (@($state.headingOverflow).Count -eq 0) ("A heading clips or overflows for {0} at {1}: {2}." -f $label, $viewport.Name, (@($state.headingOverflow) -join ', '))
+  Assert-State (@($state.emailOverflow).Count -eq 0) ("An email address overflows for {0} at {1}." -f $label, $viewport.Name)
+  Assert-State ($state.bodyScrollHeight -gt $height -and $state.loaderHidden -and -not $state.menuOpen) ("The page is clipped, loading, or menu-locked for {0} at {1}." -f $label, $viewport.Name)
+  Assert-State ($state.badProjectImages -eq 0) ("A project image has no layout box for {0} at {1}." -f $label, $viewport.Name)
+
+  if ((Evaluate 'document.body.classList.contains("home-page")')) {
+    Assert-State ($state.monitorWidth -gt 0 -and $state.monitorLeft -ge -1 -and $state.monitorRight -le ($width + 1)) ("Opening monitor overflows at {0}." -f $viewport.Name)
+    foreach ($target in @($state.sliderTargets)) {
+      Assert-State ($target.width -ge 44 -and $target.height -ge 44) ("Slider touch target is too small at {0}." -f $viewport.Name)
+    }
+  }
+
+  if ($width -le 960) {
+    Assert-State ($state.toggleVisible -and $state.toggleWidth -ge 44 -and $state.toggleHeight -ge 44 -and $state.navAriaHidden -eq 'true') ("Mobile navigation state is invalid at {0}." -f $viewport.Name)
+  } else {
+    Assert-State (-not $state.toggleVisible -and $state.navVisible -and [string]::IsNullOrEmpty([string]$state.navAriaHidden)) ("Desktop navigation state is invalid at {0}." -f $viewport.Name)
+  }
+}
+
+function Assert-HomepageViewports {
+  foreach ($viewport in $viewports) {
+    Assert-ResponsiveLayout $viewport 'homepage'
+  }
+}
+
+function Assert-MobileInteractions {
+  Set-Viewport $phoneViewport
+  Wait-For 'innerWidth === 390 && innerHeight === 844' 'Mobile interaction viewport did not settle.' 40
+  Assert-ReadingProgression
+  $null = Evaluate 'document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, 0); true'
+  Start-Sleep -Milliseconds 100
+  $null = Evaluate 'document.getElementById("nav-toggle").click(); true'
+  Wait-For 'document.getElementById("nav-toggle").getAttribute("aria-expanded") === "true" && document.body.classList.contains("menu-open") && document.getElementById("primary-navigation").getAttribute("aria-hidden") === "false"' 'The mobile menu did not open accessibly.' 30
+  $null = Evaluate 'document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })); true'
+  Wait-For 'document.getElementById("nav-toggle").getAttribute("aria-expanded") === "false" && !document.body.classList.contains("menu-open") && document.getElementById("primary-navigation").getAttribute("aria-hidden") === "true"' 'The mobile menu did not close on Escape.' 30
+
+  Center-Element '[data-visual-slider]'
+  $null = Evaluate 'document.querySelector("[data-visual-slider]").dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true })); document.querySelector("[data-visual-prev]").click(); document.querySelector("[data-visual-next]").click(); true'
+  $null = Evaluate @'
+(() => {
+  const slider = document.querySelector("[data-visual-slider]");
+  const viewport = slider.querySelector("[data-visual-viewport]");
+  const start = { bubbles: true, cancelable: true, pointerId: 41, pointerType: "touch", button: 0, clientX: 300, clientY: 200 };
+  viewport.dispatchEvent(new PointerEvent("pointerdown", start));
+  viewport.dispatchEvent(new PointerEvent("pointermove", { ...start, clientX: 185, clientY: 202 }));
+  viewport.dispatchEvent(new PointerEvent("pointerup", { ...start, clientX: 185, clientY: 202 }));
+  return true;
 })()
 '@
+  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "02"' 'The Visual Studies touch swipe did not advance.' 30
+  $null = Evaluate 'document.querySelector("[data-visual-prev]").click(); true'
+  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'The Visual Studies slider did not reset after touch testing.' 30
+}
+
+function Assert-ProjectRoute([string]$slug, [string]$number, [string]$previousSlug, [string]$nextSlug) {
+  Wait-For "document.body.dataset.project === '$slug' && document.querySelectorAll('.project-header').length === 1" ("Project route did not render: {0}." -f $slug) 80
+  Wait-For-AppReady ("project route {0}" -f $slug)
+  Assert-HeadingComplete '.project-header' ("project page heading {0}" -f $slug)
+  Wait-For 'document.querySelector(".project-hero img")?.complete && document.querySelector(".project-hero img").naturalWidth > 0' ("Project hero did not load: {0}." -f $slug) 100
+
+  $state = Evaluate-Json @'
+JSON.stringify((() => {
+  const project = window.siteContent.projects.find(item => (item.slug || item.id) === document.body.dataset.project);
+  const header = document.querySelector(".project-header");
+  const image = document.querySelector(".project-hero img");
+  const links = Array.from(document.querySelectorAll(".project-navigation__link"));
+  const bodyStyle = getComputedStyle(document.body);
+  const htmlStyle = getComputedStyle(document.documentElement);
+  const values = color => (color.match(/[\d.]+/g) || []).map(Number);
+  const luminance = color => {
+    const rgb = values(color);
+    return rgb.length >= 3 ? rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722 : -1;
+  };
+  return {
+    slug: document.body.dataset.project || "",
+    theme: document.body.dataset.siteTheme || "",
+    headerTheme: header?.dataset.projectTheme || "",
+    number: (header?.querySelector(".project-header__eyebrow")?.textContent.match(/\d{2}/) || [""])[0],
+    title: header?.querySelector("h1")?.getAttribute("aria-label") || "",
+    dataTitle: project?.navigationTitle || project?.title || "",
+    h1Count: document.querySelectorAll("main h1").length,
+    headerCount: document.querySelectorAll(".project-header").length,
+    heroCount: document.querySelectorAll(".project-hero").length,
+    heroComplete: Boolean(image?.complete && image.naturalWidth > 0 && image.naturalHeight > 0),
+    heroLocal: image ? !/^https?:/i.test(image.getAttribute("src") || "") : false,
+    heroVisible: image ? image.getBoundingClientRect().width > 40 && image.getBoundingClientRect().height > 24 && getComputedStyle(image).visibility !== "hidden" : false,
+    overview: document.querySelectorAll(".project-copy-section").length,
+    frameworkPoints: document.querySelectorAll(".project-logic-list li").length,
+    navigation: links.length,
+    navHrefs: links.map(link => link.getAttribute("href") || ""),
+    bodyLight: luminance(bodyStyle.backgroundColor),
+    textLight: luminance(bodyStyle.color),
+    htmlLight: luminance(htmlStyle.backgroundColor),
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+    fieldLink: Boolean(document.querySelector(".project-header__field-link"))
+  };
+})())
+'@
+  Assert-State ($state.slug -eq $slug -and $state.h1Count -eq 1 -and $state.headerCount -eq 1) ("Project identity structure is invalid: {0}." -f $slug)
+  Assert-State ($state.number -eq $number.Substring(1, 2) -and -not [string]::IsNullOrWhiteSpace([string]$state.title) -and $state.title -eq $state.dataTitle) ("Project number or title does not match central data: {0}." -f $slug)
+  Assert-State ($state.heroCount -eq 1 -and $state.heroComplete -and $state.heroLocal -and $state.heroVisible) ("Project hero is missing, remote, unloaded, or invisible: {0}." -f $slug)
+  Assert-State ($state.overview -ge 2 -and $state.frameworkPoints -ge 1) ("Project overview/framework is incomplete: {0}." -f $slug)
+  Assert-State ($state.navigation -eq 2) ("Project previous/next navigation is incomplete: {0}." -f $slug)
+  Assert-State ((@($state.navHrefs) -join ',') -eq ("project.html?project={0},project.html?project={1}" -f $previousSlug, $nextSlug)) ("Project navigation order is invalid: {0}." -f $slug)
+  Assert-State ($state.scrollWidth -le ($state.clientWidth + 1)) ("Project route has horizontal overflow: {0}." -f $slug)
+
+  if ($slug -eq 'project-01') {
+    Assert-State ($state.theme -eq 'manmatic' -and $state.headerTheme -eq 'manmatic' -and $state.bodyLight -lt 30 -and $state.htmlLight -lt 30 -and $state.textLight -gt 180 -and $state.fieldLink) 'The ManMaTIC project route is not fully inverted by default.'
+  } else {
+    Assert-State ($state.theme -eq 'light' -and $state.headerTheme -eq 'light' -and $state.bodyLight -gt 235 -and $state.htmlLight -gt 235 -and $state.textLight -lt 70 -and -not $state.fieldLink) ("A light project route has the wrong theme: {0}." -f $slug)
   }
-  $null = Invoke-Cdp 'Emulation.setEmulatedMedia' @{
-    features = @(@{ name = 'prefers-reduced-motion'; value = 'no-preference' })
+}
+
+function Assert-ProjectRoutes {
+  for ($index = 0; $index -lt $expectedSlugs.Count; $index++) {
+    Set-Viewport $desktopViewport
+    $slug = $expectedSlugs[$index]
+    $previousSlug = $expectedSlugs[($index - 1 + $expectedSlugs.Count) % $expectedSlugs.Count]
+    $nextSlug = $expectedSlugs[($index + 1) % $expectedSlugs.Count]
+    Clear-CdpEvents
+    Navigate ($projectBaseUrl + "?project=$slug")
+    Assert-ProjectRoute $slug $expectedNumbers[$index] $previousSlug $nextSlug
+    Assert-No-PageErrors ("project route {0}" -f $slug)
+
+    if ($slug -eq 'project-01') {
+      $keyNames = @('320x568', '390x844', '844x390', '768x1024', '1024x768', '1440x900', '1920x1080')
+      Clear-CdpEvents
+      foreach ($name in $keyNames) {
+        $viewport = $viewports | Where-Object { $_.Name -eq $name } | Select-Object -First 1
+        Assert-ResponsiveLayout $viewport 'ManMaTIC project'
+      }
+      Assert-No-PageErrors 'ManMaTIC project responsive checks'
+      Set-Viewport $desktopViewport
+    }
   }
 
-  Set-Viewport $viewports[1]
-  Navigate $homeUrl
-  Wait-For 'document.querySelectorAll(".project-row").length === 5' 'Homepage content did not become ready.'
-  $null = Evaluate 'sessionStorage.clear(); true'
-  Navigate $homeUrl
-  Wait-For 'document.querySelectorAll(".project-row").length === 5' 'First-session homepage did not become ready.'
-  $loaderStarted = [bool](Evaluate 'document.documentElement.classList.contains("loader-pending")')
-  $loaderShot = Save-ViewportScreenshot 'loader-1440x900'
-  $loaderReleaseAt = 9999.0
-  for ($loaderPoll = 0; $loaderPoll -lt 90; $loaderPoll++) {
-    $loaderSample = (Evaluate @'
+  Clear-CdpEvents
+  Navigate ($projectBaseUrl + '?project=missing')
+  Wait-For 'document.querySelectorAll(".project-detail__error").length === 1' 'The invalid project route did not render its error state.' 80
+  Wait-For-AppReady 'invalid project route'
+  $invalid = Evaluate-Json @'
 JSON.stringify({
-  now: performance.now(),
-  pending: document.documentElement.classList.contains("loader-pending"),
-  pendingAt: window.__portfolioLoaderAudit ? window.__portfolioLoaderAudit.pendingAt : null,
-  releasedAt: window.__portfolioLoaderAudit ? window.__portfolioLoaderAudit.releasedAt : null,
-  visuallyReleased: (function () {
-    var loader = document.getElementById("loader");
-    if (!loader || loader.hidden) return true;
-    var computed = getComputedStyle(loader);
-    return computed.display === "none" || computed.visibility === "hidden" || parseFloat(computed.opacity || "1") < 0.02;
-  })()
+  heading: document.querySelector(".project-detail__error h1")?.textContent.trim() || "",
+  returnHref: document.querySelector(".project-detail__error a")?.getAttribute("href") || "",
+  h1Count: document.querySelectorAll("main h1").length,
+  scrollWidth: document.documentElement.scrollWidth,
+  clientWidth: document.documentElement.clientWidth
 })
-'@) | ConvertFrom-Json
-    if (-not $loaderSample.pending -and $loaderSample.visuallyReleased -and $null -ne $loaderSample.pendingAt -and $null -ne $loaderSample.releasedAt) {
-      $loaderReleaseAt = [double]$loaderSample.releasedAt - [double]$loaderSample.pendingAt
-      break
-    }
-    Start-Sleep -Milliseconds 20
-  }
-  $firstLoaderReleased = $loaderReleaseAt -le 1425
-  Navigate $homeUrl
-  Start-Sleep -Milliseconds 120
-  $repeatLoaderSkipped = [bool](Evaluate @'
-(function () {
-  var loader = document.getElementById("loader");
-  return !document.documentElement.classList.contains("loader-pending") &&
-    (!loader || loader.hidden || getComputedStyle(loader).display === "none" || getComputedStyle(loader).visibility === "hidden");
-})()
-'@)
+'@
+  Assert-State ($invalid.heading -eq 'PROJECT NOT FOUND' -and $invalid.returnHref -eq 'index.html#work' -and $invalid.h1Count -eq 1) 'The invalid project route is not a complete accessible fallback.'
+  Assert-State ($invalid.scrollWidth -le ($invalid.clientWidth + 1)) 'The invalid project route has horizontal overflow.'
+  Assert-No-PageErrors 'invalid project route'
+}
 
-  Assert-State $loaderStarted 'The first-session monitor activation did not start.'
-  Assert-State $firstLoaderReleased ("The monitor activation remained visible beyond 1.4 seconds ({0:N0}ms)." -f $loaderReleaseAt)
-  Assert-State $repeatLoaderSkipped 'The loader replayed in the same browser session.'
-
-  Wait-For 'document.querySelectorAll("[data-showreel-slide]").length >= 5' 'The fallback showreel was not available.'
-  $showreelInitialFrame = [string](Evaluate '(document.querySelector("[data-showreel-slide].is-active") || {}).dataset.frame || ""')
-  $showreelAdvanced = $false
-  for ($framePoll = 0; $framePoll -lt 10; $framePoll++) {
-    Start-Sleep -Milliseconds 450
-    $currentFrame = [string](Evaluate '(document.querySelector("[data-showreel-slide].is-active") || {}).dataset.frame || ""')
-    if ($currentFrame -and $currentFrame -ne $showreelInitialFrame) {
-      $showreelAdvanced = $true
-      break
-    }
-  }
-  Assert-State $showreelAdvanced 'The fallback showreel did not advance within 4.5 seconds.'
-  $null = Evaluate 'document.querySelector("[data-showreel-toggle]").click(); true'
-  Start-Sleep -Milliseconds 100
-  $pausedFrame = [string](Evaluate '(document.querySelector("[data-showreel-slide].is-active") || {}).dataset.frame || ""')
-  $pauseState = [bool](Evaluate 'document.querySelector("[data-showreel-toggle]").getAttribute("aria-pressed") === "true"')
-  Start-Sleep -Milliseconds 4200
-  $pausedFrameAfterWait = [string](Evaluate '(document.querySelector("[data-showreel-slide].is-active") || {}).dataset.frame || ""')
-  Assert-State ($pauseState -and $pausedFrame -eq $pausedFrameAfterWait) 'The showreel pause control did not stop the continuing motion.'
-  $null = Evaluate 'document.querySelector("[data-showreel-toggle]").click(); true'
-
+function Assert-ReducedMotion {
   $null = Invoke-Cdp 'Emulation.setEmulatedMedia' @{
+    media = 'screen'
     features = @(@{ name = 'prefers-reduced-motion'; value = 'reduce' })
   }
-  $null = Evaluate 'sessionStorage.clear(); true'
+  Set-Viewport $phoneViewport
+  Clear-CdpEvents
   Navigate $homeUrl
-  Wait-For 'document.querySelectorAll(".project-row").length === 5' 'Reduced-motion homepage did not render.'
-  Start-Sleep -Milliseconds 180
-  $reducedStateBefore = Reduced-Motion-State
-  $reducedShot = Save-ViewportScreenshot 'reduced-motion-1440x900'
-  Start-Sleep -Milliseconds 3300
-  $reducedStateAfter = Reduced-Motion-State
-  Write-Output ("REDUCED_STATE " + ($reducedStateBefore | ConvertTo-Json -Compress))
-  $reducedLoaderSkipped = [bool]$reducedStateBefore.loaderSkipped
-  Assert-State $reducedLoaderSkipped 'Reduced-motion mode did not skip the loader.'
-  Assert-State ($reducedStateBefore.activeSlides -eq 1 -and $reducedStateBefore.activeFrame -eq $reducedStateAfter.activeFrame) 'Reduced-motion mode did not keep a static showreel frame.'
-  Assert-State ($reducedStateBefore.videosPaused -and $reducedStateBefore.revealsVisible) 'Reduced-motion media or image reveals are still moving or hidden.'
-  Assert-State ($reducedStateBefore.runningAnimations -eq 0 -and $reducedStateBefore.smoothScrollDisabled) 'Reduced-motion CSS still exposes ongoing animation or smooth scrolling.'
+  $null = Assert-LoaderCycle 'reduced-motion homepage loader' 3
+  $state = Evaluate-Json @'
+JSON.stringify((() => {
+  const headings = Array.from(document.querySelectorAll(".heading-motion"));
+  const scrambles = Array.from(document.querySelectorAll("[data-scramble]"));
+  const readingWords = Array.from(document.querySelectorAll(".reading-word"));
+  const reveals = Array.from(document.querySelectorAll("[data-image-reveal]"));
+  const reel = document.querySelector("[data-showreel-fallback]");
+  const toggle = document.querySelector("[data-showreel-toggle]");
+  const duration = value => Math.max(...String(value).split(",").map(part => parseFloat(part) || 0));
+  return {
+    media: matchMedia("(prefers-reduced-motion: reduce)").matches,
+    rootClass: document.documentElement.classList.contains("reduced-motion"),
+    headings: headings.length,
+    settledHeadings: headings.filter(heading => heading.classList.contains("is-heading-settled") && !heading.classList.contains("is-heading-scanning")).length,
+    scrambleMismatches: scrambles.filter(text => {
+      const expected = text.dataset.pointerText || text.dataset.scrambleText || text.textContent;
+      return text.textContent.trim() !== String(expected).trim();
+    }).length,
+    readingWords: readingWords.length,
+    incompleteWords: readingWords.filter(word => {
+      const progress = parseFloat(word.style.getPropertyValue("--reading-progress"));
+      return !Number.isFinite(progress) || progress < 0.999;
+    }).length,
+    hiddenWords: readingWords.filter(word => getComputedStyle(word).visibility === "hidden" || Number(getComputedStyle(word).opacity) < 0.9).length,
+    reveals: reveals.length,
+    visibleReveals: reveals.filter(reveal => reveal.classList.contains("is-visible")).length,
+    reelFrame: reel?.dataset.activeFrame || "",
+    reelPlaying: reel?.dataset.playing || "",
+    reelStatus: document.getElementById("showreel-status")?.textContent.trim() || "",
+    toggleDisabled: Boolean(toggle?.disabled),
+    toggleText: toggle?.textContent.trim() || "",
+    binaryRemoved: !document.querySelector(".loader__binary"),
+    scanDisplay: getComputedStyle(document.querySelector(".pointer-scan"), "::after").display,
+    maxTransition: duration(getComputedStyle(document.querySelector(".project-row")).transitionDuration),
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth
+  };
+})())
+'@
+  Assert-State ($state.media -and $state.rootClass) 'The browser and root do not expose reduced-motion mode.'
+  Assert-State ($state.headings -gt 0 -and $state.settledHeadings -eq $state.headings -and $state.scrambleMismatches -eq 0) 'Reduced motion left a heading moving, clipped, or scrambled.'
+  Assert-State ($state.readingWords -gt 0 -and $state.incompleteWords -eq 0 -and $state.hiddenWords -eq 0) 'Reduced motion left reading text pale, incomplete, or hidden.'
+  Assert-State ($state.reveals -gt 0 -and $state.visibleReveals -eq $state.reveals) 'Reduced motion left an image reveal concealed.'
+  Assert-State ($state.reelFrame -eq '01' -and $state.reelPlaying -eq 'false' -and $state.reelStatus -match '^STATIC' -and $state.toggleDisabled -and $state.toggleText -eq 'STATIC FRAME') 'Reduced motion did not freeze the showreel in its accessible static state.'
+  Assert-State ($state.binaryRemoved -and $state.scanDisplay -eq 'none' -and $state.maxTransition -le 0.02) 'Reduced motion retained binary, scanning, or long transition effects.'
+  Assert-State ($state.scrollWidth -le ($state.clientWidth + 1)) 'Reduced-motion homepage has horizontal overflow.'
 
-  $null = Invoke-Cdp 'Emulation.setScriptExecutionDisabled' @{ value = $true }
-  Navigate $homeUrl
-  $noScriptState = (Evaluate @'
-JSON.stringify({
-  h1: document.querySelectorAll("main h1").length,
-  rows: document.querySelectorAll(".project-row").length,
-  monitor: document.querySelectorAll("[data-broadcast-monitor]").length,
-  slides: document.querySelectorAll("[data-showreel-slide]").length,
-  cv: document.body.innerText.includes("Architectural Intern") && document.body.innerText.includes("Training Guide for Dialogue & Volunteer Clubs"),
-  contact: !!document.querySelector('a[href="tel:+962790652697"]'),
-  loaderHidden: getComputedStyle(document.getElementById("loader")).display === "none"
-})
-'@) | ConvertFrom-Json
-  Assert-State ($noScriptState.h1 -eq 1 -and $noScriptState.rows -eq 5 -and $noScriptState.monitor -eq 1 -and $noScriptState.slides -ge 5 -and $noScriptState.cv -and $noScriptState.contact -and $noScriptState.loaderHidden) 'The no-script homepage is incomplete.'
-  $null = Invoke-Cdp 'Emulation.setScriptExecutionDisabled' @{ value = $false }
+  Assert-ResponsiveLayout $phoneViewport 'reduced-motion homepage'
+  Assert-ResponsiveLayout $smallPhoneViewport 'reduced-motion homepage'
+  Assert-No-PageErrors 'reduced-motion homepage'
+}
 
-  $null = Invoke-Cdp 'Emulation.setEmulatedMedia' @{
-    features = @(@{ name = 'prefers-reduced-motion'; value = 'no-preference' })
+function Send-CdpNoWait([string]$method) {
+  if ($null -eq $ws -or $ws.State -ne [System.Net.WebSockets.WebSocketState]::Open) { return }
+  $script:cdpId++
+  $json = @{ id = $script:cdpId; method = $method } | ConvertTo-Json -Compress
+  $bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
+  $segment = [System.ArraySegment[byte]]::new($bytes)
+  $null = $ws.SendAsync(
+    $segment,
+    [System.Net.WebSockets.WebSocketMessageType]::Text,
+    $true,
+    [System.Threading.CancellationToken]::None
+  ).GetAwaiter().GetResult()
+}
+
+$runFailure = $null
+$cleanupFailure = $null
+
+try {
+  Assert-SourceContract
+  Assert-State (Test-Path -LiteralPath $chrome -PathType Leaf) 'Google Chrome was not found at the configured path.'
+
+  New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+  New-Item -ItemType Directory -Force -Path $profile | Out-Null
+  $profileCreated = $true
+
+  $process = Start-Process -FilePath $chrome -ArgumentList @(
+    '--headless=new',
+    '--disable-gpu',
+    '--disable-background-timer-throttling',
+    '--disable-backgrounding-occluded-windows',
+    '--disable-renderer-backgrounding',
+    '--disable-default-apps',
+    '--hide-scrollbars',
+    '--no-first-run',
+    '--no-default-browser-check',
+    '--allow-file-access-from-files',
+    '--remote-debugging-port=0',
+    '--remote-allow-origins=*',
+    "--user-data-dir=$profile",
+    'about:blank'
+  ) -PassThru -WindowStyle Hidden
+
+  $portFile = Join-Path $profile 'DevToolsActivePort'
+  $deadline = (Get-Date).AddSeconds(15)
+  while (-not (Test-Path -LiteralPath $portFile) -and (Get-Date) -lt $deadline) {
+    if ($process.HasExited) { throw 'Chrome exited before its DevTools endpoint started.' }
+    Start-Sleep -Milliseconds 100
   }
-  $null = Evaluate 'sessionStorage.setItem("portfolio:monitor-boot:v1", "1"); true'
+  Assert-State (Test-Path -LiteralPath $portFile -PathType Leaf) 'Chrome DevTools endpoint did not start.'
 
-  $expectedSlugs = @('project-05', 'project-01', 'project-02', 'project-03', 'project-04')
-  $expectedNumbers = @('001', '002', '003', '004', '005')
-  $expectedHrefs = $expectedSlugs | ForEach-Object { "project.html?project=$_" }
-  $typeBounds = @{
-    '1920x1080' = @{ TitleMin = 58; TitleMax = 77; TitleLines = 1; ManifestoMin = 24; ManifestoMax = 32.5; ManifestoLinesMin = 2; ManifestoLinesMax = 4; ProfileMin = 32; ProfileMax = 48.5 }
-    '1440x900'  = @{ TitleMin = 48; TitleMax = 63; TitleLines = 1; ManifestoMin = 21; ManifestoMax = 28; ManifestoLinesMin = 2; ManifestoLinesMax = 5; ProfileMin = 30; ProfileMax = 43 }
-    '1366x768'  = @{ TitleMin = 47; TitleMax = 63; TitleLines = 1; ManifestoMin = 20.5; ManifestoMax = 28; ManifestoLinesMin = 2; ManifestoLinesMax = 5; ProfileMin = 30; ProfileMax = 43 }
-    '1024x768'  = @{ TitleMin = 42; TitleMax = 54; TitleLines = 2; ManifestoMin = 18; ManifestoMax = 25; ManifestoLinesMin = 3; ManifestoLinesMax = 6; ProfileMin = 25; ProfileMax = 38 }
-    '768x1024'  = @{ TitleMin = 38; TitleMax = 50; TitleLines = 2; ManifestoMin = 17.5; ManifestoMax = 23; ManifestoLinesMin = 3; ManifestoLinesMax = 7; ProfileMin = 24; ProfileMax = 34 }
-    '430x932'   = @{ TitleMin = 37.5; TitleMax = 47; TitleLines = 2; ManifestoMin = 17.5; ManifestoMax = 22; ManifestoLinesMin = 5; ManifestoLinesMax = 11; ProfileMin = 24; ProfileMax = 33 }
-    '390x844'   = @{ TitleMin = 37.5; TitleMax = 47; TitleLines = 2; ManifestoMin = 17.5; ManifestoMax = 22; ManifestoLinesMin = 5; ManifestoLinesMax = 12; ProfileMin = 24; ProfileMax = 33 }
-    '360x800'   = @{ TitleMin = 37.5; TitleMax = 47; TitleLines = 2; ManifestoMin = 17.5; ManifestoMax = 22; ManifestoLinesMin = 5; ManifestoLinesMax = 13; ProfileMin = 24; ProfileMax = 33 }
+  $port = [int](Get-Content -LiteralPath $portFile | Select-Object -First 1)
+  $target = $null
+  $targetDeadline = (Get-Date).AddSeconds(5)
+  while ($null -eq $target -and (Get-Date) -lt $targetDeadline) {
+    try {
+      $targets = Invoke-RestMethod -Uri "http://127.0.0.1:$port/json/list"
+      $target = $targets | Where-Object { $_.type -eq 'page' } | Select-Object -First 1
+    } catch {}
+    if ($null -eq $target) { Start-Sleep -Milliseconds 100 }
   }
+  Assert-State ($null -ne $target) 'No Chrome page target was available.'
 
-  $viewportResults = @()
-  foreach ($viewport in $viewports) {
-    Set-Viewport $viewport
-    Navigate $homeUrl
-    Wait-For 'document.querySelectorAll(".project-row").length === 5' ("Homepage did not render at {0}." -f $viewport.Name)
-    Start-Sleep -Milliseconds 1100
-    $state = Home-State
-    $bounds = $typeBounds[$viewport.Name]
-    Write-Output ("TYPE_STATE " + $viewport.Name + " " + ($state.typography | ConvertTo-Json -Compress))
-
-    Assert-State ($state.scrollWidth -le ($state.clientWidth + 1)) ("Horizontal overflow at {0}." -f $viewport.Name)
-    Assert-State ($state.bodyBackground -eq 'rgb(255, 255, 255)') ("Body background is not white at {0}." -f $viewport.Name)
-    Assert-State ($state.siteTheme -eq 'light') ("Homepage did not start in the light theme at {0}." -f $viewport.Name)
-    Assert-State ($state.h1Count -eq 1) ("Homepage heading count is invalid at {0}." -f $viewport.Name)
-    Assert-State ($state.rows -eq 5 -and $state.validRows -eq 5) ("Project index is invalid at {0}." -f $viewport.Name)
-    Assert-State ($state.badLinks -eq 0) ("An empty fragment link exists at {0}." -f $viewport.Name)
-    Assert-State ($state.brokenInternalLinks -eq 0) ("An internal section link is broken at {0}." -f $viewport.Name)
-    Assert-State ($state.duplicateIds -eq 0 -and $state.emptyLinks -eq 0) ("Duplicate IDs or empty links exist at {0}." -f $viewport.Name)
-    Assert-State ($state.ratings -eq 11) ("Accessible proficiency labels are incomplete at {0}." -f $viewport.Name)
-    Assert-State ($state.firstEmail -and $state.secondEmail -and $state.phone -and $state.linkedIn -and $state.instagram) ("Contact links are incomplete at {0}." -f $viewport.Name)
-    Assert-State ($state.themeColor -eq '#ffffff') ("The browser theme color is not white at {0}." -f $viewport.Name)
-    Assert-State (($state.navLabels -join ',') -eq 'INDEX,PROFILE,CV,WORK,CONTACT') ("Navigation order is invalid at {0}." -f $viewport.Name)
-
-    Assert-State ($state.monitor.count -eq 1 -and $state.monitor.screenCount -eq 1 -and $state.monitor.order) ("Monitor composition or document order is invalid at {0}." -f $viewport.Name)
-    Assert-State ($state.monitor.slideCount -ge 5 -and $state.monitor.slideCount -le 8 -and $state.monitor.activeSlides -eq 1 -and $state.monitor.localImages) ("Fallback showreel frames are invalid at {0}." -f $viewport.Name)
-    Assert-State ($state.monitor.toggle -and $state.monitor.toggleIsButton -and $state.monitor.described) ("Monitor controls or accessible description are incomplete at {0}." -f $viewport.Name)
-    Assert-State ($state.monitor.screenRatio -ge 1.5 -and $state.monitor.screenRatio -le 1.85) ("Monitor screen ratio is outside the architectural broadcast range at {0}." -f $viewport.Name)
-    if ($viewport.Width -ge 1024) {
-      Assert-State ($state.monitor.widthRatio -ge 0.75 -and $state.monitor.widthRatio -le 0.94 -and $state.monitor.width -le 1642) ("Desktop monitor scale is outside the requested range at {0}." -f $viewport.Name)
-    } else {
-      Assert-State ($state.monitor.widthRatio -ge 0.88 -and $state.monitor.widthRatio -le 1.01) ("Mobile monitor does not use the available page width at {0}." -f $viewport.Name)
-    }
-
-    Assert-State ($state.openingImage.complete -and $state.openingImage.objectFit -eq 'contain') ("The opening board is missing or cropped at {0}." -f $viewport.Name)
-    Assert-State ($state.openingImage.transformScale -le 1.002 -and $state.openingImage.belowHeader) ("The opening board is scaled or hidden beneath the header at {0}." -f $viewport.Name)
-
-    Assert-State ($state.typography.titleSize -ge $bounds.TitleMin -and $state.typography.titleSize -le $bounds.TitleMax -and $state.typography.titleLines -le $bounds.TitleLines -and -not $state.typography.titleHasBreak) ("Architecture of Elsewhere typography is out of bounds at {0}." -f $viewport.Name)
-    Assert-State ($state.typography.manifestoSize -ge $bounds.ManifestoMin -and $state.typography.manifestoSize -le $bounds.ManifestoMax -and $state.typography.manifestoLines -ge $bounds.ManifestoLinesMin -and $state.typography.manifestoLines -le $bounds.ManifestoLinesMax) ("Manifesto typography or line count is out of bounds at {0}." -f $viewport.Name)
-    Assert-State ($state.typography.manifestoLineHeight -ge 1.2 -and $state.typography.manifestoLineHeight -le 1.42) ("Manifesto line height is invalid at {0}." -f $viewport.Name)
-    Assert-State ($state.typography.profileSize -ge $bounds.ProfileMin -and $state.typography.profileSize -le $bounds.ProfileMax) ("Profile statement scale is invalid at {0}." -f $viewport.Name)
-    Assert-State ($state.typography.profileHyphens -eq 'none' -and $state.typography.profileOverflowWrap -eq 'normal' -and $state.typography.profileWordBreak -eq 'normal' -and $state.typography.researchWordLines -eq 1) ("Profile words can split or hyphenate incorrectly at {0}." -f $viewport.Name)
-    Assert-State ($state.typography.projectTitleMax -le 52.5) ("A project title exceeds the requested scale at {0}." -f $viewport.Name)
-    if ($viewport.Width -ge 1024) {
-      Assert-State ($state.typography.titleWidthRatio -ge 0.75 -and $state.typography.manifestoWidthRatio -ge 0.64 -and $state.typography.profileWidthRatio -ge 0.58) ("Editorial text columns are too narrow at {0}." -f $viewport.Name)
-    }
-
-    Assert-State (($state.projectOrder.dataSlugs -join ',') -eq ($expectedSlugs -join ',')) ("Central project data order is invalid at {0}." -f $viewport.Name)
-    Assert-State (($state.projectOrder.dataNumbers -join ',') -eq ($expectedNumbers -join ',')) ("Central project numbering is invalid at {0}." -f $viewport.Name)
-    Assert-State (($state.projectOrder.rowIds -join ',') -eq ($expectedSlugs -join ',') -and ($state.projectOrder.rowNumbers -join ',') -eq ($expectedNumbers -join ',') -and ($state.projectOrder.rowHrefs -join ',') -eq ($expectedHrefs -join ',')) ("Homepage project rows do not match central data at {0}." -f $viewport.Name)
-    Assert-State ($state.projectOrder.firstText.ToUpper().Contains('SHILA MUSEUM') -and $state.projectOrder.firstText.ToUpper().Contains('THE QUARRY THAT FOLDS INWARD')) ("Shila is not project file 01 at {0}." -f $viewport.Name)
-    Assert-State ($state.projectOrder.secondText.ToUpper().Contains('MANMATIC') -and $state.projectOrder.secondText.ToUpper().Contains('INTEGRATION INSTITUTE')) ("ManMaTIC is not project file 02 at {0}." -f $viewport.Name)
-
-    Assert-State (-not ($state.sectionDimensions | Where-Object { $_.minHeight -ge ($viewport.Height * 0.9) })) ("A content section still behaves like a viewport-height slide at {0}." -f $viewport.Name)
-    Assert-State ($state.contact.markerCount -eq 1 -and $state.contact.markerText -eq '04 / CONTACT' -and -not $state.contact.hasDisconnectedHeading) ("Contact marker is not the unified 04 / CONTACT heading at {0}." -f $viewport.Name)
-    Assert-State ($state.contact.markerSize -ge 12 -and $state.contact.markerSize -le 14.5 -and $state.contact.markerFont.ToLower().Contains('plex mono') -and $state.contact.markerAlign -eq 'baseline') ("Contact marker typography or baseline is invalid at {0}." -f $viewport.Name)
-    Assert-State ($state.contact.leftMarkerName -le 2.5 -and $state.contact.leftNameStatement -le 2.5 -and $state.contact.leftStatementBand -le 2.5) ("Contact elements do not share one primary edge at {0}." -f $viewport.Name)
-    Assert-State ($state.contact.nameSize -ge ($(if ($viewport.Width -ge 1024) { 44 } else { 28 })) -and $state.contact.nameSize -le 105 -and $state.contact.nameLineHeight -ge 0.88 -and $state.contact.nameLineHeight -le 1.05) ("Contact name typography is invalid at {0}." -f $viewport.Name)
-    Assert-State ($state.contact.statementSize -ge 20 -and $state.contact.statementSize -le 41 -and $state.contact.statementLineHeight -ge 1.2 -and $state.contact.statementLineHeight -le 1.42 -and $state.contact.statementWidth -le 1205) ("Contact statement typography is invalid at {0}." -f $viewport.Name)
-    if ($viewport.Width -ge 1024) {
-      Assert-State ($state.contact.nameLines -eq 1) ("Contact name should remain on one desktop line at {0}." -f $viewport.Name)
-      Assert-State ($state.contact.markerNameGap -ge 32 -and $state.contact.markerNameGap -le 90 -and $state.contact.nameStatementGap -ge 16 -and $state.contact.nameStatementGap -le 48 -and $state.contact.statementBandGap -ge 30 -and $state.contact.statementBandGap -le 84) ("Contact vertical rhythm is invalid at {0}." -f $viewport.Name)
-      Assert-State ($state.contact.bandColumns -ne 'none' -and $state.contact.bandColumns.Contains(' ')) ("Contact information band is not two-column at {0}." -f $viewport.Name)
-    }
-
-    $topShot = Save-ViewportScreenshot ("opening-{0}" -f $viewport.Name)
-
-    Center-Element '[data-project-theme="manmatic"]'
-    Wait-For 'document.body.dataset.siteTheme === "manmatic"' ("ManMaTIC theme did not activate at {0}." -f $viewport.Name)
-    Start-Sleep -Milliseconds 1050
-    $manmaticTheme = Theme-State
-    Write-Output ("THEME_STATE " + $viewport.Name + " " + ($manmaticTheme | ConvertTo-Json -Compress))
-    Assert-State ($manmaticTheme.background -eq 'rgb(10, 10, 10)' -and $manmaticTheme.color -eq 'rgb(242, 242, 242)' -and $manmaticTheme.themeLine -eq '#2a2a2a') ("ManMaTIC colors did not settle correctly at {0}." -f $viewport.Name)
-    Assert-State ($manmaticTheme.headerColor -eq 'rgb(242, 242, 242)') ("Header colors did not adapt to ManMaTIC at {0}." -f $viewport.Name)
-    $manmaticShot = Save-ViewportScreenshot ("manmatic-{0}" -f $viewport.Name)
-    $null = Evaluate 'window.scrollBy(0, 24); true'
-    Start-Sleep -Milliseconds 240
-    Assert-State ([bool](Evaluate 'document.body.dataset.siteTheme === "manmatic"')) ("ManMaTIC theme flickered near its active range at {0}." -f $viewport.Name)
-
-    Center-Element '.project-row[data-project-index="03"]'
-    Wait-For 'document.body.dataset.siteTheme === "light"' ("Theme did not leave ManMaTIC at {0}." -f $viewport.Name)
-    Start-Sleep -Milliseconds 1050
-    $afterTheme = Theme-State
-    Assert-State ($afterTheme.background -eq 'rgb(255, 255, 255)' -and $afterTheme.color -eq 'rgb(17, 17, 17)') ("Theme did not return to white after ManMaTIC at {0}." -f $viewport.Name)
-    $afterThemeShot = Save-ViewportScreenshot ("after-manmatic-{0}" -f $viewport.Name)
-
-    Center-Element '#contact'
-    Start-Sleep -Milliseconds 180
-    $contactShot = Save-ViewportScreenshot ("contact-{0}" -f $viewport.Name)
-
-    $null = Evaluate 'document.querySelectorAll("[data-image-reveal]").forEach(function (item) { item.classList.add("is-visible"); }); true'
-    Start-Sleep -Milliseconds 80
-    $null = Evaluate 'window.scrollTo(0, 0); true'
-    Start-Sleep -Milliseconds 80
-    $shot = Save-FullScreenshot ("home-{0}" -f $viewport.Name)
-    $viewportResults += [PSCustomObject]@{
-      Viewport = $viewport.Name
-      State = $state
-      Theme = $manmaticTheme
-      AfterTheme = $afterTheme
-      Screenshot = $shot
-      OpeningScreenshot = $topShot
-      ManmaticScreenshot = $manmaticShot
-      AfterManmaticScreenshot = $afterThemeShot
-      ContactScreenshot = $contactShot
-    }
+  $ws = [System.Net.WebSockets.ClientWebSocket]::new()
+  $connectCancellation = [System.Threading.CancellationTokenSource]::new(15000)
+  try {
+    $null = $ws.ConnectAsync([System.Uri]$target.webSocketDebuggerUrl, $connectCancellation.Token).GetAwaiter().GetResult()
+  } finally {
+    $connectCancellation.Dispose()
   }
 
-  Set-Viewport $viewports[6]
-  Navigate $homeUrl
-  Wait-For 'document.querySelectorAll(".project-row").length === 5' 'Mobile homepage did not render.'
-  $null = Evaluate 'document.getElementById("nav-toggle").click(); true'
-  Start-Sleep -Milliseconds 100
-  $menuOpen = [bool](Evaluate 'document.getElementById("nav-toggle").getAttribute("aria-expanded") === "true" && document.body.classList.contains("menu-open")')
-  Start-Sleep -Milliseconds 650
-  $menuShot = Save-ViewportScreenshot 'mobile-menu-390x844'
-  $null = Evaluate 'document.dispatchEvent(new KeyboardEvent("keydown", {key:"Escape", bubbles:true})); true'
-  Start-Sleep -Milliseconds 80
-  $menuClosed = [bool](Evaluate 'document.getElementById("nav-toggle").getAttribute("aria-expanded") === "false" && !document.body.classList.contains("menu-open")')
-  Assert-State $menuOpen 'The mobile menu did not open accessibly.'
-  Assert-State $menuClosed 'The mobile menu did not close on Escape.'
-
-  Set-Viewport $viewports[1]
-  Navigate $homeUrl
-  Wait-For 'document.querySelectorAll(".project-row").length === 5' 'Print target did not render.'
-  $null = Invoke-Cdp 'Emulation.setEmulatedMedia' @{ media = 'print' }
-  $printState = [bool](Evaluate 'getComputedStyle(document.getElementById("cv")).display !== "none" && getComputedStyle(document.getElementById("work")).display === "none" && getComputedStyle(document.querySelector(".site-header")).display === "none"')
-  Assert-State $printState 'The CV print view does not isolate the CV.'
+  $null = Invoke-Cdp 'Page.enable'
+  $null = Invoke-Cdp 'Runtime.enable'
+  $null = Invoke-Cdp 'Log.enable'
+  $null = Invoke-Cdp 'Network.enable'
+  $null = Invoke-Cdp 'Network.setCacheDisabled' @{ cacheDisabled = $true }
+  $null = Invoke-Cdp 'Emulation.setFocusEmulationEnabled' @{ enabled = $true }
+  Install-DocumentProbe
   $null = Invoke-Cdp 'Emulation.setEmulatedMedia' @{
     media = 'screen'
     features = @(@{ name = 'prefers-reduced-motion'; value = 'no-preference' })
   }
 
-  Set-Viewport $viewports[1]
-  $projectResults = @()
-  for ($index = 0; $index -lt $expectedSlugs.Count; $index++) {
-    $key = $expectedSlugs[$index]
-    $previousKey = $expectedSlugs[($index - 1 + $expectedSlugs.Count) % $expectedSlugs.Count]
-    $nextKey = $expectedSlugs[($index + 1) % $expectedSlugs.Count]
-    Navigate ($projectBaseUrl + "?project=$key")
-    Wait-For 'document.querySelectorAll(".project-header").length === 1' ("Project did not render: {0}." -f $key)
-    Start-Sleep -Milliseconds 1050
-    $state = Project-State
-    Assert-State ($state.key -eq $key) ("Wrong project resolved for {0}." -f $key)
-    Assert-State ($state.h1Count -eq 1 -and $state.header -eq 1 -and $state.hero -eq 1 -and $state.heroComplete -and $state.heroFit -eq 'contain') ("Project structure or uncropped hero is incomplete for {0}." -f $key)
-    Assert-State ($state.navigation -eq 2 -and $state.badLinks -eq 0) ("Project navigation is invalid for {0}." -f $key)
-    Assert-State ($state.navHrefs[0] -eq "project.html?project=$previousKey" -and $state.navHrefs[1] -eq "project.html?project=$nextKey") ("Previous/next order is invalid for {0}." -f $key)
-    if ($key -eq 'project-01') {
-      Assert-State ($state.siteTheme -eq 'manmatic' -and $state.background -eq 'rgb(10, 10, 10)' -and $state.color -eq 'rgb(242, 242, 242)' -and $state.themeLine -eq '#2a2a2a') 'The ManMaTIC detail page is not dark by default.'
-    } else {
-      Assert-State ($state.siteTheme -eq 'light' -and $state.background -eq 'rgb(255, 255, 255)') ("A non-ManMaTIC project is not light: {0}." -f $key)
-    }
-    Assert-State ($state.scrollWidth -le ($state.clientWidth + 1)) ("Project has horizontal overflow: {0}." -f $key)
-    $projectResults += [PSCustomObject]@{ Project = $key; State = $state }
-  }
+  Set-Viewport $desktopViewport
+  Clear-CdpEvents
+  Navigate $homeUrl
+  $firstProbe = Assert-LoaderCycle 'initial homepage loader'
+  Assert-HomeStructure
+  Assert-No-PageErrors 'initial homepage load'
 
-  Navigate ($projectBaseUrl + '?project=missing')
-  Wait-For 'document.querySelectorAll(".project-detail__error").length === 1' 'Invalid-project state did not render.'
-  $invalidHeading = Evaluate 'document.querySelector(".project-detail__error h1").textContent'
-  Assert-State ($invalidHeading -eq 'PROJECT NOT FOUND') 'Invalid-project heading is incorrect.'
+  Clear-CdpEvents
+  Reload-Page
+  $refreshProbe = Assert-LoaderCycle 'refreshed homepage loader'
+  Assert-State ([double]$refreshProbe.timeOrigin -ne [double]$firstProbe.timeOrigin) 'The refresh did not create a new document loader cycle.'
+  Assert-HomeStructure
+  Assert-No-PageErrors 'refreshed homepage load'
 
-  Navigate ($projectBaseUrl + '?project=project-01')
-  Wait-For 'document.querySelectorAll(".project-header").length === 1' 'Project screenshot target did not render.'
-  Start-Sleep -Milliseconds 1100
-  $projectShot = Save-FullScreenshot 'manmatic-project-1440x900'
+  Clear-CdpEvents
+  Assert-ShowreelChanges
+  Assert-ReadingProgression
+  Assert-ProjectImages
+  Assert-VisualSlider
+  Assert-ManmaticThemeInversion
+  Assert-AllHeadingCompletion
+  Assert-MobileInteractions
+  Assert-HomepageViewports
+  Assert-No-PageErrors 'homepage interactions and responsive checks'
 
-  Set-Viewport $viewports[6]
-  Navigate ($projectBaseUrl + '?project=project-01')
-  Wait-For 'document.querySelectorAll(".project-header").length === 1' 'Mobile ManMaTIC project did not render.'
-  Start-Sleep -Milliseconds 1050
-  $mobileProjectState = Project-State
-  Assert-State ($mobileProjectState.scrollWidth -le ($mobileProjectState.clientWidth + 1) -and $mobileProjectState.siteTheme -eq 'manmatic' -and $mobileProjectState.background -eq 'rgb(10, 10, 10)') 'The mobile ManMaTIC detail state is invalid.'
-  $mobileProjectShot = Save-FullScreenshot 'manmatic-project-390x844'
+  Assert-ProjectRoutes
+  Assert-ReducedMotion
 
-  Write-Output ("loader`t{0}" -f (@{
-    started = $loaderStarted
-    firstReleased = $firstLoaderReleased
-    releaseAtMs = $loaderReleaseAt
-    repeatSkipped = $repeatLoaderSkipped
-    reducedSkipped = $reducedLoaderSkipped
-  } | ConvertTo-Json -Compress))
-  Write-Output ("loader-screenshot`t{0}" -f $loaderShot)
-  Write-Output ("reduced-motion-screenshot`t{0}" -f $reducedShot)
-  Write-Output ("no-script`t{0}" -f ($noScriptState | ConvertTo-Json -Compress))
-  Write-Output ("print`t{0}" -f (@{ cvOnly = $printState } | ConvertTo-Json -Compress))
-
-  foreach ($result in $viewportResults) {
-    Write-Output ("viewport`t{0}`t{1}`t{2}" -f $result.Viewport, ($result.State | ConvertTo-Json -Depth 12 -Compress), $result.Screenshot)
-    Write-Output ("captures`t{0}`t{1}`t{2}`t{3}`t{4}" -f $result.Viewport, $result.OpeningScreenshot, $result.ManmaticScreenshot, $result.AfterManmaticScreenshot, $result.ContactScreenshot)
-  }
-
-  foreach ($result in $projectResults) {
-    Write-Output ("project`t{0}`t{1}" -f $result.Project, ($result.State | ConvertTo-Json -Depth 8 -Compress))
-  }
-
-  Write-Output ("mobile-menu`t{0}" -f (@{ opened = $menuOpen; closed = $menuClosed } | ConvertTo-Json -Compress))
-  Write-Output ("mobile-menu-screenshot`t{0}" -f $menuShot)
-  Write-Output ("project-screenshot`t{0}" -f $projectShot)
-  Write-Output ("mobile-project-screenshot`t{0}" -f $mobileProjectShot)
-  Write-Output 'verification`tPASS'
+  Write-Output ("verification`tPASS`tassertions={0}`tviewports={1}`tprojects={2}" -f $script:assertionCount, $viewports.Count, $expectedSlugs.Count)
+}
+catch {
+  $runFailure = $_
 }
 finally {
-  try { $null = Invoke-Cdp 'Browser.close' } catch {}
-  try { $ws.Dispose() } catch {}
-  if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force }
+  try {
+    if ($null -ne $ws -and $ws.State -eq [System.Net.WebSockets.WebSocketState]::Open) {
+      try { Send-CdpNoWait 'Browser.close' } catch {}
+      Start-Sleep -Milliseconds 250
+    }
+    if ($null -ne $ws) {
+      try { $ws.Dispose() } catch {}
+      $ws = $null
+    }
+
+    if ($null -ne $process) {
+      try { $null = $process.WaitForExit(3000) } catch {}
+      try {
+        if (-not $process.HasExited) {
+          Stop-Process -Id $process.Id -Force -ErrorAction Stop
+          $null = $process.WaitForExit(3000)
+        }
+      } catch {
+        if ($null -eq $cleanupFailure) { $cleanupFailure = $_ }
+      }
+    }
+
+    if ($profileCreated) {
+      try {
+        $profileFull = [System.IO.Path]::GetFullPath($profile).TrimEnd('\')
+        $outFull = [System.IO.Path]::GetFullPath($outDir).TrimEnd('\')
+        $expectedPrefix = $outFull + [System.IO.Path]::DirectorySeparatorChar
+        $safeProfile = $profileFull.StartsWith($expectedPrefix, [System.StringComparison]::OrdinalIgnoreCase) -and
+          [System.IO.Path]::GetFileName($profileFull).StartsWith('profile-', [System.StringComparison]::OrdinalIgnoreCase)
+        if (-not $safeProfile) { throw "Refusing to clean an unexpected profile path: $profileFull" }
+
+        try {
+          Get-CimInstance Win32_Process -Filter "Name = 'chrome.exe'" -ErrorAction Stop |
+            Where-Object {
+              $commandLine = [string]$_.CommandLine
+              $commandLine.IndexOf($profileFull, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+            } |
+            ForEach-Object {
+              Stop-Process -Id ([int]$_.ProcessId) -Force -ErrorAction SilentlyContinue
+            }
+        } catch {}
+
+        for ($attempt = 0; $attempt -lt 50 -and (Test-Path -LiteralPath $profileFull); $attempt++) {
+          try {
+            Remove-Item -LiteralPath $profileFull -Recurse -Force -ErrorAction Stop
+          } catch {
+            Start-Sleep -Milliseconds 100
+          }
+        }
+        if (Test-Path -LiteralPath $profileFull) {
+          throw "Chrome profile cleanup failed: $profileFull"
+        }
+      } catch {
+        if ($null -eq $cleanupFailure) { $cleanupFailure = $_ }
+      }
+    }
+  }
+  catch {
+    if ($null -eq $cleanupFailure) { $cleanupFailure = $_ }
+  }
 }
+
+if ($null -ne $runFailure) { throw $runFailure }
+if ($null -ne $cleanupFailure) { throw $cleanupFailure }

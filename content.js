@@ -27,11 +27,122 @@ const siteContent = {
     displayName: "AHMAD ALHADIDII",
     location: "As-Salt, Jordan",
     roles: [
-      "Architectural Designer",
+      "Architect",
       "Design Researcher",
-      "Computational Design Explorer"
+      "Computational Designer"
     ]
   },
+
+  visualStudies: [
+    {
+      index: "01",
+      title: "Code and Repeated Forms",
+      text:
+        "The board's upper-left field places the A-H26 code beside repeated vertical forms, fine traces, and a measured horizontal datum.",
+      project: "Architecture of Elsewhere",
+      year: "2026",
+      category: "Visual Research",
+      image: "assets/images/architecture-of-elsewhere-2400.jpg",
+      srcset:
+        "assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w",
+      width: 2400,
+      height: 1293,
+      objectPosition: "22% 24%",
+      caption: "CROP 01 / ARCHITECTURE OF ELSEWHERE BOARD / UPPER-LEFT FIELD",
+      alt:
+        "Upper-left crop of the Architecture of Elsewhere board showing repeated white vertical forms, the A-H26 code, and fine horizontal technical traces."
+    },
+    {
+      index: "02",
+      title: "Orbital Reference Field",
+      text:
+        "Planetary images and sparse construction lines are isolated as a study of scale, reference, and distance within the board's dark upper field.",
+      project: "Architecture of Elsewhere",
+      year: "2026",
+      category: "Atmospheric Study",
+      image: "assets/images/architecture-of-elsewhere-2400.jpg",
+      srcset:
+        "assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w",
+      width: 2400,
+      height: 1293,
+      objectPosition: "62% 23%",
+      caption: "CROP 02 / ARCHITECTURE OF ELSEWHERE BOARD / ORBITAL FIELD",
+      alt:
+        "Upper-centre crop of the Architecture of Elsewhere board showing two grayscale planetary images, a small cross, and pale technical lines on black."
+    },
+    {
+      index: "03",
+      title: "Figures at the Edge",
+      text:
+        "An outlined dark form, two small human figures, and a planetary fragment make a narrow threshold at the board's right edge.",
+      project: "Architecture of Elsewhere",
+      year: "2026",
+      category: "System Drawing",
+      image: "assets/images/architecture-of-elsewhere-2400.jpg",
+      srcset:
+        "assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w",
+      width: 2400,
+      height: 1293,
+      objectPosition: "88% 30%",
+      caption: "CROP 03 / ARCHITECTURE OF ELSEWHERE BOARD / RIGHT-HAND FIELD",
+      alt:
+        "Upper-right crop of the Architecture of Elsewhere board showing a large outlined dark form, two small white human figures, and a grayscale planetary fragment."
+    },
+    {
+      index: "04",
+      title: "Section Across the Field",
+      text:
+        "The long pale architectural section is read as one continuous spatial cut, carrying orange edges and dark openings across the image field.",
+      project: "Architecture of Elsewhere",
+      year: "2026",
+      category: "Spatial Study",
+      image: "assets/images/architecture-of-elsewhere-2400.jpg",
+      srcset:
+        "assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w",
+      width: 2400,
+      height: 1293,
+      objectPosition: "51% 55%",
+      caption: "CROP 04 / ARCHITECTURE OF ELSEWHERE BOARD / CENTRAL SECTION",
+      alt:
+        "Central crop of the Architecture of Elsewhere board showing a long white architectural section with orange edges, ramps, and dark openings."
+    },
+    {
+      index: "05",
+      title: "Ramped Ground",
+      text:
+        "Dark ramps and rust-toned planes are isolated from the lower-left field as a material study of descent, overlap, and cut ground.",
+      project: "Architecture of Elsewhere",
+      year: "2026",
+      category: "Material Field",
+      image: "assets/images/architecture-of-elsewhere-2400.jpg",
+      srcset:
+        "assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w",
+      width: 2400,
+      height: 1293,
+      objectPosition: "27% 83%",
+      caption: "CROP 05 / ARCHITECTURE OF ELSEWHERE BOARD / LOWER-LEFT GROUND",
+      alt:
+        "Lower-left crop of the Architecture of Elsewhere board showing a dark descending ramp, rust-coloured planes, and pale cut ground."
+    },
+    {
+      index: "06",
+      title: "Residual Plan Lines",
+      text:
+        "Pale floor fields, orange outlines, and overlapping plan traces are framed as an architectural collage extracted from the board's lower-right corner.",
+      project: "Architecture of Elsewhere",
+      year: "2026",
+      category: "Architectural Collage",
+      image: "assets/images/architecture-of-elsewhere-2400.jpg",
+      srcset:
+        "assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w",
+      width: 2400,
+      height: 1293,
+      objectPosition: "80% 82%",
+      caption: "CROP 06 / ARCHITECTURE OF ELSEWHERE BOARD / LOWER-RIGHT LINEWORK",
+      alt:
+        "Lower-right crop of the Architecture of Elsewhere board showing pale architectural planes, orange outlines, and overlapping white plan linework."
+    }
+  ],
 
   projects: [
     {

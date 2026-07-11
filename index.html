@@ -2,7 +2,7 @@
 <html lang="en" class="no-js">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Architecture, design research, and computational design portfolio by Ahmad Alhadidii.">
   <meta name="theme-color" content="#ffffff">
 
@@ -14,54 +14,80 @@
       root.classList.remove("no-js");
       root.classList.add("js");
 
-      var play = false;
-      try {
-        var key = "portfolio:monitor-boot:v1";
-        var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        play = !sessionStorage.getItem(key) && !reduced;
-        if (play) sessionStorage.setItem(key, "1");
-      } catch (error) {
-        play = false;
-      }
-
-      root.classList.add(play ? "loader-pending" : "loader-skipped");
-      window.setTimeout(function () {
+      root.classList.add("loader-pending");
+      window.__portfolioLoaderFallback = window.setTimeout(function () {
         if (root.classList.contains("loader-pending")) {
+          var loader = document.getElementById("loader");
           root.classList.remove("loader-pending");
-          root.classList.add("loader-skipped");
+          root.classList.add("loader-complete", "motion-ready");
+          if (loader) {
+            loader.hidden = true;
+            loader.setAttribute("aria-hidden", "true");
+          }
         }
-      }, 1400);
+      }, 3200);
     })();
   </script>
 
   <style>
     html, body { background: #ffffff; }
-    .loader-skipped .loader { display: none; }
+    .no-js .loader { display: none; }
   </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
-  <link rel="preload" href="assets/images/architecture-of-elsewhere-2400.jpg" as="image">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" href="assets/images/architecture-of-elsewhere-1400.jpg" as="image" imagesrcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" imagesizes="(max-width: 960px) 100vw, min(1360px, 86vw)">
   <link rel="stylesheet" href="assets/css/style.css">
 
   <script src="content.js" defer></script>
   <script src="assets/js/main.js" defer></script>
 </head>
 <body class="home-page" data-site-theme="light">
-  <div class="loader" id="loader" role="status" aria-live="polite" aria-label="Loading Ahmad Alhadidii architecture portfolio">
-    <div class="loader__activation">
-      <div class="loader__device" aria-hidden="true">
-        <div class="loader__screen">
-          <img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="755" alt="">
-          <span class="loader__signal"></span>
-          <span class="loader__frame">FRAME <b id="loader-count">01</b> / 06</span>
+  <div class="loader" id="loader" role="status" aria-label="Initializing Ahmad Alhadidii portfolio field">
+    <p class="visually-hidden" id="loader-announcement" aria-live="polite">Portfolio field initialization in progress.</p>
+    <div class="loader__binary" aria-hidden="true">
+      <span class="loader__binary-stream loader__binary-stream--one">01001001 00110001 01000001 00110110 01001000 00110010</span>
+      <span class="loader__binary-stream loader__binary-stream--two">101001 011010 001101 110010 010110 100101</span>
+      <span class="loader__binary-stream loader__binary-stream--three">0011 0101 1001 0110 1100 0010</span>
+    </div>
+    <div class="loader__grid" aria-hidden="true">
+      <header class="loader__header">
+        <div>
+          <p class="loader__name" id="loader-name">AHMAD ALHADIDII</p>
+          <p>PORTFOLIO FIELD</p>
         </div>
+        <dl>
+          <div><dt>STATE</dt><dd id="loader-state">SYSTEM INITIALIZATION</dd></div>
+          <div><dt>FRAME</dt><dd id="loader-frame">01 / 06</dd></div>
+          <div><dt>SIGNAL</dt><dd id="loader-signal">000.000</dd></div>
+        </dl>
+      </header>
+
+      <div class="loader__field">
+        <figure class="loader__preview">
+          <div class="loader__preview-image">
+            <img data-loader-preview src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="">
+            <span class="loader__preview-scan"></span>
+            <span class="loader__preview-slice loader__preview-slice--one"></span>
+            <span class="loader__preview-slice loader__preview-slice--two"></span>
+          </div>
+          <figcaption><span>VISUAL FIELD / A-H26</span><span>IMAGE BUFFER</span></figcaption>
+        </figure>
+        <div class="loader__counter">
+          <span id="loader-progress">000</span><small>/ 100</small>
+        </div>
+        <p class="loader__active-binary" id="loader-active-binary">00000000 / 00000000</p>
       </div>
-      <div class="loader__footer">
-        <p class="loader__name" aria-label="Ahmad Alhadidii"><span id="loader-name" aria-hidden="true">AHMAD ALHADIDII</span></p>
-        <p aria-hidden="true">PORTFOLIO FIELD / SCREEN ACTIVATION / 2026</p>
-      </div>
+
+      <footer class="loader__footer">
+        <div class="loader__progress-track"><span id="loader-progress-bar"></span></div>
+        <div class="loader__footer-meta">
+          <p>ARCHITECTURE / RESEARCH / COMPUTATION</p>
+          <p id="loader-phase">ARCHIVE ACCESS</p>
+          <p><span id="loader-progress-secondary">000</span> / 100</p>
+        </div>
+      </footer>
     </div>
   </div>
 
@@ -91,8 +117,10 @@
           <a href="#index" data-section-link="index" aria-current="location"><span data-scramble>INDEX</span></a>
           <a href="#profile" data-section-link="profile"><span data-scramble>PROFILE</span></a>
           <a href="#cv" data-section-link="cv"><span data-scramble>CV</span></a>
+          <a href="#visual-studies" data-section-link="visual"><span data-scramble>VISUAL STUDIES</span></a>
           <a href="#work" data-section-link="work"><span data-scramble>WORK</span></a>
           <a href="#contact" data-section-link="contact"><span data-scramble>CONTACT</span></a>
+          <a class="site-nav__external" href="https://www.manmatic.institute/" target="_blank" rel="noopener noreferrer" aria-label="Open the ManMaTIC Institute field website in a new tab">MANMATIC FIELD <span aria-hidden="true">↗</span></a>
         </nav>
       </div>
     </header>
@@ -107,12 +135,12 @@
 
         <div class="opening__identity">
           <h1 class="opening__name" id="opening-name" aria-label="Ahmad Alhadidii">
-            <span data-scramble data-scramble-entry aria-hidden="true">AHMAD ALHADIDII</span>
+            <span class="pointer-scan" data-pointer-scan data-pointer-text="AHMAD ALHADIDII" data-scramble data-scramble-entry aria-hidden="true">AHMAD ALHADIDII</span>
           </h1>
           <div class="opening__roles">
-            <p>ARCHITECTURAL DESIGNER</p>
+            <p>ARCHITECT</p>
             <p>DESIGN RESEARCHER</p>
-            <p>COMPUTATIONAL DESIGN EXPLORER</p>
+            <p>COMPUTATIONAL DESIGNER</p>
           </div>
           <div class="opening__meta">
             <p>AS-SALT, JORDAN</p>
@@ -141,7 +169,7 @@
                   <p class="showreel__label">PROJECT FILE 02 / MANMATIC</p>
                 </div>
                 <div class="showreel__slide showreel__slide--title" data-showreel-slide data-frame="04" aria-hidden="true">
-                  <p>AHMAD ALHADIDII</p><strong>ARCHITECTURAL DESIGNER</strong><span>DESIGN RESEARCHER / COMPUTATIONAL DESIGN EXPLORER</span>
+                  <p>AHMAD ALHADIDII</p><strong>ARCHITECT</strong><span>DESIGN RESEARCHER / COMPUTATIONAL DESIGNER</span>
                 </div>
                 <div class="showreel__slide showreel__slide--image" data-showreel-slide data-frame="05" aria-hidden="true">
                   <img src="assets/images/architecture-of-elsewhere-2400.jpg" width="2400" height="1293" alt="" loading="lazy" decoding="async">
@@ -153,7 +181,7 @@
               </div>
               <div class="monitor__scan" aria-hidden="true"></div>
               <div class="monitor__readout monitor__readout--top" aria-hidden="true"><span>FRAME <b id="showreel-frame">01</b> / 06</span><span>ARCHIVE 2026</span></div>
-              <div class="monitor__readout monitor__readout--bottom" aria-hidden="true"><span id="showreel-status">PLAYING / MUTED</span><span>SIGNAL ———</span></div>
+              <div class="monitor__readout monitor__readout--bottom" aria-hidden="true"><span id="showreel-status">PLAYING / MUTED</span><span>SIGNAL <b id="showreel-signal">013.7</b></span></div>
             </div>
             <div class="monitor__controls">
               <div aria-hidden="true"><span>[ A ]</span><span>FIELD DISPLAY</span><span>RUN 00:18</span></div>
@@ -170,7 +198,7 @@
         <div class="opening__concept" aria-labelledby="manifesto-title">
           <p class="editorial-label">[ A ] CONCEPTUAL FIELD</p>
           <h2 class="manifesto__title" id="manifesto-title" aria-label="Architecture of Elsewhere">
-            <span data-scramble aria-hidden="true">ARCHITECTURE OF ELSEWHERE</span>
+            <span class="pointer-scan" data-pointer-scan data-pointer-text="ARCHITECTURE OF ELSEWHERE" data-scramble aria-hidden="true">ARCHITECTURE OF ELSEWHERE</span>
           </h2>
           <p class="manifesto__text reading-text" data-reading-text>A way of thinking that begins with uncertainty and searches for the hidden order within it. Systems, patterns, and relationships are traced across different fields, then translated into architecture. What first appears fragmented gains coherence; what remains abstract gains structure, presence, and place.</p>
         </div>
@@ -178,7 +206,7 @@
 
       <section class="section profile page-width" id="profile" data-nav-section="profile" aria-labelledby="profile-title">
         <header class="section-heading section-heading--record">
-          <h2 id="profile-title" aria-label="Profile"><span class="section-heading__code">001 /</span> <span data-scramble aria-hidden="true">PROFILE</span></h2>
+          <h2 id="profile-title" aria-label="Profile"><span class="section-heading__code">001 /</span> <span class="pointer-scan" data-pointer-scan data-pointer-text="PROFILE" data-scramble aria-hidden="true">PROFILE</span></h2>
           <p class="section-heading__note">POSITION / PRACTICE / CONTEXT</p>
         </header>
 
@@ -189,14 +217,23 @@
             <p><span>[ B ]</span> CURRENT FIELD</p>
             <span>ARCHITECTURE / RESEARCH / COMPUTATION</span>
           </aside>
-          <p class="profile__statement reading-text" data-reading-text>Architecture student with a research-based approach, drawing from systems, contexts, human experience, and emerging technologies to shape meaningful spatial and visual responses. Interested in computational tools, AI, cultural and contextual references, and collaborative environments where ideas are questioned, exchanged, and developed collectively.</p>
+          <figure class="profile-portrait" data-pixel-portrait data-portrait-status="placeholder" aria-labelledby="profile-portrait-caption">
+            <div class="profile-portrait__frame">
+              <img class="profile-portrait__image" data-pixel-image src="assets/images/architecture-of-elsewhere-1400.jpg" srcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" sizes="(max-width: 760px) calc(100vw - 36px), 34vw" width="1400" height="754" alt="Temporary crop of the Architecture of Elsewhere board reserving the future profile portrait frame; this is not a portrait of Ahmad Alhadidii." loading="lazy" decoding="async">
+              <span class="pixel-portrait__grid" data-pixel-grid aria-hidden="true"></span>
+              <span class="profile-portrait__scan" aria-hidden="true"></span>
+              <p class="profile-portrait__status">FINAL PORTRAIT REQUIRED</p>
+            </div>
+            <figcaption id="profile-portrait-caption"><span>PROFILE IMAGE / 001</span><strong>FINAL PORTRAIT REQUIRED</strong><span>TEMPORARY ARCHITECTURE OF ELSEWHERE BOARD CROP / NOT A PORTRAIT</span></figcaption>
+          </figure>
+          <p class="profile__statement reading-text" data-reading-text>Architect with a research-based approach, drawing from systems, contexts, human experience, and emerging technologies to shape meaningful spatial and visual responses. His work moves between architectural design, design research, and computational methods, translating complex relationships into clear spatial structures.</p>
         </div>
 
         <dl class="profile__meta">
-          <div><dt>[ 01 ] EDUCATION</dt><dd>Bachelor of Architecture Candidate<br>Al-Balqa Applied University</dd></div>
+          <div><dt>[ 01 ] EDUCATION</dt><dd>Bachelor of Architecture<br>Al-Balqa Applied University</dd></div>
           <div><dt>[ 02 ] LOCATION</dt><dd>As-Salt, Jordan</dd></div>
-          <div><dt>[ 03 ] POSITION</dt><dd>Architectural Designer<br>Design Researcher</dd></div>
-          <div><dt>[ 04 ] CURRENT FIELD</dt><dd>Computational Design Explorer</dd></div>
+          <div><dt>[ 03 ] POSITION</dt><dd>Architect<br>Design Researcher</dd></div>
+          <div><dt>[ 04 ] CURRENT FIELD</dt><dd>Computational Design</dd></div>
           <div><dt>[ 05 ] BIRTH DATE</dt><dd>31.08.2003</dd></div>
           <div class="profile__meta-contact"><dt>[ 06 ] CONTACT INDEX</dt><dd><a href="mailto:ahmadalhadidii@manmatic.institute">ahmadalhadidii@manmatic.institute</a><br><a href="tel:+962790652697">0790652697</a></dd></div>
         </dl>
@@ -204,14 +241,14 @@
 
       <section class="section cv page-width" id="cv" data-nav-section="cv" aria-labelledby="cv-title">
         <header class="section-heading section-heading--record">
-          <h2 id="cv-title" aria-label="Curriculum vitae"><span class="section-heading__code">002 /</span> <span data-scramble aria-hidden="true">CURRICULUM VITAE</span></h2>
+          <h2 id="cv-title" aria-label="Curriculum vitae"><span class="section-heading__code">002 /</span> <span class="pointer-scan" data-pointer-scan data-pointer-text="CURRICULUM VITAE" data-scramble aria-hidden="true">CURRICULUM VITAE</span></h2>
           <p class="section-heading__note">EDUCATION / PRACTICE / RECOGNITION</p>
         </header>
 
         <div class="cv__identity" aria-label="Personal and contact information">
           <div>
             <p class="cv__identity-name">AHMAD ALHADIDII</p>
-            <p>ARCHITECTURAL DESIGNER · DESIGN RESEARCHER · COMPUTATIONAL DESIGN EXPLORER</p>
+            <p>ARCHITECT · DESIGN RESEARCHER · COMPUTATIONAL DESIGNER</p>
           </div>
           <dl>
             <div><dt>BORN</dt><dd>31.08.2003</dd></div>
@@ -267,7 +304,7 @@
             <section class="cv-group" aria-labelledby="education-heading">
               <h3 id="education-heading"><span>[003]</span> EDUCATION</h3>
               <article class="cv-row">
-                <div><p class="cv-entry__index">[003.01]</p><h4>Bachelor of Architecture — Candidate</h4><p>Al-Balqa Applied University · Jordan — Salt</p></div>
+                <div><p class="cv-entry__index">[003.01]</p><h4>Bachelor of Architecture</h4><p>Al-Balqa Applied University · Jordan — Salt</p></div>
                 <p>2021 — 2026</p>
               </article>
               <article class="cv-row">
@@ -371,13 +408,46 @@
         </div>
       </section>
 
+      <section class="section visual-studies page-width" id="visual-studies" data-nav-section="visual" aria-labelledby="visual-studies-title">
+        <header class="section-heading section-heading--record">
+          <h2 id="visual-studies-title" aria-label="Visual Studies"><span class="section-heading__code">003 /</span> <span class="pointer-scan" data-pointer-scan data-pointer-text="VISUAL STUDIES" data-scramble aria-hidden="true">VISUAL STUDIES</span></h2>
+          <p class="section-heading__note">[ IMAGE / THOUGHT / FIELD ]</p>
+        </header>
+
+        <div class="visual-slider" data-visual-slider role="region" aria-roledescription="carousel" aria-label="Visual studies" tabindex="0">
+          <div class="visual-slider__viewport" data-visual-viewport>
+            <div class="visual-slider__track" data-visual-track>
+              <article class="visual-slide is-active" data-visual-fallback role="group" aria-roledescription="slide" aria-label="1 of 6: Code and Repeated Forms">
+                <div class="visual-slide__copy">
+                  <p class="visual-slide__index">STUDY 01 / VISUAL RESEARCH</p>
+                  <h3>Code and Repeated Forms</h3>
+                  <p>The board's upper-left field places the A-H26 code beside repeated vertical forms, fine traces, and a measured horizontal datum.</p>
+                  <dl><div><dt>PROJECT</dt><dd>Architecture of Elsewhere</dd></div><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>CATEGORY</dt><dd>Visual Research</dd></div></dl>
+                </div>
+                <figure class="visual-slide__media">
+                  <img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" style="object-position: 22% 24%" alt="Upper-left crop of the Architecture of Elsewhere board showing repeated white vertical forms, the A-H26 code, and fine horizontal technical traces." loading="lazy" decoding="async">
+                  <figcaption>CROP 01 / ARCHITECTURE OF ELSEWHERE BOARD / UPPER-LEFT FIELD</figcaption>
+                </figure>
+              </article>
+            </div>
+            <span class="visual-slider__signal" aria-hidden="true">SIGNAL SYNC</span>
+          </div>
+          <div class="visual-slider__controls">
+            <button type="button" data-visual-prev aria-label="Show previous visual study">PREVIOUS</button>
+            <p aria-live="polite" aria-atomic="true"><span data-visual-current>01</span> / <span data-visual-total>06</span></p>
+            <button type="button" data-visual-next aria-label="Show next visual study">NEXT</button>
+          </div>
+          <div class="visual-slider__progress" aria-hidden="true"><span data-visual-progress></span></div>
+        </div>
+      </section>
+
       <section class="section work page-width" id="work" data-nav-section="work" aria-labelledby="work-title">
         <header class="section-heading section-heading--record">
-          <h2 id="work-title" aria-label="Selected work"><span class="section-heading__code">003 /</span> <span data-scramble aria-hidden="true">SELECTED WORK</span></h2>
+          <h2 id="work-title" aria-label="Selected work"><span class="section-heading__code">004 /</span> <span class="pointer-scan" data-pointer-scan data-pointer-text="SELECTED WORK" data-scramble aria-hidden="true">SELECTED WORK</span></h2>
           <p class="section-heading__note">PROJECT ARCHIVE / <span id="work-active-file">01 / 05</span></p>
         </header>
 
-        <p class="work__intro reading-text" data-reading-text>Selected architecture, research, mapping, environmental design, and speculative drawing projects developed in 2026.</p>
+        <p class="work__intro reading-text">Selected architecture, research, mapping, environmental design, and speculative drawing projects developed in 2026.</p>
 
         <div class="project-index" aria-label="Selected projects">
           <article class="project-row project-row--shila" data-project-index="01" data-project-id="project-05">
@@ -385,46 +455,47 @@
               <p class="project-row__number" data-scramble aria-hidden="true">001</p>
               <div class="project-row__copy">
                 <p class="project-row__file">PROJECT FILE 01</p>
-                <h3><span class="project-row__archive-title">SHILA MUSEUM</span><span class="project-row__archive-subtitle">THE QUARRY THAT FOLDS INWARD</span></h3>
+                <h3 data-heading aria-label="Shila Museum — The Quarry That Folds Inward"><span class="project-row__archive-title pointer-scan" data-pointer-scan data-pointer-text="SHILA MUSEUM" data-scramble aria-hidden="true">SHILA MUSEUM</span><span class="project-row__archive-subtitle">THE QUARRY THAT FOLDS INWARD</span></h3>
                 <p>A museum concept where the quarry folds inward, turning stone, water, shadow, and void into spatial memory.</p>
                 <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>TYPE</dt><dd>Museum / Stone Memory</dd></div><div><dt>ROLE</dt><dd>Concept, atmosphere, spatial storytelling</dd></div></dl>
               </div>
               <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal>
-                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="755" alt="Shared Architecture of Elsewhere portfolio visual field, used because the Shila project image is not present in the repository." loading="lazy" decoding="async"></div>
+                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="Shared Architecture of Elsewhere portfolio visual field, used because the Shila project image is not present in the repository." loading="lazy" decoding="async"></div>
                 <figcaption><span>FIG. 01</span><span>SHARED ARCHIVE VISUAL / ARCHITECTURE OF ELSEWHERE</span></figcaption>
               </figure>
               <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
             </a>
           </article>
 
-          <article class="project-row project-row--manmatic" data-project-index="02" data-project-id="project-01" data-project-theme="manmatic">
+          <article class="project-row project-row--manmatic" data-project-index="02" data-project-id="project-01" data-manmatic-field>
             <a class="project-row__link" href="project.html?project=project-01" aria-label="Project file 02, ManMaTIC, Human–Machine Integration Institute">
               <p class="project-row__number" data-scramble aria-hidden="true">002</p>
               <div class="project-row__copy">
                 <p class="project-row__file">PROJECT FILE 02</p>
-                <h3><span class="project-row__archive-title">MANMATIC</span><span class="project-row__archive-subtitle">HUMAN–MACHINE INTEGRATION INSTITUTE</span></h3>
+                <h3 data-heading aria-label="ManMaTIC — Human–Machine Integration Institute"><span class="project-row__archive-title pointer-scan" data-pointer-scan data-pointer-text="MANMATIC" data-scramble aria-hidden="true">MANMATIC</span><span class="project-row__archive-subtitle">HUMAN–MACHINE INTEGRATION INSTITUTE</span></h3>
                 <p>A research-based institute exploring how humans and intelligent systems collaborate, negotiate, and deploy decisions in real environments.</p>
                 <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>LOCATION</dt><dd>Aqaba</dd></div><div><dt>TYPE</dt><dd>Research Institute</dd></div><div><dt>ROLE</dt><dd>Architecture, research, systems thinking, visual communication</dd></div></dl>
               </div>
               <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal>
-                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" srcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" sizes="(max-width: 760px) calc(100vw - 36px), 48vw" width="1400" height="755" alt="Architecture of Elsewhere visual field for the ManMaTIC Institute, combining architectural, planetary, and systems imagery." loading="lazy" decoding="async"></div>
+                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" srcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" sizes="(max-width: 760px) calc(100vw - 36px), 48vw" width="1400" height="754" alt="Architecture of Elsewhere visual field for the ManMaTIC Institute, combining architectural, planetary, and systems imagery." loading="lazy" decoding="async"></div>
                 <figcaption><span>FIG. 02</span><span>ARCHITECTURE OF ELSEWHERE / ACTIVE FIELD</span></figcaption>
               </figure>
               <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
             </a>
+            <a class="manmatic-field__external" href="https://www.manmatic.institute/" target="_blank" rel="noopener noreferrer" aria-label="Open the ManMaTIC Institute field website in a new tab">MANMATIC FIELD <span aria-hidden="true">↗</span></a>
           </article>
 
           <article class="project-row" data-project-index="03" data-project-id="project-02">
-            <a class="project-row__link" href="project.html?project=project-02">
+            <a class="project-row__link" href="project.html?project=project-02" aria-label="Project file 03, From Concrete Fatigue to Green Asset">
               <p class="project-row__number" data-scramble aria-hidden="true">003</p>
               <div class="project-row__copy">
                 <p class="project-row__file">PROJECT FILE 03</p>
-                <h3>From Concrete Fatigue to Green Asset</h3>
+                <h3 class="pointer-scan" data-heading data-scramble data-pointer-scan data-pointer-text="From Concrete Fatigue to Green Asset" aria-label="From Concrete Fatigue to Green Asset">From Concrete Fatigue to Green Asset</h3>
                 <p>A staircase transformation proposal turning daily urban infrastructure into environmental and social value.</p>
                 <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>LOCATION</dt><dd>Amman</dd></div><div><dt>TYPE</dt><dd>Urban Intervention</dd></div><div><dt>ROLE</dt><dd>Concept, environmental strategy, visual communication</dd></div></dl>
               </div>
               <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal>
-                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="755" alt="Shared Architecture of Elsewhere portfolio visual field, shown while project-specific imagery is unavailable." loading="lazy" decoding="async"></div>
+                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="Shared Architecture of Elsewhere portfolio visual field, shown while project-specific imagery is unavailable." loading="lazy" decoding="async"></div>
                 <figcaption><span>FIG. 03</span><span>SHARED PORTFOLIO VISUAL / ARCHITECTURE OF ELSEWHERE</span></figcaption>
               </figure>
               <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
@@ -432,16 +503,16 @@
           </article>
 
           <article class="project-row" data-project-index="04" data-project-id="project-03">
-            <a class="project-row__link" href="project.html?project=project-03">
+            <a class="project-row__link" href="project.html?project=project-03" aria-label="Project file 04, Ground of Continuity">
               <p class="project-row__number" data-scramble aria-hidden="true">004</p>
               <div class="project-row__copy">
                 <p class="project-row__file">PROJECT FILE 04</p>
-                <h3>Ground of Continuity</h3>
+                <h3 class="pointer-scan" data-heading data-scramble data-pointer-scan data-pointer-text="Ground of Continuity" aria-label="Ground of Continuity">Ground of Continuity</h3>
                 <p>A cultural map reading Jordan as a ground of continuity between memory, borders, routes, and shared regional identity.</p>
                 <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>LOCATION</dt><dd>Jordan</dd></div><div><dt>TYPE</dt><dd>Cultural Map / Visual Research</dd></div><div><dt>ROLE</dt><dd>Mapping, cultural research, graphic composition</dd></div></dl>
               </div>
               <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal>
-                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="755" alt="Shared Architecture of Elsewhere portfolio visual field, shown while project-specific imagery is unavailable." loading="lazy" decoding="async"></div>
+                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="Shared Architecture of Elsewhere portfolio visual field, shown while project-specific imagery is unavailable." loading="lazy" decoding="async"></div>
                 <figcaption><span>FIG. 04</span><span>SHARED PORTFOLIO VISUAL / ARCHITECTURE OF ELSEWHERE</span></figcaption>
               </figure>
               <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
@@ -449,16 +520,16 @@
           </article>
 
           <article class="project-row" data-project-index="05" data-project-id="project-04">
-            <a class="project-row__link" href="project.html?project=project-04">
+            <a class="project-row__link" href="project.html?project=project-04" aria-label="Project file 05, The Mechanics of Becoming">
               <p class="project-row__number" data-scramble aria-hidden="true">005</p>
               <div class="project-row__copy">
                 <p class="project-row__file">PROJECT FILE 05</p>
-                <h3>The Mechanics of Becoming</h3>
+                <h3 class="pointer-scan" data-heading data-scramble data-pointer-scan data-pointer-text="The Mechanics of Becoming" aria-label="The Mechanics of Becoming">The Mechanics of Becoming</h3>
                 <p>A spatial timeline of human and machine evolution, carved as a threshold between tools, bodies, and complex systems.</p>
                 <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>TYPE</dt><dd>Drawing / Human–Machine History</dd></div><div><dt>ROLE</dt><dd>Concept, digital painting, architectural narrative</dd></div></dl>
               </div>
               <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal>
-                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="755" alt="Shared Architecture of Elsewhere portfolio visual field, shown while project-specific imagery is unavailable." loading="lazy" decoding="async"></div>
+                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="Shared Architecture of Elsewhere portfolio visual field, shown while project-specific imagery is unavailable." loading="lazy" decoding="async"></div>
                 <figcaption><span>FIG. 05</span><span>SHARED PORTFOLIO VISUAL / ARCHITECTURE OF ELSEWHERE</span></figcaption>
               </figure>
               <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
@@ -469,18 +540,18 @@
 
       <section class="section contact page-width" id="contact" data-nav-section="contact" aria-labelledby="contact-title">
         <header class="contact__marker" data-section-marker>
-          <h2 id="contact-title" aria-label="04 / Contact"><span>04</span><span>/</span><span data-scramble aria-hidden="true">CONTACT</span></h2>
+          <h2 id="contact-title" aria-label="05 / Contact"><span>05</span><span>/</span><span class="pointer-scan" data-pointer-scan data-pointer-text="CONTACT" data-scramble aria-hidden="true">CONTACT</span></h2>
           <span class="contact__marker-rule" aria-hidden="true"></span>
         </header>
 
         <div class="contact__intro">
           <p class="contact__name">AHMAD ALHADIDII</p>
-          <p class="contact__statement reading-text" data-reading-text>Architecture, design research, and computational exploration developed through clear systems, contextual reading, and collaborative exchange.</p>
+          <p class="contact__statement reading-text">Architecture, design research, and computational design developed through clear systems, contextual reading, and collaborative exchange.</p>
         </div>
 
         <div class="contact__band">
           <div class="contact__identity">
-            <p class="contact__roles">ARCHITECTURAL DESIGNER<br>DESIGN RESEARCHER<br>COMPUTATIONAL DESIGN EXPLORER</p>
+            <p class="contact__roles">ARCHITECT<br>DESIGN RESEARCHER<br>COMPUTATIONAL DESIGNER</p>
             <p class="contact__location">AS-SALT, JORDAN</p>
           </div>
           <address class="contact__links">
@@ -493,6 +564,10 @@
         </div>
       </section>
     </main>
+
+    <div class="closing-identity page-width" aria-label="Ahmad Alhadidii">
+      <p class="pointer-scan" data-heading data-pointer-scan data-pointer-text="AHMAD ALHADIDII" data-scramble aria-hidden="true">AHMAD ALHADIDII</p>
+    </div>
 
     <footer class="site-footer page-width">
       <p>© 2026 AHMAD ALHADIDII</p>

@@ -143,8 +143,14 @@
     eyebrow.setAttribute("data-scramble", "");
     const title = element("h1");
     title.setAttribute("aria-label", navigationTitle(project));
-    const titleVisual = element("span", "project-header__archive-title", archiveTitle(project));
+    const titleVisual = element(
+      "span",
+      "project-header__archive-title pointer-scan",
+      archiveTitle(project)
+    );
     titleVisual.setAttribute("data-scramble", "");
+    titleVisual.setAttribute("data-pointer-scan", "");
+    titleVisual.setAttribute("data-pointer-text", archiveTitle(project));
     titleVisual.setAttribute("aria-hidden", "true");
     title.appendChild(titleVisual);
     if (archiveSubtitle(project)) {
@@ -159,6 +165,17 @@
     const definition = element("p", "project-header__definition", project.definition);
     header.append(eyebrow, title, definition);
     appendMetadata(header, project);
+    if (projectTheme(project) === "manmatic") {
+      const fieldLink = element("a", "project-header__field-link", "MANMATIC FIELD ↗");
+      fieldLink.href = "https://www.manmatic.institute/";
+      fieldLink.target = "_blank";
+      fieldLink.rel = "noopener noreferrer";
+      fieldLink.setAttribute(
+        "aria-label",
+        "Open the ManMaTIC Institute field website in a new tab"
+      );
+      header.appendChild(fieldLink);
+    }
     return header;
   }
 
@@ -322,7 +339,15 @@
       if (node) article.appendChild(node);
     });
 
-    if (window.PortfolioEnhance) window.PortfolioEnhance.refresh(article);
+    function enhanceProjectEntry() {
+      if (window.PortfolioEnhance) window.PortfolioEnhance.refresh(article);
+    }
+
+    if (document.documentElement.classList.contains("loader-complete")) {
+      enhanceProjectEntry();
+    } else {
+      document.addEventListener("portfolio:ready", enhanceProjectEntry, { once: true });
+    }
   }
 
   function init() {

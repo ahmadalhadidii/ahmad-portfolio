@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en" class="no-js loader-skipped" data-page="project">
+<html lang="en" class="no-js" data-page="project">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Selected architecture, research, and computational design project by Ahmad Alhadidii.">
   <meta name="theme-color" content="#ffffff">
 
@@ -38,27 +38,81 @@
 
       root.classList.remove("no-js");
       root.classList.add("js");
+      root.classList.add("loader-pending");
       root.dataset.initialTheme = theme;
       if (themeColor) themeColor.setAttribute("content", theme === "manmatic" ? "#0a0a0a" : "#ffffff");
+
+      window.__portfolioLoaderFallback = window.setTimeout(function () {
+        if (root.classList.contains("loader-pending")) {
+          var loader = document.getElementById("loader");
+          root.classList.remove("loader-pending");
+          root.classList.add("loader-complete", "motion-ready");
+          if (loader) {
+            loader.hidden = true;
+            loader.setAttribute("aria-hidden", "true");
+          }
+        }
+      }, 3200);
     })();
   </script>
 
   <style>
     html, body, main { background: #ffffff; color: #111111; }
+    .no-js .loader { display: none; }
     html[data-initial-theme="manmatic"],
     html[data-initial-theme="manmatic"] body,
     html[data-initial-theme="manmatic"] main { background: #0a0a0a; color: #f2f2f2; }
   </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
 
   <script src="assets/js/main.js" defer></script>
   <script src="assets/js/project.js" defer></script>
 </head>
 <body class="project-page" data-site-theme="light">
-  <noscript><style>.nav-toggle { display: none !important; }</style></noscript>
+  <div class="loader" id="loader" role="status" aria-label="Initializing Ahmad Alhadidii portfolio field">
+    <p class="visually-hidden" id="loader-announcement" aria-live="polite">Portfolio field initialization in progress.</p>
+    <div class="loader__binary" aria-hidden="true">
+      <span class="loader__binary-stream loader__binary-stream--one">01001001 00110001 01000001 00110110 01001000 00110010</span>
+      <span class="loader__binary-stream loader__binary-stream--two">101001 011010 001101 110010 010110 100101</span>
+      <span class="loader__binary-stream loader__binary-stream--three">0011 0101 1001 0110 1100 0010</span>
+    </div>
+    <div class="loader__grid" aria-hidden="true">
+      <header class="loader__header">
+        <div><p class="loader__name" id="loader-name">AHMAD ALHADIDII</p><p>PORTFOLIO FIELD</p></div>
+        <dl>
+          <div><dt>STATE</dt><dd id="loader-state">SYSTEM INITIALIZATION</dd></div>
+          <div><dt>FRAME</dt><dd id="loader-frame">01 / 06</dd></div>
+          <div><dt>SIGNAL</dt><dd id="loader-signal">000.000</dd></div>
+        </dl>
+      </header>
+      <div class="loader__field">
+        <figure class="loader__preview">
+          <div class="loader__preview-image">
+            <img data-loader-preview src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="">
+            <span class="loader__preview-scan"></span>
+            <span class="loader__preview-slice loader__preview-slice--one"></span>
+            <span class="loader__preview-slice loader__preview-slice--two"></span>
+          </div>
+          <figcaption><span>VISUAL FIELD / A-H26</span><span>IMAGE BUFFER</span></figcaption>
+        </figure>
+        <div class="loader__counter"><span id="loader-progress">000</span><small>/ 100</small></div>
+        <p class="loader__active-binary" id="loader-active-binary">00000000 / 00000000</p>
+      </div>
+      <footer class="loader__footer">
+        <div class="loader__progress-track"><span id="loader-progress-bar"></span></div>
+        <div class="loader__footer-meta">
+          <p>ARCHITECTURE / RESEARCH / COMPUTATION</p>
+          <p id="loader-phase">ARCHIVE ACCESS</p>
+          <p><span id="loader-progress-secondary">000</span> / 100</p>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <noscript><style>.loader, .nav-toggle { display: none !important; }</style></noscript>
 
   <a class="skip-link" href="#main-content">Skip to project content</a>
 
@@ -78,8 +132,10 @@
           <a href="index.html#index"><span data-scramble>INDEX</span></a>
           <a href="index.html#profile"><span data-scramble>PROFILE</span></a>
           <a href="index.html#cv"><span data-scramble>CV</span></a>
+          <a href="index.html#visual-studies"><span data-scramble>VISUAL STUDIES</span></a>
           <a class="is-active" href="index.html#work" aria-current="location"><span data-scramble>WORK</span></a>
           <a href="index.html#contact"><span data-scramble>CONTACT</span></a>
+          <a class="site-nav__external" href="https://www.manmatic.institute/" target="_blank" rel="noopener noreferrer" aria-label="Open the ManMaTIC Institute field website in a new tab">MANMATIC FIELD <span aria-hidden="true">↗</span></a>
         </nav>
       </div>
     </header>
