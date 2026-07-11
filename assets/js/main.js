@@ -372,10 +372,50 @@
     const announcement = document.getElementById("loader-announcement");
     const loaderName = document.getElementById("loader-name");
     const preview = loader.querySelector("[data-loader-preview]");
+    const projectLoaderData = window.__portfolioProjectLoaderData || null;
+    const isProjectLoader = loader.classList.contains("loader--project") && projectLoaderData;
+
+    if (isProjectLoader) {
+      loader.classList.add("loader--project-dark");
+      if (loaderName) loaderName.textContent = projectLoaderData.title;
+      const kicker = loader.querySelector("[data-project-loader-kicker]");
+      const caption = loader.querySelector("[data-project-loader-caption]");
+      const type = loader.querySelector("[data-project-loader-type]");
+      const statusType = loader.querySelector("[data-project-loader-status-type]");
+      const subtitle = loader.querySelector("[data-project-loader-subtitle]");
+      const year = loader.querySelector("[data-project-loader-year]");
+      if (kicker) kicker.textContent = `PROJECT FILE ${projectLoaderData.number}`;
+      if (caption) caption.textContent = `${projectLoaderData.title} / ${projectLoaderData.year}`;
+      if (type) type.textContent = projectLoaderData.type;
+      if (statusType) statusType.textContent = projectLoaderData.type;
+      if (subtitle) subtitle.textContent = projectLoaderData.subtitle || projectLoaderData.type;
+      if (year) {
+        year.textContent = [projectLoaderData.location, projectLoaderData.year]
+          .filter(Boolean)
+          .join(" / ");
+      }
+      if (preview) {
+        const markImageMissing = function () {
+          loader.classList.add("is-image-missing");
+          preview.removeAttribute("srcset");
+          preview.removeAttribute("src");
+        };
+        preview.addEventListener("error", markImageMissing, { once: true });
+        preview.src = projectLoaderData.image;
+        if (projectLoaderData.srcset) preview.srcset = projectLoaderData.srcset;
+        else preview.removeAttribute("srcset");
+      }
+    }
     const startedAt = performance.now();
-    const minimumDuration = reducedMotion.matches ? 280 : 1880;
-    const maximumDuration = reducedMotion.matches ? 640 : 3000;
-    const exitDuration = reducedMotion.matches ? 40 : 500;
+    const minimumDuration = isProjectLoader
+      ? reducedMotion.matches ? 240 : 1200
+      : reducedMotion.matches ? 280 : 1880;
+    const maximumDuration = isProjectLoader
+      ? reducedMotion.matches ? 520 : 2200
+      : reducedMotion.matches ? 640 : 3000;
+    const exitDuration = isProjectLoader
+      ? reducedMotion.matches ? 40 : 360
+      : reducedMotion.matches ? 40 : 500;
     const timers = new Set();
     let frameRequest = 0;
     let assetsReady = false;
@@ -384,6 +424,8 @@
     let resolveBoot;
     let currentProgress = 0;
     let signalStage = 0;
+    const blackFlashPoints = [35, 82];
+    const completedBlackFlashes = new Set();
 
     function schedule(callback, delay) {
       const timer = window.setTimeout(function () {
@@ -439,6 +481,8 @@
       const formatted = String(currentProgress).padStart(3, "0");
       const ratio = currentProgress / 100;
       loader.style.setProperty("--loader-ratio", ratio.toFixed(3));
+      loader.style.setProperty("--project-reveal", `${((1 - ratio) * 100).toFixed(2)}%`);
+      loader.style.setProperty("--project-band-inset", `${((1 - ratio) * 46).toFixed(2)}%`);
       loader.style.setProperty("--loader-progress", String(currentProgress));
       if (progressPrimary) progressPrimary.textContent = formatted;
       if (progressSecondary) progressSecondary.textContent = formatted;
@@ -478,6 +522,36 @@
       if (state) state.textContent = stateText;
       if (phase) phase.textContent = phaseText;
 
+      if (isProjectLoader) {
+        if (state) {
+          state.textContent = currentProgress >= 100
+            ? "PROJECT OPEN"
+            : currentProgress >= 68
+              ? "HERO ALIGNMENT"
+              : currentProgress >= 35
+                ? "IMAGE ASSEMBLY"
+                : "FILE INDEXING";
+        }
+        if (phase) {
+          phase.textContent = currentProgress >= 100
+            ? "FILE READY"
+            : currentProgress >= 68
+              ? "OPENING PROJECT"
+              : "FILE ACCESS";
+        }
+      }
+
+      if (!isProjectLoader && !reducedMotion.matches) {
+        blackFlashPoints.forEach(function (point) {
+          if (currentProgress < point || completedBlackFlashes.has(point)) return;
+          completedBlackFlashes.add(point);
+          loader.classList.add("is-black-flash");
+          schedule(function () {
+            loader.classList.remove("is-black-flash");
+          }, 90);
+        });
+      }
+
       const nextSignalStage = currentProgress >= 100
         ? 4
         : currentProgress >= 91
@@ -489,7 +563,8 @@
               : 0;
       if (nextSignalStage !== signalStage) {
         signalStage = nextSignalStage;
-        if (!reducedMotion.matches && signalStage > 0) {
+        const shouldGlitch = isProjectLoader ? signalStage === 2 : signalStage > 0;
+        if (!reducedMotion.matches && shouldGlitch) {
           loader.classList.remove("is-glitching");
           void loader.offsetWidth;
           loader.classList.add("is-glitching");
@@ -503,6 +578,13 @@
     function targetProgress(elapsed) {
       if (reducedMotion.matches) {
         return clamp((elapsed / minimumDuration) * 100, 0, 100);
+      }
+      if (isProjectLoader) {
+        if (elapsed < 220) return (elapsed / 220) * 16;
+        if (elapsed < 520) return 16 + ((elapsed - 220) / 300) * 28;
+        if (elapsed < 860) return 44 + ((elapsed - 520) / 340) * 30;
+        if (!assetsReady) return 74 + clamp((elapsed - 860) / 900, 0, 1) * 16;
+        return 74 + clamp((elapsed - 860) / 340, 0, 1) * 26;
       }
       if (elapsed < 280) return (elapsed / 280) * 12;
       if (elapsed < 700) return 12 + ((elapsed - 280) / 420) * 19;
@@ -535,7 +617,11 @@
       if (exitStarted || settled) return;
       exitStarted = true;
       setProgress(100);
-      if (announcement) announcement.textContent = "Portfolio field active.";
+      if (announcement) {
+        announcement.textContent = isProjectLoader
+          ? `${projectLoaderData.title} project file open.`
+          : "Portfolio field active.";
+      }
       loader.classList.add("is-ready");
       schedule(function () {
         loader.classList.add("is-complete");
@@ -566,7 +652,7 @@
     }
 
     finishMonitorBoot = beginExit;
-    scrambleElement(loaderName, reducedMotion.matches ? 1 : 640);
+    scrambleElement(loaderName, reducedMotion.matches ? 1 : isProjectLoader ? 260 : 640);
     Promise.all([waitForPreview(), waitForFonts()]).then(function () {
       assetsReady = true;
     });
@@ -1355,9 +1441,6 @@
       const originalText = (element.textContent || "").trim().replace(/\s+/g, " ");
       const words = originalText.split(/\s+/);
       if (!words.length || !words[0]) return;
-      const accessibleText = document.createElement("span");
-      accessibleText.className = "visually-hidden";
-      accessibleText.textContent = originalText;
       const visualText = document.createElement("span");
       visualText.className = "reading-visual";
       visualText.setAttribute("aria-hidden", "true");
@@ -1373,7 +1456,8 @@
         return span;
       });
 
-      element.replaceChildren(accessibleText, visualText);
+      element.replaceChildren(visualText);
+      element.setAttribute("aria-label", originalText);
       element.classList.add("is-reading-active");
       element.dataset.readingOriginal = originalText;
       element.dataset.readingPrepared = "true";
@@ -1435,8 +1519,8 @@
     }
 
     const viewportHeight = Math.max(window.innerHeight, 1);
-    const startLine = viewportHeight * 0.74;
-    const endLine = viewportHeight * 0.16;
+    const startLine = viewportHeight * 0.68;
+    const endLine = viewportHeight * 0.18;
     const distance = Math.max(startLine - endLine, 1);
 
     readingGroups.forEach(function (group) {
@@ -1447,11 +1531,11 @@
       if (group.stage) {
         const stageBounds = group.stage.getBoundingClientRect();
         const scrollDistance = Math.max(
-          stageBounds.height - viewportHeight * 0.45,
-          viewportHeight * 0.72
+          stageBounds.height - viewportHeight * 0.2,
+          viewportHeight * 0.75
         );
         groupProgress = clamp(
-          (viewportHeight * 0.72 - stageBounds.top) / scrollDistance,
+          (viewportHeight * 0.58 - stageBounds.top) / scrollDistance,
           0,
           1
         );
@@ -1735,7 +1819,7 @@
         manmaticGlitchTimer = window.setTimeout(function () {
           if (manmaticTarget) manmaticTarget.classList.remove("is-screen-glitching");
           manmaticGlitchTimer = 0;
-        }, 680);
+        }, 300);
       }
     } else if (manmaticTarget) {
       manmaticTarget.classList.remove("is-screen-glitching");
@@ -1747,6 +1831,7 @@
   function clearManmaticTransition(token) {
     if (token !== manmaticTransitionToken || !manmaticTransitionElement) return;
     manmaticTransitionElement.className = "manmatic-transition";
+    if (manmaticTarget) manmaticTarget.classList.remove("is-field-transitioning");
   }
 
   function runManmaticTransition(active) {
@@ -1764,6 +1849,7 @@
     }
 
     setManmaticTransitionOrigin();
+    if (manmaticTarget) manmaticTarget.classList.add("is-field-transitioning");
     if (active) {
       manmaticTransitionElement.className =
         "manmatic-transition is-active is-entering";
@@ -1779,7 +1865,7 @@
           clearManmaticTransition(token);
         });
         manmaticTransitionTimer = 0;
-      }, 800);
+      }, 520);
       return;
     }
 
@@ -1787,16 +1873,16 @@
       "manmatic-transition is-active is-exiting";
     window.requestAnimationFrame(function () {
       if (token !== manmaticTransitionToken) return;
-      commitManmaticState(false, token);
-      window.requestAnimationFrame(function () {
+      manmaticTransitionElement.classList.add("is-retracting");
+      window.setTimeout(function () {
         if (token !== manmaticTransitionToken) return;
-        manmaticTransitionElement.classList.add("is-retracting");
-      });
+        commitManmaticState(false, token);
+      }, 80);
     });
     manmaticTransitionTimer = window.setTimeout(function () {
       clearManmaticTransition(token);
       manmaticTransitionTimer = 0;
-    }, 800);
+    }, 520);
   }
 
   function setManmaticActive(active) {
@@ -1822,12 +1908,12 @@
       1,
       Math.min(bounds.height, viewportHeight)
     );
-    const remainsDominant = manmaticScrollDirection >= 0
-      ? bounds.bottom > viewportHeight * 0.28
-      : bounds.top < viewportHeight * 0.72;
-    const shouldActivate = manmaticDesiredActive
-      ? visibilityRatio > 0.15 && remainsDominant
-      : visibilityRatio >= 0.4;
+    const center = bounds.top + bounds.height * 0.5;
+    const enterZone = visibilityRatio >= 0.3 &&
+      center >= viewportHeight * 0.25 && center <= viewportHeight * 0.75;
+    const holdZone = visibilityRatio > 0.12 &&
+      center >= viewportHeight * 0.2 && center <= viewportHeight * 0.8;
+    const shouldActivate = manmaticDesiredActive ? holdZone : enterZone;
     if (
       manmaticTransitionElement &&
       manmaticTransitionElement.classList.contains("is-active")
@@ -1983,7 +2069,7 @@
       const wasOpen = toggle.getAttribute("aria-expanded") === "true";
       toggle.setAttribute("aria-expanded", "false");
       navigation.classList.remove("is-open");
-      document.body.classList.remove("menu-open");
+      document.body.classList.remove("is-menu-open", "menu-open");
       navigation.setAttribute("aria-hidden", window.innerWidth <= 960 ? "true" : "false");
       setBackgroundInert(false);
       if (wasOpen) unlockBody();
@@ -2000,7 +2086,7 @@
       lockBody();
       toggle.setAttribute("aria-expanded", "true");
       navigation.classList.add("is-open");
-      document.body.classList.add("menu-open");
+      document.body.classList.add("is-menu-open", "menu-open");
       navigation.setAttribute("aria-hidden", "false");
       setBackgroundInert(true);
       if (links[0]) links[0].focus();

@@ -312,6 +312,7 @@ function Install-DocumentProbe {
   const state = {
     timeOrigin: performance.timeOrigin,
     loader: [],
+    blackFlashCount: 0,
     windowErrors: [],
     unhandledRejections: []
   };
@@ -323,6 +324,7 @@ function Install-DocumentProbe {
   });
 
   let lastLoaderKey = "";
+  let blackFlashActive = false;
   const sampleLoader = () => {
     const loader = document.getElementById("loader");
     const progress = document.getElementById("loader-progress");
@@ -330,6 +332,9 @@ function Install-DocumentProbe {
     const value = String(progress.textContent || "").trim();
     if (!/^\d{3}$/.test(value)) return;
     const bar = document.getElementById("loader-progress-bar");
+    const nextBlackFlashActive = loader.classList.contains("is-black-flash");
+    if (nextBlackFlashActive && !blackFlashActive) state.blackFlashCount += 1;
+    blackFlashActive = nextBlackFlashActive;
     const entry = {
       value,
       hidden: Boolean(loader.hidden),
@@ -484,6 +489,9 @@ JSON.stringify((() => {
   const ids = Array.from(document.querySelectorAll("[id]"), node => node.id);
   const internalLinks = Array.from(document.querySelectorAll('a[href^="#"]'));
   const externalLinks = Array.from(document.querySelectorAll('a[target="_blank"]'));
+  const restoredRecords = Array.from(document.querySelectorAll(
+    ".profile__layout, .profile__meta, .cv__identity, .cv-group, .support-group, .contact__intro, .contact__band"
+  ));
   return {
     home: document.body.classList.contains("home-page"),
     h1Count: document.querySelectorAll("main h1").length,
@@ -508,7 +516,16 @@ JSON.stringify((() => {
     showreelSlides: document.querySelectorAll("[data-showreel-slide]").length,
     showreelActive: document.querySelectorAll("[data-showreel-slide].is-active").length,
     sliderDataCount: studies.length,
-    loaderBinaryRemoved: !document.querySelector(".loader__binary")
+    loaderBinaryRemoved: !document.querySelector(".loader__binary"),
+    restoredRecordCount: restoredRecords.length,
+    visibleRestoredRecords: restoredRecords.filter(record => {
+      const style = getComputedStyle(record);
+      return Number(style.opacity) > 0.9 && style.visibility !== "hidden" &&
+        !String(style.clipPath).includes("100%") && record.getBoundingClientRect().height > 0;
+    }).length,
+    profileMetaCount: document.querySelectorAll(".profile__meta > div").length,
+    cvGroupCount: document.querySelectorAll(".cv-group, .support-group").length,
+    contactLinkCount: document.querySelectorAll(".contact__links a").length
   };
 })())
 '@
@@ -526,6 +543,8 @@ JSON.stringify((() => {
   Assert-State ($state.showreelSlides -ge 5 -and $state.showreelActive -eq 1) 'The homepage showreel frame structure is incomplete.'
   Assert-State ($state.sliderDataCount -ge 5) 'Visuals must contain at least five data entries.'
   Assert-State $state.loaderBinaryRemoved 'Loader binary elements were not removed after completion.'
+  Assert-State ($state.restoredRecordCount -ge 10 -and $state.visibleRestoredRecords -eq $state.restoredRecordCount) 'Profile, CV, or Contact content is still visually clipped or hidden.'
+  Assert-State ($state.profileMetaCount -eq 6 -and $state.cvGroupCount -ge 8 -and $state.contactLinkCount -eq 5) 'Profile, CV, or Contact content is incomplete.'
 }
 
 function Assert-ProjectImages {
@@ -705,9 +724,9 @@ function Set-ReadingProgress([double]$progress) {
   const viewportHeight = Math.max(innerHeight, 1);
   const bounds = stage.getBoundingClientRect();
   const documentTop = bounds.top + scrollY;
-  const distance = Math.max(bounds.height - viewportHeight * 0.45, viewportHeight * 0.72);
+  const distance = Math.max(bounds.height - viewportHeight * 0.2, viewportHeight * 0.75);
   scrollTo({
-    top: Math.max(0, documentTop - viewportHeight * 0.72 + distance * $progressLiteral),
+    top: Math.max(0, documentTop - viewportHeight * 0.58 + distance * $progressLiteral),
     behavior: 'auto'
   });
   return true;
@@ -722,6 +741,28 @@ function Set-ReadingProgress([double]$progress) {
 function Assert-ReadingProgression {
   $selector = '.manifesto__text[data-reading-text]'
   Wait-For 'document.querySelectorAll(".manifesto__text .reading-word").length >= 20' 'The manifesto was not prepared into word-level reading spans.' 50
+  $structure = Evaluate-Json @'
+JSON.stringify((() => {
+  const text = document.querySelector(".manifesto__text");
+  const stage = document.querySelector("[data-reading-stage]");
+  return {
+    visualCopies: text?.querySelectorAll(".reading-visual").length || 0,
+    hiddenCopies: text?.querySelectorAll(".visually-hidden").length || 0,
+    accessibleLabel: text?.getAttribute("aria-label") || "",
+    stageRatio: stage ? stage.getBoundingClientRect().height / innerHeight : 0,
+    viewport: `${innerWidth}x${innerHeight}`,
+    stageMinHeight: stage ? getComputedStyle(stage).minHeight : "",
+    narrowMedia: matchMedia("(max-width: 700px)").matches
+  };
+})())
+'@
+  Assert-State ($structure.visualCopies -eq 1 -and $structure.hiddenCopies -eq 0 -and -not [string]::IsNullOrWhiteSpace([string]$structure.accessibleLabel)) 'The Architecture of Elsewhere statement is duplicated or lacks one accessible label.'
+  $stageRatioValid = if ($structure.narrowMedia) {
+    $structure.stageRatio -ge 1.2 -and $structure.stageRatio -le 1.3
+  } else {
+    $structure.stageRatio -ge 1.45 -and $structure.stageRatio -le 1.55
+  }
+  Assert-State $stageRatioValid ("The Architecture of Elsewhere reading stage is outside its controlled duration: ratio={0} viewport={1} min={2} narrow={3}." -f $structure.stageRatio, $structure.viewport, $structure.stageMinHeight, $structure.narrowMedia)
 
   Set-ReadingProgress 0.02
   $early = Get-ReadingSnapshot $selector
@@ -858,6 +899,7 @@ JSON.stringify((() => {
     left: bounds.left,
     right: bounds.right,
     texts: texts.length,
+    textSizes: texts.map(text => ({ value: text.textContent, client: text.clientWidth, scroll: text.scrollWidth, display: getComputedStyle(text).display })),
     textOverflow: texts.some(text => text.scrollWidth > text.clientWidth + 2 && text.clientWidth > 0),
     codeVisible: visible(code),
     noteVisible: visible(note),
@@ -867,7 +909,7 @@ JSON.stringify((() => {
   };
 })())
 "@
-  Assert-State ($state.texts -gt 0 -and -not $state.textOverflow -and -not $state.scanning) ("Heading is clipped, overflowing, or still scanning: {0}." -f $label)
+  Assert-State ($state.texts -gt 0 -and -not $state.textOverflow -and -not $state.scanning) ("Heading is clipped, overflowing, or still scanning: {0}. texts={1} overflow={2} scanning={3} sizes={4}" -f $label, $state.texts, $state.textOverflow, $state.scanning, ($state.textSizes | ConvertTo-Json -Compress))
   Assert-State ($state.left -ge -1 -and $state.right -le (([int](Evaluate 'innerWidth')) + 1)) ("Heading leaves the viewport: {0}." -f $label)
   Assert-State ($state.codeVisible -and $state.noteVisible) ("Heading code or technical note is not visible: {0}." -f $label)
   if ($selector -match 'section-heading|contact__marker') {
@@ -1030,6 +1072,8 @@ JSON.stringify((() => {
   const header = document.querySelector(".project-header");
   const image = document.querySelector(".project-hero img");
   const links = Array.from(document.querySelectorAll(".project-navigation__link"));
+  const loader = document.getElementById("loader");
+  const loaderImage = loader?.querySelector("[data-loader-preview]");
   const bodyStyle = getComputedStyle(document.body);
   const htmlStyle = getComputedStyle(document.documentElement);
   const values = color => (color.match(/[\d.]+/g) || []).map(Number);
@@ -1045,6 +1089,8 @@ JSON.stringify((() => {
     number: (header?.querySelector(".project-header__eyebrow")?.textContent.match(/\d{2}/) || [""])[0],
     title: header?.querySelector("h1")?.getAttribute("aria-label") || "",
     dataTitle: project?.navigationTitle || project?.title || "",
+    dataLoaderTitle: project?.archiveTitle || project?.title || "",
+    dataLoaderImage: project?.hero?.src || "",
     h1Count: document.querySelectorAll("main h1").length,
     headerCount: document.querySelectorAll(".project-header").length,
     heroCount: document.querySelectorAll(".project-hero").length,
@@ -1061,6 +1107,13 @@ JSON.stringify((() => {
     scrollWidth: document.documentElement.scrollWidth,
     clientWidth: document.documentElement.clientWidth,
     fieldLink: Boolean(document.querySelector(".project-header__field-link"))
+    ,loaderProjectClass: Boolean(loader?.classList.contains("loader--project"))
+    ,loaderDarkClass: Boolean(loader?.classList.contains("loader--project-dark"))
+    ,loaderTitle: document.getElementById("loader-name")?.textContent.trim() || ""
+    ,loaderKicker: loader?.querySelector("[data-project-loader-kicker]")?.textContent.trim() || ""
+    ,loaderCaption: loader?.querySelector("[data-project-loader-caption]")?.textContent.trim() || ""
+    ,loaderImage: loaderImage?.getAttribute("src") || ""
+    ,loaderBackgroundLight: loader ? luminance(getComputedStyle(loader).backgroundColor) : -1
   };
 })())
 '@
@@ -1071,6 +1124,9 @@ JSON.stringify((() => {
   Assert-State ($state.navigation -eq 2) ("Project previous/next navigation is incomplete: {0}." -f $slug)
   Assert-State ((@($state.navHrefs) -join ',') -eq ("project.html?project={0},project.html?project={1}" -f $previousSlug, $nextSlug)) ("Project navigation order is invalid: {0}." -f $slug)
   Assert-State ($state.scrollWidth -le ($state.clientWidth + 1)) ("Project route has horizontal overflow: {0}." -f $slug)
+  Assert-State ($state.loaderProjectClass -and $state.loaderDarkClass -and $state.loaderBackgroundLight -ge 0 -and $state.loaderBackgroundLight -lt 20) ("Project loader is not using the dedicated black file-opening system: {0}." -f $slug)
+  Assert-State ($state.loaderTitle -eq $state.dataLoaderTitle -and $state.loaderKicker -eq ("PROJECT FILE {0}" -f $number.Substring(1, 2))) ("Project loader title or number is not dynamic: {0}." -f $slug)
+  Assert-State ($state.loaderCaption -match [regex]::Escape([string]$state.dataLoaderTitle) -and $state.loaderImage -eq $state.dataLoaderImage) ("Project loader image or caption does not match the selected project: {0}." -f $slug)
 
   if ($slug -eq 'project-01') {
     Assert-State ($state.theme -eq 'manmatic' -and $state.headerTheme -eq 'manmatic' -and $state.bodyLight -lt 30 -and $state.htmlLight -lt 30 -and $state.textLight -gt 180 -and $state.fieldLink) 'The ManMaTIC project route is not fully inverted by default.'
@@ -1129,6 +1185,8 @@ function Assert-ReducedMotion {
   Clear-CdpEvents
   Navigate $homeUrl
   $null = Assert-LoaderCycle 'reduced-motion homepage loader' 3
+  $reducedProbe = Evaluate-Json 'JSON.stringify(window.__portfolioContractProbe)'
+  Assert-State ([int]$reducedProbe.blackFlashCount -eq 0) 'Reduced motion retained a black loader flash.'
   $state = Evaluate-Json @'
 JSON.stringify((() => {
   const headings = Array.from(document.querySelectorAll(".heading-motion"));
@@ -1267,12 +1325,14 @@ try {
   Clear-CdpEvents
   Navigate $homeUrl
   $firstProbe = Assert-LoaderCycle 'initial homepage loader'
+  Assert-State ([int]$firstProbe.blackFlashCount -eq 2) 'The main loader did not produce exactly two controlled black flashes.'
   Assert-HomeStructure
   Assert-No-PageErrors 'initial homepage load'
 
   Clear-CdpEvents
   Reload-Page
   $refreshProbe = Assert-LoaderCycle 'refreshed homepage loader'
+  Assert-State ([int]$refreshProbe.blackFlashCount -eq 2) 'The refreshed main loader did not produce exactly two controlled black flashes.'
   Assert-State ([double]$refreshProbe.timeOrigin -ne [double]$firstProbe.timeOrigin) 'The refresh did not create a new document loader cycle.'
   Assert-HomeStructure
   Assert-No-PageErrors 'refreshed homepage load'
