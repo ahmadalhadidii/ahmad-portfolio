@@ -50,7 +50,7 @@
     const theme = projectTheme(project);
     const themeColor = document.querySelector('meta[name="theme-color"]');
     document.documentElement.dataset.initialTheme = theme;
-    document.body.dataset.siteTheme = theme;
+    document.documentElement.dataset.siteTheme = theme;
     if (themeColor) {
       themeColor.setAttribute("content", theme === "manmatic" ? "#0a0a0a" : "#ffffff");
     }

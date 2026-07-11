@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="en" class="no-js" data-site-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -43,7 +43,7 @@
   <script src="content.js" defer></script>
   <script src="assets/js/main.js" defer></script>
 </head>
-<body class="home-page" data-site-theme="light">
+<body class="home-page">
   <div class="loader" id="loader" role="status" aria-label="Initializing Ahmad Alhadidii portfolio field">
     <p class="visually-hidden" id="loader-announcement" aria-live="polite">Portfolio field initialization in progress.</p>
     <div class="loader__binary" aria-hidden="true">
@@ -101,6 +101,12 @@
 
   <a class="skip-link" href="#main-content">Skip to content</a>
 
+  <div class="ambient-signal" aria-hidden="true"></div>
+  <div class="material-texture" aria-hidden="true"></div>
+  <div class="manmatic-transition" data-manmatic-transition aria-hidden="true">
+    <span class="manmatic-transition__readout">MANMATIC / ENVIRONMENT SHIFT</span>
+  </div>
+
   <div class="site-shell" id="site-shell">
     <header class="site-header" id="site-header">
       <div class="site-header__inner page-width">
@@ -117,8 +123,8 @@
           <a href="#index" data-section-link="index" aria-current="location"><span data-scramble>INDEX</span></a>
           <a href="#profile" data-section-link="profile"><span data-scramble>PROFILE</span></a>
           <a href="#cv" data-section-link="cv"><span data-scramble>CV</span></a>
-          <a href="#visual-studies" data-section-link="visual"><span data-scramble>VISUAL STUDIES</span></a>
           <a href="#work" data-section-link="work"><span data-scramble>WORK</span></a>
+          <a href="#visual-studies" data-section-link="visual"><span data-scramble>VISUALS</span></a>
           <a href="#contact" data-section-link="contact"><span data-scramble>CONTACT</span></a>
           <a class="site-nav__external" href="https://www.manmatic.institute/" target="_blank" rel="noopener noreferrer" aria-label="Open the ManMaTIC Institute field website in a new tab">MANMATIC FIELD <span aria-hidden="true">↗</span></a>
         </nav>
@@ -195,12 +201,14 @@
           <p id="monitor-description">A silent archival sequence presenting Ahmad Alhadidii’s architectural identity and selected project records.</p>
         </div>
 
-        <div class="opening__concept" aria-labelledby="manifesto-title">
-          <p class="editorial-label">[ A ] CONCEPTUAL FIELD</p>
-          <h2 class="manifesto__title" id="manifesto-title" aria-label="Architecture of Elsewhere">
-            <span class="pointer-scan" data-pointer-scan data-pointer-text="ARCHITECTURE OF ELSEWHERE" data-scramble aria-hidden="true">ARCHITECTURE OF ELSEWHERE</span>
-          </h2>
-          <p class="manifesto__text reading-text" data-reading-text>A way of thinking that begins with uncertainty and searches for the hidden order within it. Systems, patterns, and relationships are traced across different fields, then translated into architecture. What first appears fragmented gains coherence; what remains abstract gains structure, presence, and place.</p>
+        <div class="opening__concept reading-stage" data-reading-stage aria-labelledby="manifesto-title">
+          <div class="reading-stage__sticky">
+            <p class="editorial-label">[ A ] CONCEPTUAL FIELD</p>
+            <h2 class="manifesto__title" id="manifesto-title" aria-label="Architecture of Elsewhere">
+              <span class="pointer-scan" data-pointer-scan data-pointer-text="ARCHITECTURE OF ELSEWHERE" data-scramble aria-hidden="true">ARCHITECTURE OF ELSEWHERE</span>
+            </h2>
+            <p class="manifesto__text reading-text" data-reading-text>A way of thinking that begins with uncertainty and searches for the hidden order within it. Systems, patterns, and relationships are traced across different fields, then translated into architecture. What first appears fragmented gains coherence; what remains abstract gains structure, presence, and place.</p>
+          </div>
         </div>
       </section>
 
@@ -211,12 +219,6 @@
         </header>
 
         <div class="profile__layout">
-          <aside class="profile__index" aria-label="Profile record labels">
-            <p><span>[ A ]</span> SUBJECT</p>
-            <strong>AHMAD ALHADIDII</strong>
-            <p><span>[ B ]</span> CURRENT FIELD</p>
-            <span>ARCHITECTURE / RESEARCH / COMPUTATION</span>
-          </aside>
           <figure class="profile-portrait" data-pixel-portrait data-portrait-status="placeholder" aria-labelledby="profile-portrait-caption">
             <div class="profile-portrait__frame">
               <img class="profile-portrait__image" data-pixel-image src="assets/images/architecture-of-elsewhere-1400.jpg" srcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" sizes="(max-width: 760px) calc(100vw - 36px), 34vw" width="1400" height="754" alt="Temporary crop of the Architecture of Elsewhere board reserving the future profile portrait frame; this is not a portrait of Ahmad Alhadidii." loading="lazy" decoding="async">
@@ -226,6 +228,12 @@
             </div>
             <figcaption id="profile-portrait-caption"><span>PROFILE IMAGE / 001</span><strong>FINAL PORTRAIT REQUIRED</strong><span>TEMPORARY ARCHITECTURE OF ELSEWHERE BOARD CROP / NOT A PORTRAIT</span></figcaption>
           </figure>
+          <aside class="profile__index" aria-label="Profile record labels">
+            <p><span>[ A ]</span> SUBJECT</p>
+            <strong>AHMAD ALHADIDII</strong>
+            <p><span>[ B ]</span> CURRENT FIELD</p>
+            <span>ARCHITECTURE / RESEARCH / COMPUTATION</span>
+          </aside>
           <p class="profile__statement reading-text" data-reading-text>Architect with a research-based approach, drawing from systems, contexts, human experience, and emerging technologies to shape meaningful spatial and visual responses. His work moves between architectural design, design research, and computational methods, translating complex relationships into clear spatial structures.</p>
         </div>
 
@@ -408,42 +416,9 @@
         </div>
       </section>
 
-      <section class="section visual-studies page-width" id="visual-studies" data-nav-section="visual" aria-labelledby="visual-studies-title">
-        <header class="section-heading section-heading--record">
-          <h2 id="visual-studies-title" aria-label="Visual Studies"><span class="section-heading__code">003 /</span> <span class="pointer-scan" data-pointer-scan data-pointer-text="VISUAL STUDIES" data-scramble aria-hidden="true">VISUAL STUDIES</span></h2>
-          <p class="section-heading__note">[ IMAGE / THOUGHT / FIELD ]</p>
-        </header>
-
-        <div class="visual-slider" data-visual-slider role="region" aria-roledescription="carousel" aria-label="Visual studies" tabindex="0">
-          <div class="visual-slider__viewport" data-visual-viewport>
-            <div class="visual-slider__track" data-visual-track>
-              <article class="visual-slide is-active" data-visual-fallback role="group" aria-roledescription="slide" aria-label="1 of 6: Code and Repeated Forms">
-                <div class="visual-slide__copy">
-                  <p class="visual-slide__index">STUDY 01 / VISUAL RESEARCH</p>
-                  <h3>Code and Repeated Forms</h3>
-                  <p>The board's upper-left field places the A-H26 code beside repeated vertical forms, fine traces, and a measured horizontal datum.</p>
-                  <dl><div><dt>PROJECT</dt><dd>Architecture of Elsewhere</dd></div><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>CATEGORY</dt><dd>Visual Research</dd></div></dl>
-                </div>
-                <figure class="visual-slide__media">
-                  <img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" style="object-position: 22% 24%" alt="Upper-left crop of the Architecture of Elsewhere board showing repeated white vertical forms, the A-H26 code, and fine horizontal technical traces." loading="lazy" decoding="async">
-                  <figcaption>CROP 01 / ARCHITECTURE OF ELSEWHERE BOARD / UPPER-LEFT FIELD</figcaption>
-                </figure>
-              </article>
-            </div>
-            <span class="visual-slider__signal" aria-hidden="true">SIGNAL SYNC</span>
-          </div>
-          <div class="visual-slider__controls">
-            <button type="button" data-visual-prev aria-label="Show previous visual study">PREVIOUS</button>
-            <p aria-live="polite" aria-atomic="true"><span data-visual-current>01</span> / <span data-visual-total>06</span></p>
-            <button type="button" data-visual-next aria-label="Show next visual study">NEXT</button>
-          </div>
-          <div class="visual-slider__progress" aria-hidden="true"><span data-visual-progress></span></div>
-        </div>
-      </section>
-
       <section class="section work page-width" id="work" data-nav-section="work" aria-labelledby="work-title">
         <header class="section-heading section-heading--record">
-          <h2 id="work-title" aria-label="Selected work"><span class="section-heading__code">004 /</span> <span class="pointer-scan" data-pointer-scan data-pointer-text="SELECTED WORK" data-scramble aria-hidden="true">SELECTED WORK</span></h2>
+          <h2 id="work-title" aria-label="Selected work"><span class="section-heading__code">003 /</span> <span class="pointer-scan" data-pointer-scan data-pointer-text="SELECTED WORK" data-scramble aria-hidden="true">SELECTED WORK</span></h2>
           <p class="section-heading__note">PROJECT ARCHIVE / <span id="work-active-file">01 / 05</span></p>
         </header>
 
@@ -467,7 +442,7 @@
             </a>
           </article>
 
-          <article class="project-row project-row--manmatic" data-project-index="02" data-project-id="project-01" data-manmatic-field>
+          <article class="project-row project-row--manmatic" id="manmatic-project" data-project-index="02" data-project-id="project-01" data-manmatic-field>
             <a class="project-row__link" href="project.html?project=project-01" aria-label="Project file 02, ManMaTIC, Human–Machine Integration Institute">
               <p class="project-row__number" data-scramble aria-hidden="true">002</p>
               <div class="project-row__copy">
@@ -535,6 +510,39 @@
               <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
             </a>
           </article>
+        </div>
+      </section>
+
+      <section class="section visual-studies page-width" id="visual-studies" data-nav-section="visual" aria-labelledby="visual-studies-title">
+        <header class="section-heading section-heading--record">
+          <h2 id="visual-studies-title" aria-label="Visuals"><span class="section-heading__code">004 /</span> <span class="pointer-scan" data-pointer-scan data-pointer-text="VISUALS" data-scramble aria-hidden="true">VISUALS</span></h2>
+          <p class="section-heading__note">[ IMAGE / THOUGHT / FIELD ]</p>
+        </header>
+
+        <div class="visual-slider" data-visual-slider role="region" aria-roledescription="carousel" aria-label="Selected visual work" tabindex="0">
+          <div class="visual-slider__viewport" data-visual-viewport>
+            <div class="visual-slider__track" data-visual-track>
+              <article class="visual-slide is-active" data-visual-fallback role="group" aria-roledescription="slide" aria-label="1 of 6: Code and Repeated Forms">
+                <div class="visual-slide__copy">
+                  <p class="visual-slide__index">VISUAL 01 / VISUAL RESEARCH</p>
+                  <h3>Code and Repeated Forms</h3>
+                  <p>The board's upper-left field places the A-H26 code beside repeated vertical forms, fine traces, and a measured horizontal datum.</p>
+                  <dl><div><dt>PROJECT</dt><dd>ManMaTIC / Architecture of Elsewhere</dd></div><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>CATEGORY</dt><dd>Visual Research</dd></div></dl>
+                </div>
+                <figure class="visual-slide__media">
+                  <img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" style="object-position: 22% 24%" alt="Upper-left crop of the Architecture of Elsewhere board showing repeated white vertical forms, the A-H26 code, and fine horizontal technical traces." loading="lazy" decoding="async">
+                  <figcaption>CROP 01 / ARCHITECTURE OF ELSEWHERE BOARD / UPPER-LEFT FIELD</figcaption>
+                </figure>
+              </article>
+            </div>
+            <span class="visual-slider__signal" aria-hidden="true">SIGNAL SYNC</span>
+          </div>
+          <div class="visual-slider__controls">
+            <button type="button" data-visual-prev aria-label="Show previous visual">PREVIOUS</button>
+            <p aria-live="polite" aria-atomic="true"><span data-visual-current>01</span> / <span data-visual-total>06</span></p>
+            <button type="button" data-visual-next aria-label="Show next visual">NEXT</button>
+          </div>
+          <div class="visual-slider__progress" aria-hidden="true"><span data-visual-progress></span></div>
         </div>
       </section>
 

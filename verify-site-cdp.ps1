@@ -72,11 +72,11 @@ function Assert-SourceContract {
   $rowIds = @($projectRows | ForEach-Object { $_.Groups[1].Value })
   Assert-State (($rowIds -join ',') -eq 'project-05,project-01,project-02,project-03,project-04') 'The homepage project archive order changed unexpectedly.'
   Assert-State ([regex]::Matches($index, 'data-manmatic-field').Count -eq 1) 'The homepage must contain one ManMaTIC activation field.'
-  Assert-State ($index -match 'data-visual-slider' -and $index -match 'data-visual-prev' -and $index -match 'data-visual-next') 'The Visual Studies slider controls are missing from the source.'
+  Assert-State ($index -match 'data-visual-slider' -and $index -match 'data-visual-prev' -and $index -match 'data-visual-next') 'The Visuals slider controls are missing from the source.'
 
   $mainScript = Get-Content -Raw -LiteralPath '.\assets\js\main.js'
   Assert-State ($mainScript -match 'prefers-reduced-motion' -and $mainScript -match 'data-reading-text' -and $mainScript -match 'reading-word') 'Reduced-motion or word-level reading logic is missing.'
-  Assert-State ($mainScript -match 'data-showreel-slide' -and $mainScript -match 'data-visual-slider') 'Showreel or Visual Studies behavior is missing.'
+  Assert-State ($mainScript -match 'data-showreel-slide' -and $mainScript -match 'data-visual-slider') 'Showreel or Visuals behavior is missing.'
 }
 
 $viewports = @(
@@ -478,8 +478,8 @@ JSON.stringify((() => {
   const projects = window.siteContent && Array.isArray(window.siteContent.projects)
     ? window.siteContent.projects
     : [];
-  const studies = window.siteContent && Array.isArray(window.siteContent.visualStudies)
-    ? window.siteContent.visualStudies
+  const studies = window.siteContent && Array.isArray(window.siteContent.visuals)
+    ? window.siteContent.visuals
     : [];
   const ids = Array.from(document.querySelectorAll("[id]"), node => node.id);
   const internalLinks = Array.from(document.querySelectorAll('a[href^="#"]'));
@@ -524,7 +524,7 @@ JSON.stringify((() => {
   Assert-State (@($state.duplicateIds).Count -eq 0 -and $state.emptyLinks -eq 0 -and @($state.brokenInternalLinks).Count -eq 0) 'The homepage contains duplicate IDs, empty links, or broken internal fragments.'
   Assert-State ($state.unsafeExternalLinks -eq 0) 'A new-tab external link is missing noopener/noreferrer.'
   Assert-State ($state.showreelSlides -ge 5 -and $state.showreelActive -eq 1) 'The homepage showreel frame structure is incomplete.'
-  Assert-State ($state.sliderDataCount -ge 5) 'Visual Studies must contain at least five data entries.'
+  Assert-State ($state.sliderDataCount -ge 5) 'Visuals must contain at least five data entries.'
   Assert-State $state.loaderBinaryRemoved 'Loader binary elements were not removed after completion.'
 }
 
@@ -608,7 +608,7 @@ JSON.stringify((() => {
 
 function Assert-VisualSlider {
   Center-Element '[data-visual-slider]'
-  Wait-For 'document.querySelector("[data-visual-slider]")?.dataset.visualInitialized === "true"' 'The Visual Studies slider did not initialize.' 60
+  Wait-For 'document.querySelector("[data-visual-slider]")?.dataset.visualInitialized === "true"' 'The Visuals slider did not initialize.' 60
   $state = Evaluate-Json @'
 JSON.stringify((() => {
   const slider = document.querySelector("[data-visual-slider]");
@@ -620,7 +620,7 @@ JSON.stringify((() => {
     return { width: bounds.width, height: bounds.height };
   };
   return {
-    dataCount: window.siteContent.visualStudies.length,
+    dataCount: window.siteContent.visuals.length,
     slideCount: slides.length,
     current: slider.querySelector("[data-visual-current]")?.textContent.trim() || "",
     total: slider.querySelector("[data-visual-total]")?.textContent.trim() || "",
@@ -634,23 +634,23 @@ JSON.stringify((() => {
   };
 })())
 '@
-  Assert-State ($state.dataCount -ge 5 -and $state.slideCount -eq $state.dataCount) 'Visual Studies slide count does not match its data array or is below five.'
-  Assert-State ($state.current -eq '01' -and [int]$state.total -eq $state.dataCount) 'Visual Studies initial current/total values are incorrect.'
-  Assert-State ($state.active -eq 1 -and $state.ariaVisible -eq 1) 'Visual Studies does not expose exactly one active slide.'
-  Assert-State ($state.localImages -and $state.altImages) 'Visual Studies requires local images with alt text.'
-  Assert-State ($state.previous.width -ge 44 -and $state.previous.height -ge 44 -and $state.next.width -ge 44 -and $state.next.height -ge 44) 'Visual Studies controls are smaller than 44 by 44 pixels.'
-  Assert-State ($state.tabindex -eq '0') 'Visual Studies is not keyboard focusable.'
+  Assert-State ($state.dataCount -ge 5 -and $state.slideCount -eq $state.dataCount) 'Visuals slide count does not match its data array or is below five.'
+  Assert-State ($state.current -eq '01' -and [int]$state.total -eq $state.dataCount) 'Visuals initial current/total values are incorrect.'
+  Assert-State ($state.active -eq 1 -and $state.ariaVisible -eq 1) 'Visuals does not expose exactly one active slide.'
+  Assert-State ($state.localImages -and $state.altImages) 'Visuals requires local images with alt text.'
+  Assert-State ($state.previous.width -ge 44 -and $state.previous.height -ge 44 -and $state.next.width -ge 44 -and $state.next.height -ge 44) 'Visuals controls are smaller than 44 by 44 pixels.'
+  Assert-State ($state.tabindex -eq '0') 'Visuals is not keyboard focusable.'
 
   $null = Evaluate 'document.querySelector("[data-visual-next]").click(); true'
-  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "02"' 'Visual Studies next control failed.' 30
+  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "02"' 'Visuals next control failed.' 30
   $null = Evaluate 'document.querySelector("[data-visual-prev]").click(); true'
-  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'Visual Studies previous control failed.' 30
+  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'Visuals previous control failed.' 30
   $lastValue = ([int]$state.dataCount).ToString('00')
   $lastValueLiteral = ConvertTo-Json -InputObject $lastValue -Compress
   $null = Evaluate 'document.querySelector("[data-visual-slider]").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true, cancelable: true })); true'
-  Wait-For "document.querySelector('[data-visual-current]').textContent.trim() === $lastValueLiteral" 'Visual Studies ArrowLeft wrapping failed.' 30
+  Wait-For "document.querySelector('[data-visual-current]').textContent.trim() === $lastValueLiteral" 'Visuals ArrowLeft wrapping failed.' 30
   $null = Evaluate 'document.querySelector("[data-visual-slider]").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true })); true'
-  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'Visual Studies ArrowRight wrapping failed.' 30
+  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'Visuals ArrowRight wrapping failed.' 30
 }
 
 function Get-ReadingSnapshot([string]$selector = '[data-reading-text]') {
@@ -695,39 +695,54 @@ JSON.stringify((() => {
   return Evaluate-Json $expression
 }
 
+function Set-ReadingProgress([double]$progress) {
+  $progressLiteral = $progress.ToString([System.Globalization.CultureInfo]::InvariantCulture)
+  $expression = @"
+(() => {
+  const stage = document.querySelector('[data-reading-stage]');
+  if (!stage) return false;
+  document.documentElement.style.scrollBehavior = 'auto';
+  const viewportHeight = Math.max(innerHeight, 1);
+  const bounds = stage.getBoundingClientRect();
+  const documentTop = bounds.top + scrollY;
+  const distance = Math.max(bounds.height - viewportHeight * 0.45, viewportHeight * 0.72);
+  scrollTo({
+    top: Math.max(0, documentTop - viewportHeight * 0.72 + distance * $progressLiteral),
+    behavior: 'auto'
+  });
+  return true;
+})()
+"@
+  Assert-State ([bool](Evaluate $expression)) 'The manifesto reading stage is missing.'
+  $waitExpression = "Math.abs(parseFloat(document.querySelector('.manifesto__text').style.getPropertyValue('--reading-section-progress')) - $progressLiteral) < 0.04"
+  Wait-For $waitExpression 'The manifesto reading progress did not settle at the requested position.' 50
+  Start-Sleep -Milliseconds 80
+}
+
 function Assert-ReadingProgression {
   $selector = '.manifesto__text[data-reading-text]'
   Wait-For 'document.querySelectorAll(".manifesto__text .reading-word").length >= 20' 'The manifesto was not prepared into word-level reading spans.' 50
 
-  Place-Element $selector 0.92
+  Set-ReadingProgress 0.02
   $early = Get-ReadingSnapshot $selector
   Assert-State ($early.prepared -eq 'true' -and $early.count -ge 20) 'The manifesto word-level reading contract is incomplete.'
   Assert-State ($early.allVisible -and $early.average -lt 0.3) 'Upcoming manifesto words are not visibly pale before the reading line.'
 
-  $middle = $null
-  $middleFraction = 0.0
-  foreach ($fraction in @(0.70, 0.64, 0.58, 0.52, 0.46, 0.40, 0.34, 0.28)) {
-    Place-Element $selector $fraction
-    $candidate = Get-ReadingSnapshot $selector
-    if ($candidate.upcoming -gt 0 -and $candidate.current -gt 0 -and $candidate.completed -gt 0) {
-      $middle = $candidate
-      $middleFraction = $fraction
-      break
-    }
-  }
-  Assert-State ($null -ne $middle) 'No scroll position exposed completed, active, and upcoming manifesto words together.'
+  Set-ReadingProgress 0.50
+  $middle = Get-ReadingSnapshot $selector
+  Assert-State ($middle.upcoming -gt 0 -and $middle.current -gt 0 -and $middle.completed -gt 0) 'No scroll position exposed completed, active, and upcoming manifesto words together.'
   Assert-State ($middle.distinctColors -ge 3 -and $middle.firstQuarter -gt ($middle.lastQuarter + 0.08)) 'Manifesto progression is not moving through individual words in reading order.'
   Assert-State $middle.allVisible 'Manifesto words became hidden during reading progression.'
 
-  Place-Element $selector 0.18
+  Set-ReadingProgress 0.98
   $late = Get-ReadingSnapshot $selector
   Assert-State ($late.average -gt ($middle.average + 0.12) -and $late.average -gt 0.72) 'Scrolling forward did not darken the manifesto toward completion.'
 
-  Place-Element $selector $middleFraction
+  Set-ReadingProgress 0.50
   $reverseMiddle = Get-ReadingSnapshot $selector
   Assert-State ([Math]::Abs([double]$reverseMiddle.average - [double]$middle.average) -lt 0.12) 'Returning to the same reading position did not restore comparable word progress.'
 
-  Place-Element $selector 0.92
+  Set-ReadingProgress 0.02
   $reverseEarly = Get-ReadingSnapshot $selector
   Assert-State ($reverseEarly.average -lt ($reverseMiddle.average - 0.12)) 'Scrolling upward did not reverse manifesto word progression.'
   Assert-State ([Math]::Abs([double]$reverseEarly.average - [double]$early.average) -lt 0.12) 'Reversed manifesto progression did not return to its pale initial state.'
@@ -736,7 +751,7 @@ function Assert-ReadingProgression {
 
 function Assert-ManmaticThemeInversion {
   Center-Element '.project-row[data-manmatic-field]'
-  Wait-For '(document.body.classList.contains("is-manmatic-active") || document.body.dataset.siteTheme === "manmatic") && document.querySelector("meta[name=theme-color]").content.toLowerCase() === "#0a0a0a"' 'The global ManMaTIC state did not activate.' 50
+  Wait-For 'document.documentElement.dataset.siteTheme === "manmatic" && document.querySelector("meta[name=theme-color]").content.toLowerCase() === "#0a0a0a"' 'The global ManMaTIC state did not activate.' 50
   Start-Sleep -Milliseconds 1050
   $dark = Evaluate-Json @'
 JSON.stringify((() => {
@@ -751,10 +766,11 @@ JSON.stringify((() => {
   const luminance = color => {
     const values = numbers(color);
     if (values.length < 3) return -1;
-    return values[0] * 0.2126 + values[1] * 0.7152 + values[2] * 0.0722;
+    const scale = /^color\(srgb/i.test(color) ? 255 : 1;
+    return (values[0] * 0.2126 + values[1] * 0.7152 + values[2] * 0.0722) * scale;
   };
   return {
-    active: document.body.classList.contains("is-manmatic-active") || document.body.dataset.siteTheme === "manmatic",
+    active: document.documentElement.dataset.siteTheme === "manmatic",
     bodyBackground: bodyStyle.backgroundColor,
     bodyColor: bodyStyle.color,
     htmlBackground: htmlStyle.backgroundColor,
@@ -784,10 +800,10 @@ JSON.stringify((() => {
 
   $null = Evaluate 'window.scrollBy(0, 24); true'
   Start-Sleep -Milliseconds 180
-  Assert-State ([bool](Evaluate 'document.body.classList.contains("is-manmatic-active") || document.body.dataset.siteTheme === "manmatic"')) 'The ManMaTIC state flickered inside its active range.'
+  Assert-State ([bool](Evaluate 'document.documentElement.dataset.siteTheme === "manmatic"')) 'The ManMaTIC state flickered inside its active range.'
 
   Center-Element '.project-row[data-project-index="03"]'
-  Wait-For '!document.body.classList.contains("is-manmatic-active") && document.body.dataset.siteTheme !== "manmatic" && document.querySelector("meta[name=theme-color]").content.toLowerCase() === "#ffffff"' 'The page did not leave the ManMaTIC state.' 50
+  Wait-For 'document.documentElement.dataset.siteTheme !== "manmatic" && document.querySelector("meta[name=theme-color]").content.toLowerCase() === "#ffffff"' 'The page did not leave the ManMaTIC state.' 50
   Start-Sleep -Milliseconds 1050
   $light = Evaluate-Json @'
 JSON.stringify((() => {
@@ -796,7 +812,8 @@ JSON.stringify((() => {
   const numbers = color => (color.match(/[\d.]+/g) || []).map(Number);
   const luminance = color => {
     const values = numbers(color);
-    return values.length >= 3 ? values[0] * 0.2126 + values[1] * 0.7152 + values[2] * 0.0722 : -1;
+    const scale = /^color\(srgb/i.test(color) ? 255 : 1;
+    return values.length >= 3 ? (values[0] * 0.2126 + values[1] * 0.7152 + values[2] * 0.0722) * scale : -1;
   };
   return {
     bodyBackgroundLight: luminance(bodyStyle.backgroundColor),
@@ -865,7 +882,7 @@ function Assert-AllHeadingCompletion {
     @{ Selector = '#profile .section-heading'; Label = 'Profile' },
     @{ Selector = '#cv .section-heading'; Label = 'Curriculum Vitae' },
     @{ Selector = '#work .section-heading'; Label = 'Selected Work' },
-    @{ Selector = '#visual-studies .section-heading'; Label = 'Visual Studies' },
+    @{ Selector = '#visual-studies .section-heading'; Label = 'Visuals' },
     @{ Selector = '#contact .contact__marker'; Label = 'Contact' },
     @{ Selector = '.closing-identity'; Label = 'closing Ahmad Alhadidii' }
   )
@@ -996,9 +1013,9 @@ function Assert-MobileInteractions {
   return true;
 })()
 '@
-  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "02"' 'The Visual Studies touch swipe did not advance.' 30
+  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "02"' 'The Visuals touch swipe did not advance.' 30
   $null = Evaluate 'document.querySelector("[data-visual-prev]").click(); true'
-  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'The Visual Studies slider did not reset after touch testing.' 30
+  Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'The Visuals slider did not reset after touch testing.' 30
 }
 
 function Assert-ProjectRoute([string]$slug, [string]$number, [string]$previousSlug, [string]$nextSlug) {
@@ -1018,11 +1035,12 @@ JSON.stringify((() => {
   const values = color => (color.match(/[\d.]+/g) || []).map(Number);
   const luminance = color => {
     const rgb = values(color);
-    return rgb.length >= 3 ? rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722 : -1;
+    const scale = /^color\(srgb/i.test(color) ? 255 : 1;
+    return rgb.length >= 3 ? (rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722) * scale : -1;
   };
   return {
     slug: document.body.dataset.project || "",
-    theme: document.body.dataset.siteTheme || "",
+    theme: document.documentElement.dataset.siteTheme || "",
     headerTheme: header?.dataset.projectTheme || "",
     number: (header?.querySelector(".project-header__eyebrow")?.textContent.match(/\d{2}/) || [""])[0],
     title: header?.querySelector("h1")?.getAttribute("aria-label") || "",

@@ -33,13 +33,13 @@ const siteContent = {
     ]
   },
 
-  visualStudies: [
+  visuals: [
     {
       index: "01",
       title: "Code and Repeated Forms",
       text:
         "The board's upper-left field places the A-H26 code beside repeated vertical forms, fine traces, and a measured horizontal datum.",
-      project: "Architecture of Elsewhere",
+      project: "ManMaTIC / Architecture of Elsewhere",
       year: "2026",
       category: "Visual Research",
       image: "assets/images/architecture-of-elsewhere-2400.jpg",
@@ -56,8 +56,8 @@ const siteContent = {
       index: "02",
       title: "Orbital Reference Field",
       text:
-        "Planetary images and sparse construction lines are isolated as a study of scale, reference, and distance within the board's dark upper field.",
-      project: "Architecture of Elsewhere",
+        "Planetary images and sparse construction lines form an atmospheric reference for ManMaTIC's questions of scale, intelligence, and distance.",
+      project: "ManMaTIC — Human–Machine Integration Institute",
       year: "2026",
       category: "Atmospheric Study",
       image: "assets/images/architecture-of-elsewhere-2400.jpg",
@@ -74,8 +74,8 @@ const siteContent = {
       index: "03",
       title: "Figures at the Edge",
       text:
-        "An outlined dark form, two small human figures, and a planetary fragment make a narrow threshold at the board's right edge.",
-      project: "Architecture of Elsewhere",
+        "An outlined dark form, two small human figures, and a planetary fragment are read as a threshold study for human and machine evolution.",
+      project: "The Mechanics of Becoming",
       year: "2026",
       category: "System Drawing",
       image: "assets/images/architecture-of-elsewhere-2400.jpg",
@@ -92,8 +92,8 @@ const siteContent = {
       index: "04",
       title: "Section Across the Field",
       text:
-        "The long pale architectural section is read as one continuous spatial cut, carrying orange edges and dark openings across the image field.",
-      project: "Architecture of Elsewhere",
+        "The long pale architectural section is read as one continuous spatial cut, a temporary shared-board reference for Shila's folded ground and voids.",
+      project: "Shila Museum — The Quarry That Folds Inward",
       year: "2026",
       category: "Spatial Study",
       image: "assets/images/architecture-of-elsewhere-2400.jpg",
@@ -110,8 +110,8 @@ const siteContent = {
       index: "05",
       title: "Ramped Ground",
       text:
-        "Dark ramps and rust-toned planes are isolated from the lower-left field as a material study of descent, overlap, and cut ground.",
-      project: "Architecture of Elsewhere",
+        "Dark ramps and rust-toned planes become a material study of descent, overlap, and environmental intervention within an existing ground system.",
+      project: "From Concrete Fatigue to Green Asset",
       year: "2026",
       category: "Material Field",
       image: "assets/images/architecture-of-elsewhere-2400.jpg",
@@ -128,8 +128,8 @@ const siteContent = {
       index: "06",
       title: "Residual Plan Lines",
       text:
-        "Pale floor fields, orange outlines, and overlapping plan traces are framed as an architectural collage extracted from the board's lower-right corner.",
-      project: "Architecture of Elsewhere",
+        "Pale fields, orange outlines, and overlapping plan traces are framed as a mapping study of routes, fragments, and continuous ground.",
+      project: "Ground of Continuity",
       year: "2026",
       category: "Architectural Collage",
       image: "assets/images/architecture-of-elsewhere-2400.jpg",

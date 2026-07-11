@@ -11,7 +11,7 @@
     profile: "SUBJECT FILE / AHMAD ALHADIDII / PROFILE",
     cv: "CURRICULUM VITAE / INDEXED RECORD / 2021–2026",
     work: "SELECTED WORK / PROJECT ARCHIVE / 01–05",
-    visual: "VISUAL STUDIES / IMAGE / THOUGHT / FIELD",
+    visual: "VISUALS / IMAGE / THOUGHT / FIELD",
     contact: "CONTACT RECORD / AS-SALT, JORDAN / 2026",
     manmatic: "MANMATIC / HUMAN–MACHINE INTEGRATION / ACTIVE FIELD"
   };
@@ -20,6 +20,7 @@
   let scrambleObserver = null;
   let scrollFrame = 0;
   let readingGroups = [];
+  let readingObserver = null;
   let activeSectionName = "";
   let runningHeaderElement = null;
   let runningHeaderValue = "";
@@ -28,6 +29,13 @@
   let manmaticObserver = null;
   let manmaticTarget = null;
   let manmaticActive = false;
+  let manmaticDesiredActive = false;
+  let manmaticTransitionElement = null;
+  let manmaticTransitionTimer = 0;
+  let manmaticGlitchTimer = 0;
+  let manmaticTransitionToken = 0;
+  let manmaticLastScrollY = window.scrollY;
+  let manmaticScrollDirection = 1;
   let projectObserver = null;
   let projectObserverFallback = false;
   let projectRows = [];
@@ -1052,30 +1060,12 @@
     const elements = elementsWithin(container, selectors.join(","));
     if (!elements.length) return;
 
-    if (!revealObserver && "IntersectionObserver" in window) {
-      revealObserver = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (entry) {
-            if (!entry.isIntersecting) return;
-            entry.target.classList.add("is-revealed");
-            revealObserver.unobserve(entry.target);
-          });
-        },
-        { threshold: 0.08, rootMargin: "0px 0px -7% 0px" }
-      );
-    }
-
     elements.forEach(function (element, index) {
       if (element.dataset.sectionRevealPrepared === "true") return;
       element.dataset.sectionRevealPrepared = "true";
       element.classList.add("reveal-item", "is-reveal-ready");
       element.classList.add(index % 2 === 0 ? "reveal-from-left" : "reveal-from-right");
-      const bounds = element.getBoundingClientRect();
-      if (reducedMotion.matches || !revealObserver || bounds.top < window.innerHeight * 0.96) {
-        element.classList.add("is-revealed");
-      } else {
-        revealObserver.observe(element);
-      }
+      element.classList.add("is-revealed");
     });
   }
 
@@ -1136,11 +1126,11 @@
     });
   }
 
-  function initVisualStudies() {
+  function initVisuals() {
     const slider = document.querySelector("[data-visual-slider]");
     const content = window.siteContent;
-    const studies = content && Array.isArray(content.visualStudies)
-      ? content.visualStudies.filter(function (study) {
+    const studies = content && Array.isArray(content.visuals)
+      ? content.visuals.filter(function (study) {
           return study && typeof study.title === "string" && typeof study.image === "string";
         })
       : [];
@@ -1190,7 +1180,7 @@
         element(
           "p",
           "visual-slide__index",
-          `STUDY ${study.index || String(slideIndex + 1).padStart(2, "0")} / ${study.category || "VISUAL STUDY"}`
+          `VISUAL ${study.index || String(slideIndex + 1).padStart(2, "0")} / ${study.category || "VISUAL WORK"}`
         )
       );
       const title = element("h3", "pointer-scan", study.title);
@@ -1387,19 +1377,47 @@
       element.classList.add("is-reading-active");
       element.dataset.readingOriginal = originalText;
       element.dataset.readingPrepared = "true";
-      readingGroups.push({ element: element, words: wordElements, visual: visualText });
+      const stage = element.closest("[data-reading-stage]");
+      readingGroups.push({
+        element: element,
+        words: wordElements,
+        visual: visualText,
+        stage: stage,
+        observedTarget: stage || element,
+        observed: false,
+        active: true
+      });
+    });
+  }
+
+  function ensureReadingObserver() {
+    if (!("IntersectionObserver" in window)) return;
+    if (!readingObserver) {
+      readingObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            readingGroups.forEach(function (group) {
+              if (group.observedTarget !== entry.target) return;
+              group.active = entry.isIntersecting;
+            });
+            if (entry.isIntersecting) requestScrollEffects();
+          });
+        },
+        { threshold: 0, rootMargin: "110% 0px 110% 0px" }
+      );
+    }
+
+    readingGroups.forEach(function (group) {
+      if (group.observed) return;
+      group.observed = true;
+      readingObserver.observe(group.observedTarget);
     });
   }
 
   function setReadingWordProgress(word, progress) {
     const normalized = clamp(progress, 0, 1);
-    const darkTheme = document.body.dataset.siteTheme === "manmatic";
-    const unread = darkTheme ? 75 : 210;
-    const complete = darkTheme ? 242 : 17;
-    const channel = Math.round(unread + (complete - unread) * normalized);
     word.style.setProperty("--reading-progress", String(normalized.toFixed(3)));
     word.style.setProperty("--reading-offset", `${((1 - normalized) * 1.5).toFixed(2)}px`);
-    word.style.color = `rgb(${channel}, ${channel}, ${channel})`;
     word.classList.toggle("is-reading-current", normalized > 0.025 && normalized < 0.975);
     word.classList.toggle("is-reading-complete", normalized >= 0.975);
   }
@@ -1422,13 +1440,35 @@
     const distance = Math.max(startLine - endLine, 1);
 
     readingGroups.forEach(function (group) {
+      if (!group.active) return;
       const groupBounds = group.element.getBoundingClientRect();
-      const groupProgress = groupBounds.bottom <= 0
-        ? 1
-        : groupBounds.top >= viewportHeight
-          ? 0
-          : clamp((startLine - groupBounds.top) / distance, 0, 1);
+      let groupProgress;
+
+      if (group.stage) {
+        const stageBounds = group.stage.getBoundingClientRect();
+        const scrollDistance = Math.max(
+          stageBounds.height - viewportHeight * 0.45,
+          viewportHeight * 0.72
+        );
+        groupProgress = clamp(
+          (viewportHeight * 0.72 - stageBounds.top) / scrollDistance,
+          0,
+          1
+        );
+      } else {
+        groupProgress = groupBounds.bottom <= 0
+          ? 1
+          : groupBounds.top >= viewportHeight
+            ? 0
+            : clamp((startLine - groupBounds.top) / distance, 0, 1);
+      }
+
       group.element.style.setProperty("--reading-section-progress", groupProgress.toFixed(4));
+      group.element.dataset.readingState = groupProgress >= 0.999
+        ? "complete"
+        : groupProgress <= 0.001
+          ? "upcoming"
+          : "reading";
 
       const count = Math.max(group.words.length, 1);
       const transitionWindow = clamp(4 / count, 0.075, 0.16);
@@ -1445,6 +1485,7 @@
 
   function initReadingProgress(scope) {
     prepareReadingText(scope || document);
+    ensureReadingObserver();
     updateReadingProgress();
   }
 
@@ -1483,6 +1524,12 @@
           { once: true }
         );
       });
+
+      if (element.closest(".project-index")) {
+        element.classList.add("is-visible");
+        if (imageObserver) imageObserver.unobserve(element);
+        return;
+      }
 
       const bounds = element.getBoundingClientRect();
       if (
@@ -1598,20 +1645,15 @@
 
   function setSiteTheme(theme) {
     const nextTheme = theme === "manmatic" ? "manmatic" : "light";
+    const changed = root.dataset.siteTheme !== nextTheme;
     root.dataset.siteTheme = nextTheme;
-    if (document.body.dataset.siteTheme !== nextTheme) {
-      document.body.dataset.siteTheme = nextTheme;
+    if (changed) {
       document.body.dispatchEvent(
         new CustomEvent("portfolio:themechange", {
           detail: { theme: nextTheme }
         })
       );
     }
-
-    document.body.classList.toggle(
-      "is-manmatic-active",
-      nextTheme === "manmatic"
-    );
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     if (themeMeta) {
       themeMeta.setAttribute(
@@ -1621,35 +1663,184 @@
     }
   }
 
-  function setManmaticActive(active) {
-    if (manmaticActive === active) return;
-    manmaticActive = active;
+  function applyThemeBehindTransition(active) {
+    root.classList.add("theme-swap-instant");
     setSiteTheme(active ? "manmatic" : "light");
+    void root.offsetWidth;
+    window.requestAnimationFrame(function () {
+      root.classList.remove("theme-swap-instant");
+    });
+  }
+
+  function setManmaticTransitionOrigin() {
+    if (!manmaticTransitionElement || !manmaticTarget) return;
+    const source =
+      manmaticTarget.querySelector(".image-frame__crop") ||
+      manmaticTarget.querySelector(".project-row__media") ||
+      manmaticTarget;
+    const bounds = source.getBoundingClientRect();
+    const viewportWidth = Math.max(window.innerWidth, 1);
+    const viewportHeight = Math.max(window.innerHeight, 1);
+    let top = clamp(bounds.top, 0, viewportHeight);
+    let right = clamp(bounds.right, 0, viewportWidth);
+    let bottom = clamp(bounds.bottom, 0, viewportHeight);
+    let left = clamp(bounds.left, 0, viewportWidth);
+
+    if (right - left < 8 || bottom - top < 8) {
+      const targetBounds = manmaticTarget.getBoundingClientRect();
+      const centerX = clamp(
+        targetBounds.left + targetBounds.width * 0.72,
+        viewportWidth * 0.2,
+        viewportWidth * 0.8
+      );
+      const centerY = clamp(
+        targetBounds.top + targetBounds.height * 0.5,
+        4,
+        viewportHeight - 4
+      );
+      left = clamp(centerX - viewportWidth * 0.18, 0, viewportWidth - 8);
+      right = clamp(centerX + viewportWidth * 0.18, left + 8, viewportWidth);
+      top = clamp(centerY - 4, 0, viewportHeight - 8);
+      bottom = clamp(centerY + 4, top + 8, viewportHeight);
+    }
+
+    const clip = [
+      top,
+      viewportWidth - right,
+      viewportHeight - bottom,
+      left
+    ].map(function (value) {
+      return `${Math.max(0, value).toFixed(1)}px`;
+    });
+    manmaticTransitionElement.style.setProperty(
+      "--manmatic-source-clip",
+      `inset(${clip.join(" ")})`
+    );
+  }
+
+  function commitManmaticState(active, token) {
+    if (token !== manmaticTransitionToken) return;
+    manmaticActive = active;
+    applyThemeBehindTransition(active);
     if (manmaticTarget) manmaticTarget.classList.toggle("is-field-active", active);
+
+    if (manmaticGlitchTimer) {
+      window.clearTimeout(manmaticGlitchTimer);
+      manmaticGlitchTimer = 0;
+    }
     if (active && manmaticTarget) {
-      window.setTimeout(function () {
-        if (manmaticActive) activateHeading(manmaticTarget);
-      }, reducedMotion.matches ? 0 : 520);
+      activateHeading(manmaticTarget);
+      if (!reducedMotion.matches) {
+        manmaticTarget.classList.add("is-screen-glitching");
+        manmaticGlitchTimer = window.setTimeout(function () {
+          if (manmaticTarget) manmaticTarget.classList.remove("is-screen-glitching");
+          manmaticGlitchTimer = 0;
+        }, 680);
+      }
+    } else if (manmaticTarget) {
+      manmaticTarget.classList.remove("is-screen-glitching");
     }
     updateReadingProgress();
     updateRunningHeader();
+  }
+
+  function clearManmaticTransition(token) {
+    if (token !== manmaticTransitionToken || !manmaticTransitionElement) return;
+    manmaticTransitionElement.className = "manmatic-transition";
+  }
+
+  function runManmaticTransition(active) {
+    manmaticTransitionToken += 1;
+    const token = manmaticTransitionToken;
+    if (manmaticTransitionTimer) {
+      window.clearTimeout(manmaticTransitionTimer);
+      manmaticTransitionTimer = 0;
+    }
+
+    if (reducedMotion.matches || !manmaticTransitionElement) {
+      commitManmaticState(active, token);
+      clearManmaticTransition(token);
+      return;
+    }
+
+    setManmaticTransitionOrigin();
+    if (active) {
+      manmaticTransitionElement.className =
+        "manmatic-transition is-active is-entering";
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          if (token !== manmaticTransitionToken) return;
+          manmaticTransitionElement.classList.add("is-covering");
+        });
+      });
+      manmaticTransitionTimer = window.setTimeout(function () {
+        commitManmaticState(true, token);
+        window.requestAnimationFrame(function () {
+          clearManmaticTransition(token);
+        });
+        manmaticTransitionTimer = 0;
+      }, 800);
+      return;
+    }
+
+    manmaticTransitionElement.className =
+      "manmatic-transition is-active is-exiting";
+    window.requestAnimationFrame(function () {
+      if (token !== manmaticTransitionToken) return;
+      commitManmaticState(false, token);
+      window.requestAnimationFrame(function () {
+        if (token !== manmaticTransitionToken) return;
+        manmaticTransitionElement.classList.add("is-retracting");
+      });
+    });
+    manmaticTransitionTimer = window.setTimeout(function () {
+      clearManmaticTransition(token);
+      manmaticTransitionTimer = 0;
+    }, 800);
+  }
+
+  function setManmaticActive(active) {
+    if (manmaticDesiredActive === active) return;
+    manmaticDesiredActive = active;
+    runManmaticTransition(active);
   }
 
   function updateManmaticTheme() {
     if (!manmaticTarget || !document.body.classList.contains("home-page")) return;
     const bounds = manmaticTarget.getBoundingClientRect();
     const viewportHeight = Math.max(window.innerHeight, 1);
-    const shouldActivate = manmaticActive
-      ? bounds.top < viewportHeight * 0.66 &&
-        bounds.bottom > viewportHeight * 0.34
-      : bounds.top < viewportHeight * 0.56 &&
-        bounds.bottom > viewportHeight * 0.44;
+    const scrollDelta = window.scrollY - manmaticLastScrollY;
+    if (Math.abs(scrollDelta) > 1) {
+      manmaticScrollDirection = scrollDelta > 0 ? 1 : -1;
+    }
+    manmaticLastScrollY = window.scrollY;
+    const visiblePixels = Math.max(
+      0,
+      Math.min(bounds.bottom, viewportHeight) - Math.max(bounds.top, 0)
+    );
+    const visibilityRatio = visiblePixels / Math.max(
+      1,
+      Math.min(bounds.height, viewportHeight)
+    );
+    const remainsDominant = manmaticScrollDirection >= 0
+      ? bounds.bottom > viewportHeight * 0.28
+      : bounds.top < viewportHeight * 0.72;
+    const shouldActivate = manmaticDesiredActive
+      ? visibilityRatio > 0.15 && remainsDominant
+      : visibilityRatio >= 0.4;
+    if (
+      manmaticTransitionElement &&
+      manmaticTransitionElement.classList.contains("is-active")
+    ) {
+      setManmaticTransitionOrigin();
+    }
     setManmaticActive(shouldActivate);
   }
 
   function initManmaticTheme() {
     if (!document.body.classList.contains("home-page")) return;
     manmaticTarget = document.querySelector("[data-manmatic-field]");
+    manmaticTransitionElement = document.querySelector("[data-manmatic-transition]");
     if (!manmaticTarget) {
       setSiteTheme("light");
       return;
@@ -1662,7 +1853,7 @@
       function () {
         requestScrollEffects();
       },
-      { threshold: 0, rootMargin: "-44% 0px -44% 0px" }
+      { threshold: [0, 0.15, 0.4, 0.75, 1] }
     );
     manmaticObserver.observe(manmaticTarget);
   }
@@ -1761,6 +1952,7 @@
     const navigation = document.getElementById("primary-navigation");
     if (!toggle || !navigation) return;
     const links = Array.from(navigation.querySelectorAll("a"));
+    const focusableMenuItems = [toggle].concat(links);
     const backgroundRegions = Array.from(
       document.querySelectorAll("main, .closing-identity, .site-footer")
     );
@@ -1835,10 +2027,10 @@
         closeMenu(true);
         return;
       }
-      if (event.key !== "Tab" || !links.length) return;
+      if (event.key !== "Tab" || !focusableMenuItems.length) return;
 
-      const first = links[0];
-      const last = links[links.length - 1];
+      const first = focusableMenuItems[0];
+      const last = focusableMenuItems[focusableMenuItems.length - 1];
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
@@ -1867,6 +2059,37 @@
   function updateHeaderState() {
     const header = document.getElementById("site-header");
     if (header) header.classList.toggle("is-scrolled", window.scrollY > 8);
+  }
+
+  function updateAmbientSuspension() {
+    root.classList.toggle("is-page-hidden", document.hidden);
+  }
+
+  function initAmbientMotion() {
+    updateAmbientSuspension();
+    document.addEventListener("visibilitychange", updateAmbientSuspension);
+  }
+
+  function updateViewportReveals() {
+    const viewportHeight = Math.max(window.innerHeight, 1);
+    document
+      .querySelectorAll(".reveal-item.is-reveal-ready:not(.is-revealed)")
+      .forEach(function (element) {
+        const bounds = element.getBoundingClientRect();
+        if (bounds.top < viewportHeight * 1.04 && bounds.bottom > -viewportHeight * 0.08) {
+          element.classList.add("is-revealed");
+          if (revealObserver) revealObserver.unobserve(element);
+        }
+      });
+    document
+      .querySelectorAll("[data-image-reveal]:not(.is-visible)")
+      .forEach(function (element) {
+        const bounds = element.getBoundingClientRect();
+        if (bounds.top < viewportHeight * 1.04 && bounds.bottom > -viewportHeight * 0.08) {
+          element.classList.add("is-visible");
+          if (imageObserver) imageObserver.unobserve(element);
+        }
+      });
   }
 
   function updateParallax() {
@@ -1899,6 +2122,7 @@
     updateReadingProgress();
     updateParallax();
     updateManmaticTheme();
+    updateViewportReveals();
     if (sectionObserverFallback) updateActiveSectionFromGeometry();
     if (projectObserverFallback) updateActiveProjectFromGeometry();
   }
@@ -1925,6 +2149,19 @@
 
     if (reducedMotion.matches) {
       if (finishMonitorBoot) finishMonitorBoot();
+
+      if (
+        manmaticTransitionElement &&
+        manmaticTransitionElement.classList.contains("is-active")
+      ) {
+        manmaticTransitionToken += 1;
+        if (manmaticTransitionTimer) {
+          window.clearTimeout(manmaticTransitionTimer);
+          manmaticTransitionTimer = 0;
+        }
+        commitManmaticState(manmaticDesiredActive, manmaticTransitionToken);
+        clearManmaticTransition(manmaticTransitionToken);
+      }
 
       document.querySelectorAll("[data-scramble]").forEach(settleScramble);
       document.querySelectorAll("[data-image-reveal]").forEach(function (element) {
@@ -1965,9 +2202,10 @@
 
   function init() {
     respectReducedMotion();
+    initAmbientMotion();
     initMobileNavigation();
     initRunningHeader();
-    visualSliderController = initVisualStudies();
+    visualSliderController = initVisuals();
     initReadingProgress(document);
     initSectionObserver();
     initManmaticTheme();

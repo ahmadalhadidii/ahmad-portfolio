@@ -40,6 +40,7 @@
       root.classList.add("js");
       root.classList.add("loader-pending");
       root.dataset.initialTheme = theme;
+      root.dataset.siteTheme = theme;
       if (themeColor) themeColor.setAttribute("content", theme === "manmatic" ? "#0a0a0a" : "#ffffff");
 
       window.__portfolioLoaderFallback = window.setTimeout(function () {
@@ -71,7 +72,7 @@
   <script src="assets/js/main.js" defer></script>
   <script src="assets/js/project.js" defer></script>
 </head>
-<body class="project-page" data-site-theme="light">
+<body class="project-page">
   <div class="loader" id="loader" role="status" aria-label="Initializing Ahmad Alhadidii portfolio field">
     <p class="visually-hidden" id="loader-announcement" aria-live="polite">Portfolio field initialization in progress.</p>
     <div class="loader__binary" aria-hidden="true">
@@ -116,6 +117,9 @@
 
   <a class="skip-link" href="#main-content">Skip to project content</a>
 
+  <div class="ambient-signal" aria-hidden="true"></div>
+  <div class="material-texture" aria-hidden="true"></div>
+
   <div class="site-shell">
     <header class="site-header" id="site-header">
       <div class="site-header__inner page-width">
@@ -132,8 +136,8 @@
           <a href="index.html#index"><span data-scramble>INDEX</span></a>
           <a href="index.html#profile"><span data-scramble>PROFILE</span></a>
           <a href="index.html#cv"><span data-scramble>CV</span></a>
-          <a href="index.html#visual-studies"><span data-scramble>VISUAL STUDIES</span></a>
           <a class="is-active" href="index.html#work" aria-current="location"><span data-scramble>WORK</span></a>
+          <a href="index.html#visual-studies"><span data-scramble>VISUALS</span></a>
           <a href="index.html#contact"><span data-scramble>CONTACT</span></a>
           <a class="site-nav__external" href="https://www.manmatic.institute/" target="_blank" rel="noopener noreferrer" aria-label="Open the ManMaTIC Institute field website in a new tab">MANMATIC FIELD <span aria-hidden="true">↗</span></a>
         </nav>
