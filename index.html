@@ -104,7 +104,7 @@
   <div class="ambient-signal" aria-hidden="true"></div>
   <div class="material-texture" aria-hidden="true"></div>
   <div class="manmatic-transition" data-manmatic-transition aria-hidden="true">
-    <span class="manmatic-transition__readout">MANMATIC / ENVIRONMENT SHIFT</span>
+    <span class="manmatic-transition__readout">MANMATIC / SYSTEM SWITCH</span>
   </div>
 
   <div class="site-shell" id="site-shell">
@@ -118,6 +118,8 @@
           <span class="nav-toggle__open">MENU</span>
           <span class="nav-toggle__close">CLOSE</span>
         </button>
+
+        <button class="nav-backdrop" type="button" data-nav-dismiss tabindex="-1" aria-label="Close navigation"></button>
 
         <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation">
           <a href="#index" data-section-link="index" aria-current="location"><span data-scramble>INDEX</span></a>
@@ -219,14 +221,19 @@
         </header>
 
         <div class="profile__layout">
-          <figure class="profile-portrait" data-pixel-portrait data-portrait-status="placeholder" aria-labelledby="profile-portrait-caption">
+          <figure class="profile-portrait" data-pixel-portrait data-portrait-status="ready" aria-labelledby="profile-portrait-caption">
             <div class="profile-portrait__frame">
-              <img class="profile-portrait__image" data-pixel-image src="assets/images/architecture-of-elsewhere-1400.jpg" srcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" sizes="(max-width: 760px) calc(100vw - 36px), 34vw" width="1400" height="754" alt="Temporary crop of the Architecture of Elsewhere board reserving the future profile portrait frame; this is not a portrait of Ahmad Alhadidii." loading="lazy" decoding="async">
+              <span class="profile-portrait__paper" aria-hidden="true"></span>
+              <span class="profile-portrait__axis profile-portrait__axis--x" aria-hidden="true"></span>
+              <span class="profile-portrait__axis profile-portrait__axis--y" aria-hidden="true"></span>
+              <span class="profile-portrait__coordinate profile-portrait__coordinate--top" aria-hidden="true">AX / 31.08.03 / 32.0392° N</span>
+              <span class="profile-portrait__coordinate profile-portrait__coordinate--side" aria-hidden="true">SUBJECT 001 / REG. A</span>
+              <img class="profile-portrait__image" data-pixel-image src="assets/images/profile.webp" srcset="assets/images/profile-800.webp 800w, assets/images/profile.webp 1200w" sizes="(max-width: 760px) calc(100vw - 36px), 34vw" width="1200" height="1500" alt="Portrait of architect and design researcher Ahmad Alhadidii." loading="lazy" decoding="async">
               <span class="pixel-portrait__grid" data-pixel-grid aria-hidden="true"></span>
               <span class="profile-portrait__scan" aria-hidden="true"></span>
-              <p class="profile-portrait__status">FINAL PORTRAIT REQUIRED</p>
+              <span class="profile-portrait__registration" aria-hidden="true">+ &nbsp; 001 &nbsp; +</span>
             </div>
-            <figcaption id="profile-portrait-caption"><span>PROFILE IMAGE / 001</span><strong>FINAL PORTRAIT REQUIRED</strong><span>TEMPORARY ARCHITECTURE OF ELSEWHERE BOARD CROP / NOT A PORTRAIT</span></figcaption>
+            <figcaption id="profile-portrait-caption"><span>PROFILE IMAGE / 001</span><strong>AHMAD ALHADIDII</strong><span>SUBJECT RECORD / ARCHITECTURE · RESEARCH · COMPUTATION</span></figcaption>
           </figure>
           <aside class="profile__index" aria-label="Profile record labels">
             <p><span>[ A ]</span> SUBJECT</p>
@@ -434,9 +441,9 @@
                 <p>A museum concept where the quarry folds inward, turning stone, water, shadow, and void into spatial memory.</p>
                 <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>TYPE</dt><dd>Museum / Stone Memory</dd></div><div><dt>ROLE</dt><dd>Concept, atmosphere, spatial storytelling</dd></div></dl>
               </div>
-              <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal>
-                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="Shared Architecture of Elsewhere portfolio visual field, used because the Shila project image is not present in the repository." loading="lazy" decoding="async"></div>
-                <figcaption><span>FIG. 01</span><span>SHARED ARCHIVE VISUAL / ARCHITECTURE OF ELSEWHERE</span></figcaption>
+              <figure class="project-row__media image-frame image-reveal media--contain media--drawing" data-image-reveal data-project-media>
+                <div class="image-frame__crop"><img src="assets/images/shilla.webp" srcset="assets/images/shilla-1400.webp 1400w, assets/images/shilla.webp 2400w" sizes="(max-width: 960px) calc(100vw - 48px), 48vw" width="2400" height="1293" alt="Pale hand-drawn study of Shila Museum arranged around a reflective quarry pool." loading="lazy" decoding="async"></div>
+                <figcaption><span>FIG. 01</span><span>SHILA MUSEUM / PRINCIPAL STUDY</span></figcaption>
               </figure>
               <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
             </a>
@@ -451,9 +458,9 @@
                 <p>A research-based institute exploring how humans and intelligent systems collaborate, negotiate, and deploy decisions in real environments.</p>
                 <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>LOCATION</dt><dd>Aqaba</dd></div><div><dt>TYPE</dt><dd>Research Institute</dd></div><div><dt>ROLE</dt><dd>Architecture, research, systems thinking, visual communication</dd></div></dl>
               </div>
-              <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal>
+              <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal data-project-media>
                 <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" srcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" sizes="(max-width: 760px) calc(100vw - 36px), 48vw" width="1400" height="754" alt="Architecture of Elsewhere visual field for the ManMaTIC Institute, combining architectural, planetary, and systems imagery." loading="lazy" decoding="async"></div>
-                <figcaption><span>FIG. 02</span><span>ARCHITECTURE OF ELSEWHERE / ACTIVE FIELD</span></figcaption>
+                <figcaption><span>FIG. 02</span><span>INDEPENDENT VISUAL NARRATIVE / NOT A LITERAL BUILDING RENDERING</span></figcaption>
               </figure>
               <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
             </a>
@@ -469,7 +476,7 @@
                 <p>A staircase transformation proposal turning daily urban infrastructure into environmental and social value.</p>
                 <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>LOCATION</dt><dd>Amman</dd></div><div><dt>TYPE</dt><dd>Urban Intervention</dd></div><div><dt>ROLE</dt><dd>Concept, environmental strategy, visual communication</dd></div></dl>
               </div>
-              <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal>
+              <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal data-project-media>
                 <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="Shared Architecture of Elsewhere portfolio visual field, shown while project-specific imagery is unavailable." loading="lazy" decoding="async"></div>
                 <figcaption><span>FIG. 03</span><span>SHARED PORTFOLIO VISUAL / ARCHITECTURE OF ELSEWHERE</span></figcaption>
               </figure>
@@ -486,7 +493,7 @@
                 <p>A cultural map reading Jordan as a ground of continuity between memory, borders, routes, and shared regional identity.</p>
                 <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>LOCATION</dt><dd>Jordan</dd></div><div><dt>TYPE</dt><dd>Cultural Map / Visual Research</dd></div><div><dt>ROLE</dt><dd>Mapping, cultural research, graphic composition</dd></div></dl>
               </div>
-              <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal>
+              <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal data-project-media>
                 <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="Shared Architecture of Elsewhere portfolio visual field, shown while project-specific imagery is unavailable." loading="lazy" decoding="async"></div>
                 <figcaption><span>FIG. 04</span><span>SHARED PORTFOLIO VISUAL / ARCHITECTURE OF ELSEWHERE</span></figcaption>
               </figure>
@@ -503,7 +510,7 @@
                 <p>A spatial timeline of human and machine evolution, carved as a threshold between tools, bodies, and complex systems.</p>
                 <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>TYPE</dt><dd>Drawing / Human–Machine History</dd></div><div><dt>ROLE</dt><dd>Concept, digital painting, architectural narrative</dd></div></dl>
               </div>
-              <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal>
+              <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal data-project-media>
                 <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="Shared Architecture of Elsewhere portfolio visual field, shown while project-specific imagery is unavailable." loading="lazy" decoding="async"></div>
                 <figcaption><span>FIG. 05</span><span>SHARED PORTFOLIO VISUAL / ARCHITECTURE OF ELSEWHERE</span></figcaption>
               </figure>
@@ -522,16 +529,17 @@
         <div class="visual-slider" data-visual-slider role="region" aria-roledescription="carousel" aria-label="Selected visual work" tabindex="0">
           <div class="visual-slider__viewport" data-visual-viewport>
             <div class="visual-slider__track" data-visual-track>
-              <article class="visual-slide is-active" data-visual-fallback role="group" aria-roledescription="slide" aria-label="1 of 6: Code and Repeated Forms">
+              <article class="visual-slide is-active" data-visual-fallback role="group" aria-roledescription="slide" aria-label="1 of 5: Architecture of Elsewhere">
                 <div class="visual-slide__copy">
-                  <p class="visual-slide__index">VISUAL 01 / VISUAL RESEARCH</p>
-                  <h3>Code and Repeated Forms</h3>
-                  <p>The board's upper-left field places the A-H26 code beside repeated vertical forms, fine traces, and a measured horizontal datum.</p>
-                  <dl><div><dt>PROJECT</dt><dd>ManMaTIC / Architecture of Elsewhere</dd></div><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>CATEGORY</dt><dd>Visual Research</dd></div></dl>
+                  <p class="visual-slide__index">VISUAL 01 / VISUAL NARRATIVE</p>
+                  <h3>Architecture of Elsewhere</h3>
+                  <p>The red does not colour the space; it consumes it. Thin lines of light remain, slowly carving the architecture back into view.</p>
+                  <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>CATEGORY</dt><dd>Visual Narrative / Conceptual Architecture</dd></div></dl>
+                  <button class="visual-slide__open" type="button" data-visual-open="0">OPEN VISUAL <span aria-hidden="true">↗</span></button>
                 </div>
                 <figure class="visual-slide__media">
-                  <img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" style="object-position: 22% 24%" alt="Upper-left crop of the Architecture of Elsewhere board showing repeated white vertical forms, the A-H26 code, and fine horizontal technical traces." loading="lazy" decoding="async">
-                  <figcaption>CROP 01 / ARCHITECTURE OF ELSEWHERE BOARD / UPPER-LEFT FIELD</figcaption>
+                  <img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="Architecture of Elsewhere collage combining a white architectural field, planetary studies, technical drawings, and a dark research surface." loading="lazy" decoding="async">
+                  <figcaption>VISUAL 01 / INDEPENDENT ARCHITECTURAL EXPERIMENT</figcaption>
                 </figure>
               </article>
             </div>
@@ -539,7 +547,7 @@
           </div>
           <div class="visual-slider__controls">
             <button type="button" data-visual-prev aria-label="Show previous visual">PREVIOUS</button>
-            <p aria-live="polite" aria-atomic="true"><span data-visual-current>01</span> / <span data-visual-total>06</span></p>
+            <p aria-live="polite" aria-atomic="true"><span data-visual-current>01</span> / <span data-visual-total>05</span></p>
             <button type="button" data-visual-next aria-label="Show next visual">NEXT</button>
           </div>
           <div class="visual-slider__progress" aria-hidden="true"><span data-visual-progress></span></div>
@@ -582,6 +590,40 @@
       <p>AS-SALT, JORDAN</p>
       <a href="#index">BACK TO TOP <span aria-hidden="true">↑</span></a>
     </footer>
+  </div>
+
+  <div class="visual-viewer" data-visual-viewer hidden aria-hidden="true">
+    <button class="visual-viewer__backdrop" type="button" data-visual-close tabindex="-1" aria-label="Close visual viewer"></button>
+    <section class="visual-viewer__panel" role="dialog" aria-modal="true" aria-labelledby="visual-viewer-title" aria-describedby="visual-viewer-description">
+      <header class="visual-viewer__header">
+        <p data-visual-viewer-index>VISUAL 01 / 05</p>
+        <button type="button" data-visual-close>RETURN TO VISUALS <span aria-hidden="true">×</span></button>
+      </header>
+      <div class="visual-viewer__layout">
+        <figure class="visual-viewer__media" data-visual-viewer-media>
+          <div class="visual-viewer__image-frame">
+            <img data-visual-viewer-image src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="">
+            <span class="visual-viewer__scan" aria-hidden="true"></span>
+          </div>
+          <figcaption data-visual-viewer-caption></figcaption>
+        </figure>
+        <div class="visual-viewer__copy">
+          <p class="visual-viewer__eyebrow" data-visual-viewer-category></p>
+          <h2 id="visual-viewer-title" data-visual-viewer-title></h2>
+          <p id="visual-viewer-description" data-visual-viewer-description></p>
+          <p class="visual-viewer__context" data-visual-viewer-context></p>
+          <dl>
+            <div><dt>YEAR</dt><dd data-visual-viewer-year></dd></div>
+            <div data-visual-viewer-related-row><dt>RELATED FIELD</dt><dd data-visual-viewer-related></dd></div>
+          </dl>
+        </div>
+      </div>
+      <nav class="visual-viewer__navigation" aria-label="Visual work navigation">
+        <button type="button" data-visual-viewer-prev>PREVIOUS VISUAL</button>
+        <p><span data-visual-viewer-current>01</span> / <span data-visual-viewer-total>05</span></p>
+        <button type="button" data-visual-viewer-next>NEXT VISUAL</button>
+      </nav>
+    </section>
   </div>
 </body>
 </html>

@@ -563,6 +563,7 @@ function Assert-ProjectImages {
   return image.complete && image.naturalWidth > 0 && image.naturalHeight > 0 &&
     bounds.width > 40 && bounds.height > 24 && style.display !== "none" &&
     style.visibility !== "hidden" && Number(style.opacity) > 0.5 &&
+    figure.classList.contains("is-visible") &&
     !figure.classList.contains("is-media-missing");
 })()
 "@
@@ -670,6 +671,56 @@ JSON.stringify((() => {
   Wait-For "document.querySelector('[data-visual-current]').textContent.trim() === $lastValueLiteral" 'Visuals ArrowLeft wrapping failed.' 30
   $null = Evaluate 'document.querySelector("[data-visual-slider]").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true })); true'
   Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'Visuals ArrowRight wrapping failed.' 30
+}
+
+function Assert-VisualViewer {
+  Center-Element '[data-visual-slider]'
+  $null = Evaluate 'document.querySelector("[data-visual-open=\"0\"]").click(); true'
+  Wait-For '!document.querySelector("[data-visual-viewer]").hidden && document.querySelector("[data-visual-viewer]").classList.contains("is-open")' 'The full visual viewer did not open.' 40
+  $opened = Evaluate-Json @'
+JSON.stringify((() => {
+  const viewer = document.querySelector("[data-visual-viewer]");
+  const panel = viewer.querySelector(".visual-viewer__panel");
+  const image = viewer.querySelector("[data-visual-viewer-image]");
+  const previous = viewer.querySelector("[data-visual-viewer-prev]");
+  const next = viewer.querySelector("[data-visual-viewer-next]");
+  const size = element => {
+    const bounds = element.getBoundingClientRect();
+    return { width: bounds.width, height: bounds.height };
+  };
+  return {
+    modal: panel.getAttribute("aria-modal") === "true",
+    title: viewer.querySelector("[data-visual-viewer-title]")?.textContent.trim() || "",
+    dataTitle: window.siteContent.visuals[0].title,
+    description: viewer.querySelector("[data-visual-viewer-description]")?.textContent.trim() || "",
+    image: image.getAttribute("src") || "",
+    dataImage: window.siteContent.visuals[0].src,
+    imageReady: image.complete && image.naturalWidth > 0,
+    current: viewer.querySelector("[data-visual-viewer-current]")?.textContent.trim() || "",
+    total: viewer.querySelector("[data-visual-viewer-total]")?.textContent.trim() || "",
+    bodyClass: document.body.classList.contains("is-visual-viewer-open"),
+    rootLocked: document.documentElement.style.overflow === "hidden",
+    bodyLocked: document.body.style.overflow === "hidden",
+    shellInert: document.getElementById("site-shell").inert,
+    previous: size(previous),
+    next: size(next)
+  };
+})())
+'@
+  Assert-State ($opened.modal -and $opened.title -eq $opened.dataTitle -and -not [string]::IsNullOrWhiteSpace([string]$opened.description)) 'The full visual viewer is missing its dialog semantics, title, or description.'
+  Assert-State ($opened.image -eq $opened.dataImage -and $opened.imageReady -and $opened.current -eq '01' -and [int]$opened.total -eq 5) 'The full visual viewer did not render the first visual from central data.'
+  Assert-State ($opened.bodyClass -and $opened.rootLocked -and $opened.bodyLocked -and $opened.shellInert) 'The full visual viewer did not isolate and scroll-lock the page.'
+  Assert-State ($opened.previous.width -ge 44 -and $opened.previous.height -ge 44 -and $opened.next.width -ge 44 -and $opened.next.height -ge 44) 'The full visual viewer navigation controls are below 44 by 44 pixels.'
+
+  $null = Evaluate 'document.querySelector("[data-visual-viewer-next]").click(); true'
+  Wait-For 'document.querySelector("[data-visual-viewer-current]").textContent.trim() === "02"' 'The full visual viewer next control failed.' 30
+  $second = Evaluate-Json 'JSON.stringify({ title: document.querySelector("[data-visual-viewer-title]").textContent.trim(), expected: window.siteContent.visuals[1].title, image: document.querySelector("[data-visual-viewer-image]").getAttribute("src"), expectedImage: window.siteContent.visuals[1].src })'
+  Assert-State ($second.title -eq $second.expected -and $second.image -eq $second.expectedImage) 'The full visual viewer next control did not update from central data.'
+
+  $null = Evaluate 'document.querySelector("[data-visual-viewer]").dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })); true'
+  Wait-For 'document.querySelector("[data-visual-viewer]").hidden' 'Escape did not close the full visual viewer.' 30
+  $closed = Evaluate-Json 'JSON.stringify({ bodyClass: document.body.classList.contains("is-visual-viewer-open"), rootInline: document.documentElement.style.overflow, bodyInline: document.body.style.overflow, shellInert: document.getElementById("site-shell").inert })'
+  Assert-State (-not $closed.bodyClass -and [string]::IsNullOrEmpty([string]$closed.rootInline) -and [string]::IsNullOrEmpty([string]$closed.bodyInline) -and -not $closed.shellInert) 'Closing the full visual viewer left the page locked or inert.'
 }
 
 function Get-ReadingSnapshot([string]$selector = '[data-reading-text]') {
@@ -940,8 +991,9 @@ function Assert-ResponsiveLayout($viewport, [string]$label) {
   Set-Viewport $viewport
   $width = [int]$viewport.Width
   $height = [int]$viewport.Height
-  Wait-For "innerWidth === $width && innerHeight === $height" ("Viewport metrics did not settle for {0} at {1}." -f $label, $viewport.Name) 40
+  Start-Sleep -Milliseconds 180
   $null = Evaluate 'document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, 0); true'
+  $null = Evaluate "document.documentElement.dataset.auditWidth = '$width'; true"
   Start-Sleep -Milliseconds 180
   $state = Evaluate-Json @'
 JSON.stringify((() => {
@@ -976,12 +1028,24 @@ JSON.stringify((() => {
     return { width: bounds.width, height: bounds.height };
   });
   const projectImages = Array.from(document.querySelectorAll(".project-row__media img, .project-hero img"));
+  const requestedWidth = Number(document.documentElement.dataset.auditWidth || innerWidth);
+  const overflowElements = Array.from(document.body.querySelectorAll("*")).filter(visible).map(element => {
+    const bounds = element.getBoundingClientRect();
+    return { element, bounds };
+  }).filter(item => item.bounds.width > 0 && (item.bounds.left < -1.5 || item.bounds.right > requestedWidth + 1.5)).sort((a, b) => Math.abs(a.bounds.right - requestedWidth) - Math.abs(b.bounds.right - requestedWidth)).slice(0, 12).map(item => ({
+    tag: item.element.tagName,
+    className: item.element.className || "",
+    left: Math.round(item.bounds.left),
+    right: Math.round(item.bounds.right),
+    width: Math.round(item.bounds.width)
+  }));
   return {
     width: innerWidth,
     height: innerHeight,
     rootScrollWidth: document.documentElement.scrollWidth,
     bodyScrollWidth: document.body.scrollWidth,
     bodyScrollHeight: document.body.scrollHeight,
+    overflowElements,
     boundsViolations,
     headingOverflow,
     emailOverflow,
@@ -1003,8 +1067,8 @@ JSON.stringify((() => {
   };
 })())
 '@
-  Assert-State ($state.width -eq $width -and $state.height -eq $height) ("Browser viewport mismatch for {0} at {1}." -f $label, $viewport.Name)
-  Assert-State ($state.rootScrollWidth -le ($width + 1) -and $state.bodyScrollWidth -le ($width + 1)) ("Horizontal overflow for {0} at {1}: root {2}, body {3}, viewport {4}." -f $label, $viewport.Name, $state.rootScrollWidth, $state.bodyScrollWidth, $width)
+  Assert-State ($state.width -eq $width -and $state.height -eq $height) ("Browser viewport mismatch for {0} at {1}: requested {2}x{3}, actual {4}x{5}, root/body scroll widths {6}/{7}." -f $label, $viewport.Name, $width, $height, $state.width, $state.height, $state.rootScrollWidth, $state.bodyScrollWidth)
+  Assert-State ($state.rootScrollWidth -le ($width + 1) -and $state.bodyScrollWidth -le ($width + 1)) ("Horizontal overflow for {0} at {1}: root {2}, body {3}, viewport {4}; elements {5}." -f $label, $viewport.Name, $state.rootScrollWidth, $state.bodyScrollWidth, $width, (($state.overflowElements | ConvertTo-Json -Compress) -join ''))
   Assert-State (@($state.boundsViolations).Count -eq 0) ("Key layout bounds leave the viewport for {0} at {1}: {2}." -f $label, $viewport.Name, (@($state.boundsViolations) -join ', '))
   Assert-State (@($state.headingOverflow).Count -eq 0) ("A heading clips or overflows for {0} at {1}: {2}." -f $label, $viewport.Name, (@($state.headingOverflow) -join ', '))
   Assert-State (@($state.emailOverflow).Count -eq 0) ("An email address overflows for {0} at {1}." -f $label, $viewport.Name)
@@ -1342,6 +1406,7 @@ try {
   Assert-ReadingProgression
   Assert-ProjectImages
   Assert-VisualSlider
+  Assert-VisualViewer
   Assert-ManmaticThemeInversion
   Assert-AllHeadingCompletion
   Assert-MobileInteractions

@@ -190,6 +190,12 @@
     figure.classList.add(`media--${fit}`);
     addMediaClasses(figure, project.hero.mediaClass);
     figure.dataset.mediaFit = fit;
+    if (project.hero.width && project.hero.height) {
+      figure.style.setProperty(
+        "--media-ratio",
+        `${project.hero.width} / ${project.hero.height}`
+      );
+    }
     figure.setAttribute("data-image-reveal", "");
     const crop = element("div", "image-frame__crop");
     const image = element("img");

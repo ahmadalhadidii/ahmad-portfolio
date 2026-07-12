@@ -45,7 +45,8 @@
         location: project.location || "",
         theme: theme,
         image: project.hero && project.hero.src ? project.hero.src : "assets/images/architecture-of-elsewhere-1400.jpg",
-        srcset: project.hero && project.hero.srcset ? project.hero.srcset : ""
+        srcset: project.hero && project.hero.srcset ? project.hero.srcset : "",
+        objectPosition: project.hero && project.hero.loaderObjectPosition ? project.hero.loaderObjectPosition : "50% 50%"
       } : null;
 
       root.classList.remove("no-js");
@@ -138,6 +139,8 @@
           <span class="nav-toggle__open">MENU</span>
           <span class="nav-toggle__close">CLOSE</span>
         </button>
+
+        <button class="nav-backdrop" type="button" data-nav-dismiss tabindex="-1" aria-label="Close navigation"></button>
 
         <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation">
           <a href="index.html#index"><span data-scramble>INDEX</span></a>
