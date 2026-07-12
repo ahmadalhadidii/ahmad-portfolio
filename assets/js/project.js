@@ -188,6 +188,7 @@
     section.setAttribute("aria-label", "Project visual");
     const figure = element("figure", "project-hero__media image-frame image-reveal");
     figure.classList.add(`media--${fit}`);
+    figure.classList.add(`orientation--${/^[a-z0-9_-]+$/i.test(normalize(project.hero.orientation)) ? normalize(project.hero.orientation) : "landscape"}`);
     addMediaClasses(figure, project.hero.mediaClass);
     figure.dataset.mediaFit = fit;
     if (project.hero.width && project.hero.height) {
@@ -199,9 +200,16 @@
     figure.setAttribute("data-image-reveal", "");
     const crop = element("div", "image-frame__crop");
     const image = element("img");
+    const orientation = normalize(project.hero.orientation) || "landscape";
+    const desktopSize = {
+      wide: "min(1480px, calc(100vw - 64px))",
+      landscape: "min(1180px, calc(100vw - 64px))",
+      square: "min(900px, calc(100vw - 64px))",
+      portrait: "min(700px, calc(100vw - 64px))"
+    }[orientation] || "min(1180px, calc(100vw - 64px))";
     image.src = project.hero.src;
     if (hasText(project.hero.srcset)) image.srcset = project.hero.srcset;
-    image.sizes = "(max-width: 760px) calc(100vw - 36px), min(1480px, calc(100vw - 64px))";
+    image.sizes = `(max-width: 760px) calc(100vw - 36px), ${desktopSize}`;
     image.alt = project.hero.alt || "";
     if (project.hero.width) image.width = project.hero.width;
     if (project.hero.height) image.height = project.hero.height;

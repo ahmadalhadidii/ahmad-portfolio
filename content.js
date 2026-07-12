@@ -9,6 +9,7 @@ const sharedPortfolioVisual = {
     "assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w",
   width: 2400,
   height: 1293,
+  orientation: "wide",
   fit: "contain",
   mediaClass: "media--board",
   alt:
@@ -257,8 +258,17 @@ const siteContent = {
         "Introduces a modular tree unit for shade, planting, and water management."
       ],
       hero: {
-        ...sharedPortfolioVisual,
-        caption: "Shared portfolio visual / Architecture of Elsewhere"
+        src: "assets/images/green-asset-1920.jpg",
+        srcset:
+          "assets/images/green-asset-1200.jpg 1200w, assets/images/green-asset-1920.jpg 1920w",
+        width: 1920,
+        height: 1080,
+        orientation: "wide",
+        fit: "contain",
+        mediaClass: "media--wide media--drawing",
+        caption: "FROM CONCRETE FATIGUE TO GREEN ASSET / TREE UNIT IDENTITY STUDY / 2026",
+        alt:
+          "Environmental design board mapping the transformation of a concrete stair into a vertical garden through infrastructure, social, and natural units."
       }
     },
     {
@@ -283,8 +293,17 @@ const siteContent = {
         "Combines cartographic logic with cultural storytelling."
       ],
       hero: {
-        ...sharedPortfolioVisual,
-        caption: "Shared portfolio visual / Architecture of Elsewhere"
+        src: "assets/images/ground-of-continuity-2200.jpg",
+        srcset:
+          "assets/images/ground-of-continuity-1400.jpg 1400w, assets/images/ground-of-continuity-2200.jpg 2200w",
+        width: 2200,
+        height: 1556,
+        orientation: "landscape",
+        fit: "contain",
+        mediaClass: "media--landscape media--map",
+        caption: "GROUND OF CONTINUITY / JORDAN THROUGH MEMORY, MOVEMENT, AND EXCHANGE / 2026",
+        alt:
+          "Layered cultural map positioning Jordan among regional routes, memory fields, craft traditions, desert passages, and shared histories."
       }
     },
     {
@@ -309,8 +328,17 @@ const siteContent = {
         "Explores the threshold between tool, human, and machine."
       ],
       hero: {
-        ...sharedPortfolioVisual,
-        caption: "Shared portfolio visual / Architecture of Elsewhere"
+        src: "assets/images/the-mechanics-of-becoming.webp",
+        srcset:
+          "assets/images/the-mechanics-of-becoming-1100.webp 1100w, assets/images/the-mechanics-of-becoming.webp 1724w",
+        width: 1724,
+        height: 1293,
+        orientation: "landscape",
+        fit: "contain",
+        mediaClass: "media--landscape media--render",
+        caption: "THE MECHANICS OF BECOMING / HUMAN–MACHINE HISTORY / 2026",
+        alt:
+          "Warm sepia corridor of monumental engraved stone walls, an olive tree, mechanical artefacts, and a solitary walking figure."
       }
     }
   ]

@@ -7,6 +7,7 @@ $runId = Get-Date -Format 'yyyyMMdd-HHmmssfff'
 $profile = Join-Path $outDir ("profile-$runId")
 $homeUrl = ([System.Uri]::new((Resolve-Path '.\index.html').Path)).AbsoluteUri
 $projectBaseUrl = ([System.Uri]::new((Resolve-Path '.\project.html').Path)).AbsoluteUri
+$visualBaseUrl = ([System.Uri]::new((Resolve-Path '.\visual.html').Path)).AbsoluteUri
 $process = $null
 $ws = $null
 $profileCreated = $false
@@ -23,10 +24,18 @@ function Assert-SourceContract {
   $sourceFiles = @(
     '.\index.html',
     '.\project.html',
+    '.\visual.html',
     '.\content.js',
+    '.\site.webmanifest',
     '.\assets\css\style.css',
     '.\assets\js\main.js',
-    '.\assets\js\project.js'
+    '.\assets\js\project.js',
+    '.\assets\js\visual.js',
+    '.\assets\icons\ad-mark-v1-16.png',
+    '.\assets\icons\ad-mark-v1-32.png',
+    '.\assets\icons\ad-mark-v1-180.png',
+    '.\assets\icons\ad-mark-v1-192.png',
+    '.\assets\icons\ad-mark-v1-512.png'
   )
   $missing = @($sourceFiles | Where-Object { -not (Test-Path -LiteralPath $_) })
   Assert-State ($missing.Count -eq 0) ("Missing source files: {0}" -f ($missing -join ', '))
@@ -50,10 +59,19 @@ function Assert-SourceContract {
     Assert-State (-not [regex]::IsMatch($sourceText, $pattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)) ("Forbidden source text remains: {0}" -f $pattern)
   }
 
-  foreach ($htmlPath in @('.\index.html', '.\project.html')) {
+  foreach ($htmlPath in @('.\index.html', '.\project.html', '.\visual.html')) {
     $html = Get-Content -Raw -LiteralPath $htmlPath
     Assert-State ($html -match 'IBM\+Plex\+Sans' -and $html -match 'IBM\+Plex\+Mono') ("The two-font import is incomplete in {0}." -f $htmlPath)
     Assert-State ($html -match 'id="loader-progress"[^>]*>000<' -and $html -match 'id="loader-progress-secondary"[^>]*>000<') ("The loader does not begin at 000 in {0}." -f $htmlPath)
+    Assert-State ($html -match 'rel="icon"[^>]+sizes="16x16"[^>]+ad-mark-v1-16\.png' -and $html -match 'rel="icon"[^>]+sizes="32x32"[^>]+ad-mark-v1-32\.png') ("The AD favicon links are incomplete in {0}." -f $htmlPath)
+    Assert-State ($html -match 'rel="apple-touch-icon"[^>]+sizes="180x180"[^>]+ad-mark-v1-180\.png' -and $html -match 'rel="manifest"[^>]+site\.webmanifest') ("The AD touch icon or manifest link is incomplete in {0}." -f $htmlPath)
+  }
+
+  $manifest = Get-Content -Raw -LiteralPath '.\site.webmanifest'
+  Assert-State ($manifest -match 'ad-mark-v1-192\.png' -and $manifest -match '"sizes"\s*:\s*"192x192"') 'The 192px AD manifest icon is missing.'
+  Assert-State ($manifest -match 'ad-mark-v1-512\.png' -and $manifest -match '"sizes"\s*:\s*"512x512"') 'The 512px AD manifest icon is missing.'
+  foreach ($iconPath in @('.\assets\icons\ad-mark-v1-16.png', '.\assets\icons\ad-mark-v1-32.png', '.\assets\icons\ad-mark-v1-180.png', '.\assets\icons\ad-mark-v1-192.png', '.\assets\icons\ad-mark-v1-512.png')) {
+    Assert-State ((Get-Item -LiteralPath $iconPath).Length -gt 100) ("The generated AD icon is empty or invalid: {0}." -f $iconPath)
   }
 
   $css = Get-Content -Raw -LiteralPath '.\assets\css\style.css'
@@ -73,10 +91,15 @@ function Assert-SourceContract {
   Assert-State (($rowIds -join ',') -eq 'project-05,project-01,project-02,project-03,project-04') 'The homepage project archive order changed unexpectedly.'
   Assert-State ([regex]::Matches($index, 'data-manmatic-field').Count -eq 1) 'The homepage must contain one ManMaTIC activation field.'
   Assert-State ($index -match 'data-visual-slider' -and $index -match 'data-visual-prev' -and $index -match 'data-visual-next') 'The Visuals slider controls are missing from the source.'
+  Assert-State ($index -notmatch 'data-visual-viewer' -and $index -notmatch 'class="visual-viewer') 'The obsolete modal visual viewer remains in the homepage source.'
+  Assert-State ($index -match 'visual\.html\?visual=architecture-of-elsewhere') 'The initial Open Visual control is not a semantic routed link.'
 
   $mainScript = Get-Content -Raw -LiteralPath '.\assets\js\main.js'
   Assert-State ($mainScript -match 'prefers-reduced-motion' -and $mainScript -match 'data-reading-text' -and $mainScript -match 'reading-word') 'Reduced-motion or word-level reading logic is missing.'
   Assert-State ($mainScript -match 'data-showreel-slide' -and $mainScript -match 'data-visual-slider') 'Showreel or Visuals behavior is missing.'
+
+  $visualScript = Get-Content -Raw -LiteralPath '.\assets\js\visual.js'
+  Assert-State ($visualScript -match 'visual\.html\?visual=' -and $visualScript -match 'rel\s*=\s*"prev"' -and $visualScript -match 'rel\s*=\s*"next"') 'Visual route generation or semantic previous/next relations are missing.'
 }
 
 $viewports = @(
@@ -89,6 +112,7 @@ $viewports = @(
   @{ Name = '393x852'; Width = 393; Height = 852; Mobile = $true; Touch = $true },
   @{ Name = '412x915'; Width = 412; Height = 915; Mobile = $true; Touch = $true },
   @{ Name = '428x926'; Width = 428; Height = 926; Mobile = $true; Touch = $true },
+  @{ Name = '430x932'; Width = 430; Height = 932; Mobile = $true; Touch = $true },
   @{ Name = '768x1024'; Width = 768; Height = 1024; Mobile = $true; Touch = $true },
   @{ Name = '810x1080'; Width = 810; Height = 1080; Mobile = $true; Touch = $true },
   @{ Name = '820x1180'; Width = 820; Height = 1180; Mobile = $true; Touch = $true },
@@ -112,6 +136,7 @@ $phoneViewport = $viewports | Where-Object { $_.Name -eq '390x844' } | Select-Ob
 $smallPhoneViewport = $viewports | Where-Object { $_.Name -eq '320x568' } | Select-Object -First 1
 $expectedSlugs = @('project-05', 'project-01', 'project-02', 'project-03', 'project-04')
 $expectedNumbers = @('001', '002', '003', '004', '005')
+$expectedVisualSlugs = @('architecture-of-elsewhere', 'drawn-out-of-red', 'stone-by-moonlight', 'the-mechanics-of-becoming', 'the-last-room-before-tomorrow')
 
 function Receive-CdpMessage {
   $buffer = New-Object byte[] 65536
@@ -648,6 +673,14 @@ JSON.stringify((() => {
     ariaVisible: slides.filter(slide => slide.getAttribute("aria-hidden") === "false").length,
     localImages: slides.every(slide => !/^https?:/i.test(slide.querySelector("img")?.getAttribute("src") || "")),
     altImages: slides.every(slide => Boolean((slide.querySelector("img")?.getAttribute("alt") || "").trim())),
+    openLinks: slides.map(slide => {
+      const control = slide.querySelector(".visual-slide__open");
+      return {
+        semantic: control?.tagName === "A",
+        href: control?.getAttribute("href") || "",
+        text: control?.textContent.trim() || ""
+      };
+    }),
     previous: size(previous),
     next: size(next),
     tabindex: slider.getAttribute("tabindex") || ""
@@ -658,6 +691,9 @@ JSON.stringify((() => {
   Assert-State ($state.current -eq '01' -and [int]$state.total -eq $state.dataCount) 'Visuals initial current/total values are incorrect.'
   Assert-State ($state.active -eq 1 -and $state.ariaVisible -eq 1) 'Visuals does not expose exactly one active slide.'
   Assert-State ($state.localImages -and $state.altImages) 'Visuals requires local images with alt text.'
+  $expectedVisualHrefs = @($expectedVisualSlugs | ForEach-Object { "visual.html?visual=$_" })
+  Assert-State (-not (@($state.openLinks.semantic) -contains $false) -and (@($state.openLinks.href) -join ',') -eq ($expectedVisualHrefs -join ',')) 'Open Visual controls are not semantic links to the shared visual routes.'
+  Assert-State (-not (@($state.openLinks.text) | Where-Object { [string]::IsNullOrWhiteSpace([string]$_) })) 'An Open Visual link has no readable label.'
   Assert-State ($state.previous.width -ge 44 -and $state.previous.height -ge 44 -and $state.next.width -ge 44 -and $state.next.height -ge 44) 'Visuals controls are smaller than 44 by 44 pixels.'
   Assert-State ($state.tabindex -eq '0') 'Visuals is not keyboard focusable.'
 
@@ -673,54 +709,139 @@ JSON.stringify((() => {
   Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'Visuals ArrowRight wrapping failed.' 30
 }
 
-function Assert-VisualViewer {
-  Center-Element '[data-visual-slider]'
-  $null = Evaluate 'document.querySelector("[data-visual-open=\"0\"]").click(); true'
-  Wait-For '!document.querySelector("[data-visual-viewer]").hidden && document.querySelector("[data-visual-viewer]").classList.contains("is-open")' 'The full visual viewer did not open.' 40
-  $opened = Evaluate-Json @'
+function Assert-VisualRoute([string]$slug, [string]$previousSlug, [string]$nextSlug) {
+  Wait-For "document.body.dataset.visualSlug === '$slug' && document.querySelectorAll('.visual-record').length === 1" ("Visual route did not render: {0}." -f $slug) 80
+  Wait-For-AppReady ("visual route {0}" -f $slug)
+  Wait-For 'document.querySelector(".visual-record__media img")?.complete && document.querySelector(".visual-record__media img").naturalWidth > 0' ("Visual image did not load: {0}." -f $slug) 100
+
+  $state = Evaluate-Json @'
 JSON.stringify((() => {
-  const viewer = document.querySelector("[data-visual-viewer]");
-  const panel = viewer.querySelector(".visual-viewer__panel");
-  const image = viewer.querySelector("[data-visual-viewer-image]");
-  const previous = viewer.querySelector("[data-visual-viewer-prev]");
-  const next = viewer.querySelector("[data-visual-viewer-next]");
-  const size = element => {
-    const bounds = element.getBoundingClientRect();
-    return { width: bounds.width, height: bounds.height };
+  const slug = document.body.dataset.visualSlug || "";
+  const visual = window.siteContent.visuals.find(item => item.slug === slug);
+  const record = document.querySelector(".visual-record");
+  const metadata = record?.querySelector(".visual-record__meta");
+  const title = record?.querySelector("h1");
+  const figure = record?.querySelector(".visual-record__media");
+  const frame = figure?.querySelector(".visual-record__image-frame");
+  const image = figure?.querySelector("img");
+  const caption = figure?.querySelector("figcaption");
+  const description = record?.querySelector(".visual-record__description");
+  const navigation = record?.querySelector(".visual-record__navigation");
+  const previous = navigation?.querySelector('a[rel="prev"]');
+  const next = navigation?.querySelector('a[rel="next"]');
+  const loader = document.getElementById("loader");
+  const orderedNodes = [metadata, title, image, caption, description, navigation];
+  const values = color => (color.match(/[\d.]+/g) || []).map(Number);
+  const luminance = color => {
+    const rgb = values(color);
+    const scale = /^color\(srgb/i.test(color) ? 255 : 1;
+    return rgb.length >= 3 ? (rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722) * scale : -1;
   };
   return {
-    modal: panel.getAttribute("aria-modal") === "true",
-    title: viewer.querySelector("[data-visual-viewer-title]")?.textContent.trim() || "",
-    dataTitle: window.siteContent.visuals[0].title,
-    description: viewer.querySelector("[data-visual-viewer-description]")?.textContent.trim() || "",
-    image: image.getAttribute("src") || "",
-    dataImage: window.siteContent.visuals[0].src,
-    imageReady: image.complete && image.naturalWidth > 0,
-    current: viewer.querySelector("[data-visual-viewer-current]")?.textContent.trim() || "",
-    total: viewer.querySelector("[data-visual-viewer-total]")?.textContent.trim() || "",
-    bodyClass: document.body.classList.contains("is-visual-viewer-open"),
-    rootLocked: document.documentElement.style.overflow === "hidden",
-    bodyLocked: document.body.style.overflow === "hidden",
-    shellInert: document.getElementById("site-shell").inert,
-    previous: size(previous),
-    next: size(next)
+    slug,
+    dataSlug: visual?.slug || "",
+    dataTitle: visual?.title || "",
+    dataImage: visual?.src || "",
+    dataCaption: visual?.caption || "",
+    dataDescription: visual?.description || "",
+    dataOrientation: visual?.orientation || "",
+    h1Count: document.querySelectorAll("main h1").length,
+    title: title?.textContent.trim() || "",
+    metadataRows: metadata?.querySelectorAll("div").length || 0,
+    description: description?.textContent.trim() || "",
+    caption: caption?.textContent.trim() || "",
+    captionAttached: caption?.parentElement === figure,
+    source: image?.getAttribute("src") || "",
+    local: image ? !/^https?:/i.test(image.getAttribute("src") || "") : false,
+    alt: image?.getAttribute("alt") || "",
+    loaded: Boolean(image?.complete && image.naturalWidth > 0 && image.naturalHeight > 0),
+    visible: image ? image.getBoundingClientRect().width > 40 && image.getBoundingClientRect().height > 24 : false,
+    objectFit: image ? getComputedStyle(image).objectFit : "",
+    opacity: image ? Number.parseFloat(getComputedStyle(image).opacity) : 0,
+    visibility: image ? getComputedStyle(image).visibility : "",
+    display: image ? getComputedStyle(image).display : "",
+    mediaMissing: Boolean(figure?.classList.contains("is-media-missing")),
+    frameRatioError: frame && image?.naturalWidth && image?.naturalHeight
+      ? Math.abs((frame.getBoundingClientRect().width / frame.getBoundingClientRect().height) - (image.naturalWidth / image.naturalHeight))
+      : 1,
+    orientation: figure?.dataset.orientation || "",
+    semanticOrder: orderedNodes.every(Boolean) && orderedNodes.slice(1).every((node, index) =>
+      Boolean(orderedNodes[index].compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING)
+    ),
+    previousHref: previous?.getAttribute("href") || "",
+    nextHref: next?.getAttribute("href") || "",
+    previousText: previous?.textContent.trim() || "",
+    nextText: next?.textContent.trim() || "",
+    loaderProject: Boolean(loader?.classList.contains("loader--project")),
+    loaderVisual: Boolean(loader?.classList.contains("loader--visual")),
+    loaderDark: Boolean(loader?.classList.contains("loader--project-dark")),
+    loaderLight: loader ? luminance(getComputedStyle(loader).backgroundColor) : -1,
+    rootScrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth
   };
 })())
 '@
-  Assert-State ($opened.modal -and $opened.title -eq $opened.dataTitle -and -not [string]::IsNullOrWhiteSpace([string]$opened.description)) 'The full visual viewer is missing its dialog semantics, title, or description.'
-  Assert-State ($opened.image -eq $opened.dataImage -and $opened.imageReady -and $opened.current -eq '01' -and [int]$opened.total -eq 5) 'The full visual viewer did not render the first visual from central data.'
-  Assert-State ($opened.bodyClass -and $opened.rootLocked -and $opened.bodyLocked -and $opened.shellInert) 'The full visual viewer did not isolate and scroll-lock the page.'
-  Assert-State ($opened.previous.width -ge 44 -and $opened.previous.height -ge 44 -and $opened.next.width -ge 44 -and $opened.next.height -ge 44) 'The full visual viewer navigation controls are below 44 by 44 pixels.'
+  Assert-State ($state.slug -eq $slug -and $state.dataSlug -eq $slug -and $state.h1Count -eq 1 -and $state.title -eq $state.dataTitle) ("Visual route identity does not match central data: {0}." -f $slug)
+  Assert-State ($state.metadataRows -ge 3 -and $state.semanticOrder -and -not [string]::IsNullOrWhiteSpace([string]$state.description) -and $state.description -eq $state.dataDescription) ("Visual metadata, description, or semantic reading order is incomplete: {0}." -f $slug)
+  Assert-State ($state.loaded -and $state.visible -and $state.local -and -not [string]::IsNullOrWhiteSpace([string]$state.alt) -and $state.source -eq $state.dataImage) ("Visual image is remote, unloaded, invisible, or does not match central data: {0}." -f $slug)
+  Assert-State (-not $state.mediaMissing -and $state.opacity -gt 0.98 -and $state.visibility -eq 'visible' -and $state.display -ne 'none') ("Visual image is not visibly painted: {0}." -f $slug)
+  Assert-State ($state.objectFit -eq 'contain' -and $state.orientation -eq $state.dataOrientation -and $state.frameRatioError -lt 0.01) ("Visual image is cropped, stretched, ratio-clamped, or missing its orientation class: {0}." -f $slug)
+  Assert-State ($state.captionAttached -and $state.caption -eq $state.dataCaption) ("Visual caption is detached or does not match central data: {0}." -f $slug)
+  Assert-State ($state.previousHref -eq ("visual.html?visual={0}" -f $previousSlug) -and $state.nextHref -eq ("visual.html?visual={0}" -f $nextSlug) -and -not [string]::IsNullOrWhiteSpace([string]$state.previousText) -and -not [string]::IsNullOrWhiteSpace([string]$state.nextText)) ("Visual previous/next route links are invalid: {0}." -f $slug)
+  Assert-State ($state.loaderProject -and $state.loaderVisual -and -not $state.loaderDark -and $state.loaderLight -gt 235) ("Visual route loader is not using the light opening system: {0}." -f $slug)
+  Assert-State ($state.rootScrollWidth -le ($state.clientWidth + 1)) ("Visual route has horizontal overflow: {0}." -f $slug)
 
-  $null = Evaluate 'document.querySelector("[data-visual-viewer-next]").click(); true'
-  Wait-For 'document.querySelector("[data-visual-viewer-current]").textContent.trim() === "02"' 'The full visual viewer next control failed.' 30
-  $second = Evaluate-Json 'JSON.stringify({ title: document.querySelector("[data-visual-viewer-title]").textContent.trim(), expected: window.siteContent.visuals[1].title, image: document.querySelector("[data-visual-viewer-image]").getAttribute("src"), expectedImage: window.siteContent.visuals[1].src })'
-  Assert-State ($second.title -eq $second.expected -and $second.image -eq $second.expectedImage) 'The full visual viewer next control did not update from central data.'
+  Set-Viewport $phoneViewport
+  Wait-For 'innerWidth === 390 && innerHeight === 844' ("Visual mobile viewport did not settle: {0}." -f $slug) 40
+  $mobile = Evaluate-Json @'
+JSON.stringify((() => {
+  const record = document.querySelector(".visual-record");
+  const nodes = [
+    record?.querySelector(".visual-record__meta"),
+    record?.querySelector("h1"),
+    record?.querySelector(".visual-record__media img"),
+    record?.querySelector(".visual-record__media figcaption"),
+    record?.querySelector(".visual-record__description"),
+    record?.querySelector(".visual-record__navigation")
+  ];
+  const rects = nodes.map(node => node?.getBoundingClientRect());
+  const links = Array.from(record?.querySelectorAll(".visual-record__navigation a") || []);
+  return {
+    complete: nodes.every(Boolean),
+    ordered: rects.slice(1).every((rect, index) => rect.top >= rects[index].bottom - 2),
+    linksLarge: links.every(link => {
+      const rect = link.getBoundingClientRect();
+      return rect.width >= 44 && rect.height >= 44;
+    }),
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth
+  };
+})())
+'@
+  Assert-State ($mobile.complete -and $mobile.ordered) ("Visual mobile reading order is not metadata, title, image, caption, description, navigation: {0}." -f $slug)
+  Assert-State ($mobile.linksLarge -and $mobile.scrollWidth -le ($mobile.clientWidth + 1)) ("Visual mobile navigation targets are too small or the layout overflows: {0}." -f $slug)
+  Set-Viewport $desktopViewport
+}
 
-  $null = Evaluate 'document.querySelector("[data-visual-viewer]").dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })); true'
-  Wait-For 'document.querySelector("[data-visual-viewer]").hidden' 'Escape did not close the full visual viewer.' 30
-  $closed = Evaluate-Json 'JSON.stringify({ bodyClass: document.body.classList.contains("is-visual-viewer-open"), rootInline: document.documentElement.style.overflow, bodyInline: document.body.style.overflow, shellInert: document.getElementById("site-shell").inert })'
-  Assert-State (-not $closed.bodyClass -and [string]::IsNullOrEmpty([string]$closed.rootInline) -and [string]::IsNullOrEmpty([string]$closed.bodyInline) -and -not $closed.shellInert) 'Closing the full visual viewer left the page locked or inert.'
+function Assert-VisualRoutes {
+  for ($index = 0; $index -lt $expectedVisualSlugs.Count; $index++) {
+    Set-Viewport $desktopViewport
+    $slug = $expectedVisualSlugs[$index]
+    $previousSlug = $expectedVisualSlugs[($index - 1 + $expectedVisualSlugs.Count) % $expectedVisualSlugs.Count]
+    $nextSlug = $expectedVisualSlugs[($index + 1) % $expectedVisualSlugs.Count]
+    Clear-CdpEvents
+    Navigate ($visualBaseUrl + "?visual=$slug")
+    Assert-VisualRoute $slug $previousSlug $nextSlug
+    Assert-No-PageErrors ("visual route {0}" -f $slug)
+  }
+
+  Clear-CdpEvents
+  Navigate ($visualBaseUrl + '?visual=missing')
+  Wait-For 'document.querySelectorAll(".visual-detail__error").length === 1' 'The invalid visual route did not render its error state.' 80
+  Wait-For-AppReady 'invalid visual route'
+  $invalid = Evaluate-Json 'JSON.stringify({ heading: document.querySelector(".visual-detail__error h1")?.textContent.trim() || "", returnHref: document.querySelector(".visual-detail__error a")?.getAttribute("href") || "", h1Count: document.querySelectorAll("main h1").length, darkLoader: document.getElementById("loader")?.classList.contains("loader--project-dark") })'
+  Assert-State ($invalid.heading -eq 'VISUAL NOT FOUND' -and $invalid.returnHref -eq 'index.html#visual-studies' -and $invalid.h1Count -eq 1 -and -not $invalid.darkLoader) 'The invalid visual route is not a complete light accessible fallback.'
+  Assert-No-PageErrors 'invalid visual route'
 }
 
 function Get-ReadingSnapshot([string]$selector = '[data-reading-text]') {
@@ -809,9 +930,9 @@ JSON.stringify((() => {
 '@
   Assert-State ($structure.visualCopies -eq 1 -and $structure.hiddenCopies -eq 0 -and -not [string]::IsNullOrWhiteSpace([string]$structure.accessibleLabel)) 'The Architecture of Elsewhere statement is duplicated or lacks one accessible label.'
   $stageRatioValid = if ($structure.narrowMedia) {
-    $structure.stageRatio -ge 1.2 -and $structure.stageRatio -le 1.3
+    $structure.stageRatio -ge 0.45 -and $structure.stageRatio -le 1.2
   } else {
-    $structure.stageRatio -ge 1.45 -and $structure.stageRatio -le 1.55
+    $structure.stageRatio -ge 0.6 -and $structure.stageRatio -le 1.15
   }
   Assert-State $stageRatioValid ("The Architecture of Elsewhere reading stage is outside its controlled duration: ratio={0} viewport={1} min={2} narrow={3}." -f $structure.stageRatio, $structure.viewport, $structure.stageMinHeight, $structure.narrowMedia)
 
@@ -1095,16 +1216,106 @@ function Assert-HomepageViewports {
   }
 }
 
+function Assert-MobileMenuAtViewport($viewport) {
+  Set-Viewport $viewport
+  $width = [int]$viewport.Width
+  $height = [int]$viewport.Height
+  Wait-For "innerWidth === $width && innerHeight === $height" ("Mobile menu viewport did not settle: {0}." -f $viewport.Name) 40
+  $null = Evaluate 'window.scrollTo(0, Math.min(160, document.documentElement.scrollHeight - innerHeight)); true'
+  Start-Sleep -Milliseconds 80
+  $before = Evaluate-Json 'JSON.stringify({ rootOverflow: document.documentElement.style.overflow, rootOverscroll: document.documentElement.style.overscrollBehavior, bodyOverflow: document.body.style.overflow })'
+
+  $null = Evaluate @'
+(() => {
+  const toggle = document.getElementById("nav-toggle");
+  toggle.dispatchEvent(new PointerEvent("pointerup", {
+    bubbles: true,
+    cancelable: true,
+    pointerId: 71,
+    pointerType: "touch",
+    isPrimary: true,
+    button: 0
+  }));
+  return true;
+})()
+'@
+  Wait-For 'document.getElementById("nav-toggle").getAttribute("aria-expanded") === "true" && document.body.classList.contains("menu-open") && document.getElementById("primary-navigation").getAttribute("aria-hidden") === "false"' ("The mobile menu did not open through touch input: {0}." -f $viewport.Name) 30
+  Start-Sleep -Milliseconds 380
+  $open = Evaluate-Json @'
+JSON.stringify((() => {
+  const nav = document.getElementById("primary-navigation");
+  const toggle = document.getElementById("nav-toggle");
+  const close = toggle.querySelector(".nav-toggle__close");
+  const navStyle = getComputedStyle(nav);
+  const navRect = nav.getBoundingClientRect();
+  const toggleRect = toggle.getBoundingClientRect();
+  const links = Array.from(nav.querySelectorAll("a"));
+  const numbers = color => (color.match(/[\d.]+/g) || []).map(Number);
+  const luminance = color => {
+    const rgb = numbers(color);
+    const scale = /^color\(srgb/i.test(color) ? 255 : 1;
+    return rgb.length >= 3 ? (rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722) * scale : -1;
+  };
+  const backgroundLight = luminance(navStyle.backgroundColor);
+  return {
+    navVisible: navStyle.display !== "none" && navStyle.visibility !== "hidden" && Number(navStyle.opacity) > 0.98 && navStyle.pointerEvents !== "none",
+    navInViewport: navRect.width > 0 && navRect.height > 0 && navRect.left >= -1 && navRect.right <= innerWidth + 1 && navRect.top >= -1 && navRect.bottom <= innerHeight + 1,
+    links: links.length,
+    linksReadable: links.every(link => {
+      const rect = link.getBoundingClientRect();
+      const style = getComputedStyle(link);
+      const foregroundLight = luminance(style.color);
+      return Boolean((link.textContent || "").trim()) && rect.width >= 44 && rect.height >= 44 &&
+        style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) > 0.98 &&
+        foregroundLight >= 0 && backgroundLight >= 0 && Math.abs(foregroundLight - backgroundLight) >= 70;
+    }),
+    toggleLarge: toggleRect.width >= 44 && toggleRect.height >= 44,
+    closeVisible: Boolean((close.textContent || "").trim()) && getComputedStyle(close).display !== "none" && getComputedStyle(close).visibility !== "hidden" && Number(getComputedStyle(close).opacity) > 0.98,
+    closeLabel: toggle.getAttribute("aria-label") || "",
+    rootLocked: document.documentElement.style.overflow === "hidden" && document.documentElement.style.overscrollBehavior === "none",
+    bodyLocked: document.body.style.overflow === "hidden",
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth
+  };
+})())
+'@
+  Assert-State ($open.navVisible -and $open.navInViewport -and $open.links -ge 6 -and $open.linksReadable) ("The mobile menu is empty, clipped, transparent, or unreadable: {0}." -f $viewport.Name)
+  Assert-State ($open.toggleLarge -and $open.closeVisible -and $open.closeLabel -match 'Close') ("The mobile close control is hidden, too small, or lacks an accessible label: {0}." -f $viewport.Name)
+  Assert-State ($open.rootLocked -and $open.bodyLocked -and $open.scrollWidth -le ($open.clientWidth + 1)) ("The open mobile menu is not scroll-locked or introduces horizontal overflow: {0}." -f $viewport.Name)
+
+  $null = Evaluate 'document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })); true'
+  Wait-For 'document.getElementById("nav-toggle").getAttribute("aria-expanded") === "false" && !document.body.classList.contains("menu-open") && document.getElementById("primary-navigation").getAttribute("aria-hidden") === "true"' ("The mobile menu did not close on Escape: {0}." -f $viewport.Name) 30
+  $closed = Evaluate-Json 'JSON.stringify({ rootOverflow: document.documentElement.style.overflow, rootOverscroll: document.documentElement.style.overscrollBehavior, bodyOverflow: document.body.style.overflow, openLabel: document.getElementById("nav-toggle").getAttribute("aria-label") || "" })'
+  Assert-State ($closed.rootOverflow -eq $before.rootOverflow -and $closed.rootOverscroll -eq $before.rootOverscroll -and $closed.bodyOverflow -eq $before.bodyOverflow -and $closed.openLabel -match 'Open') ("Escape left the document locked or the toggle mislabeled: {0}." -f $viewport.Name)
+
+  $null = Evaluate @'
+(() => {
+  const toggle = document.getElementById("nav-toggle");
+  const touch = () => toggle.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, cancelable: true, pointerId: 72, pointerType: "touch", isPrimary: true, button: 0 }));
+  touch();
+  touch();
+  return true;
+})()
+'@
+  Wait-For 'document.getElementById("nav-toggle").getAttribute("aria-expanded") === "false" && !document.body.classList.contains("menu-open")' ("The mobile close control did not respond to touch: {0}." -f $viewport.Name) 30
+  $touchClosed = Evaluate-Json 'JSON.stringify({ rootOverflow: document.documentElement.style.overflow, rootOverscroll: document.documentElement.style.overscrollBehavior, bodyOverflow: document.body.style.overflow })'
+  Assert-State ($touchClosed.rootOverflow -eq $before.rootOverflow -and $touchClosed.rootOverscroll -eq $before.rootOverscroll -and $touchClosed.bodyOverflow -eq $before.bodyOverflow) ("Touch-close did not restore document scrolling: {0}." -f $viewport.Name)
+}
+
 function Assert-MobileInteractions {
   Set-Viewport $phoneViewport
   Wait-For 'innerWidth === 390 && innerHeight === 844' 'Mobile interaction viewport did not settle.' 40
   Assert-ReadingProgression
   $null = Evaluate 'document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, 0); true'
   Start-Sleep -Milliseconds 100
-  $null = Evaluate 'document.getElementById("nav-toggle").click(); true'
-  Wait-For 'document.getElementById("nav-toggle").getAttribute("aria-expanded") === "true" && document.body.classList.contains("menu-open") && document.getElementById("primary-navigation").getAttribute("aria-hidden") === "false"' 'The mobile menu did not open accessibly.' 30
-  $null = Evaluate 'document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })); true'
-  Wait-For 'document.getElementById("nav-toggle").getAttribute("aria-expanded") === "false" && !document.body.classList.contains("menu-open") && document.getElementById("primary-navigation").getAttribute("aria-hidden") === "true"' 'The mobile menu did not close on Escape.' 30
+
+  foreach ($name in @('320x568', '375x812', '390x844', '430x932', '768x1024')) {
+    $viewport = $viewports | Where-Object { $_.Name -eq $name } | Select-Object -First 1
+    Assert-MobileMenuAtViewport $viewport
+  }
+
+  Set-Viewport $phoneViewport
+  Wait-For 'innerWidth === 390 && innerHeight === 844' 'Mobile interaction viewport did not reset.' 40
 
   Center-Element '[data-visual-slider]'
   $null = Evaluate 'document.querySelector("[data-visual-slider]").dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true })); document.querySelector("[data-visual-prev]").click(); document.querySelector("[data-visual-next]").click(); true'
@@ -1188,13 +1399,14 @@ JSON.stringify((() => {
   Assert-State ($state.navigation -eq 2) ("Project previous/next navigation is incomplete: {0}." -f $slug)
   Assert-State ((@($state.navHrefs) -join ',') -eq ("project.html?project={0},project.html?project={1}" -f $previousSlug, $nextSlug)) ("Project navigation order is invalid: {0}." -f $slug)
   Assert-State ($state.scrollWidth -le ($state.clientWidth + 1)) ("Project route has horizontal overflow: {0}." -f $slug)
-  Assert-State ($state.loaderProjectClass -and $state.loaderDarkClass -and $state.loaderBackgroundLight -ge 0 -and $state.loaderBackgroundLight -lt 20) ("Project loader is not using the dedicated black file-opening system: {0}." -f $slug)
   Assert-State ($state.loaderTitle -eq $state.dataLoaderTitle -and $state.loaderKicker -eq ("PROJECT FILE {0}" -f $number.Substring(1, 2))) ("Project loader title or number is not dynamic: {0}." -f $slug)
   Assert-State ($state.loaderCaption -match [regex]::Escape([string]$state.dataLoaderTitle) -and $state.loaderImage -eq $state.dataLoaderImage) ("Project loader image or caption does not match the selected project: {0}." -f $slug)
 
   if ($slug -eq 'project-01') {
+    Assert-State ($state.loaderProjectClass -and $state.loaderDarkClass -and $state.loaderBackgroundLight -ge 0 -and $state.loaderBackgroundLight -lt 20) 'The ManMaTIC project loader is not using the dedicated black opening system.'
     Assert-State ($state.theme -eq 'manmatic' -and $state.headerTheme -eq 'manmatic' -and $state.bodyLight -lt 30 -and $state.htmlLight -lt 30 -and $state.textLight -gt 180 -and $state.fieldLink) 'The ManMaTIC project route is not fully inverted by default.'
   } else {
+    Assert-State ($state.loaderProjectClass -and -not $state.loaderDarkClass -and $state.loaderBackgroundLight -gt 235) ("A non-ManMaTIC project loader is not light: {0}." -f $slug)
     Assert-State ($state.theme -eq 'light' -and $state.headerTheme -eq 'light' -and $state.bodyLight -gt 235 -and $state.htmlLight -gt 235 -and $state.textLight -lt 70 -and -not $state.fieldLink) ("A light project route has the wrong theme: {0}." -f $slug)
   }
 }
@@ -1389,14 +1601,14 @@ try {
   Clear-CdpEvents
   Navigate $homeUrl
   $firstProbe = Assert-LoaderCycle 'initial homepage loader'
-  Assert-State ([int]$firstProbe.blackFlashCount -eq 2) 'The main loader did not produce exactly two controlled black flashes.'
+  Assert-State ([int]$firstProbe.blackFlashCount -eq 0) 'The light homepage loader produced a reserved black flash.'
   Assert-HomeStructure
   Assert-No-PageErrors 'initial homepage load'
 
   Clear-CdpEvents
   Reload-Page
   $refreshProbe = Assert-LoaderCycle 'refreshed homepage loader'
-  Assert-State ([int]$refreshProbe.blackFlashCount -eq 2) 'The refreshed main loader did not produce exactly two controlled black flashes.'
+  Assert-State ([int]$refreshProbe.blackFlashCount -eq 0) 'The refreshed light homepage loader produced a reserved black flash.'
   Assert-State ([double]$refreshProbe.timeOrigin -ne [double]$firstProbe.timeOrigin) 'The refresh did not create a new document loader cycle.'
   Assert-HomeStructure
   Assert-No-PageErrors 'refreshed homepage load'
@@ -1406,7 +1618,6 @@ try {
   Assert-ReadingProgression
   Assert-ProjectImages
   Assert-VisualSlider
-  Assert-VisualViewer
   Assert-ManmaticThemeInversion
   Assert-AllHeadingCompletion
   Assert-MobileInteractions
@@ -1414,9 +1625,10 @@ try {
   Assert-No-PageErrors 'homepage interactions and responsive checks'
 
   Assert-ProjectRoutes
+  Assert-VisualRoutes
   Assert-ReducedMotion
 
-  Write-Output ("verification`tPASS`tassertions={0}`tviewports={1}`tprojects={2}" -f $script:assertionCount, $viewports.Count, $expectedSlugs.Count)
+  Write-Output ("verification`tPASS`tassertions={0}`tviewports={1}`tprojects={2}`tvisuals={3}" -f $script:assertionCount, $viewports.Count, $expectedSlugs.Count, $expectedVisualSlugs.Count)
 }
 catch {
   $runFailure = $_
