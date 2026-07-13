@@ -1438,6 +1438,7 @@
       const openIcon = element("span", "", "↗");
       openIcon.setAttribute("aria-hidden", "true");
       openButton.appendChild(openIcon);
+      copy.appendChild(openButton);
 
       const figure = element("figure", "visual-slide__media");
       applyMediaClasses(figure, study);
@@ -1446,7 +1447,7 @@
       imageFrame.dataset.revealVariant = study.reveal || ["horizontal", "split", "vertical"][slideIndex % 3];
       const image = element("img");
       applyImageSource(image, study);
-      image.sizes = "(max-width: 700px) calc(100vw - 36px), (max-width: 960px) 58vw, min(930px, 62vw)";
+      image.sizes = "(max-width: 700px) calc(100vw - 36px), (max-width: 960px) calc(100vw - 48px), min(930px, 62vw)";
       image.loading = "lazy";
       image.decoding = "async";
       image.draggable = false;
@@ -1462,7 +1463,6 @@
       imageFrame.append(image, scan);
       figure.append(
         imageFrame,
-        openButton,
         element("figcaption", "", study.caption || "LOCAL ARCHIVE VISUAL")
       );
       slide.append(copy, figure);

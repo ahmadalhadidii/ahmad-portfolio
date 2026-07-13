@@ -3665,8 +3665,7 @@ html.loader-pending body {
   }
 
   .visual-slide__open {
-    top: 9px;
-    right: 9px;
+    margin-top: 22px;
   }
 
   .visual-links {
@@ -4646,6 +4645,16 @@ html.loader-pending body {
 }
 
 @media (max-width: 960px) {
+  .material-texture {
+    display: none;
+  }
+
+  .ambient-signal {
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+
   .loader__header {
     grid-template-columns: minmax(0, 1fr) minmax(300px, 1fr);
   }
@@ -4666,8 +4675,59 @@ html.loader-pending body {
   }
 
   .visual-slide {
-    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-    gap: clamp(24px, 4vw, 48px);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(22px, 4vw, 36px);
+  }
+
+  .visual-slide__media {
+    order: -1;
+  }
+
+  .visual-slide__open {
+    position: static;
+    inset: auto;
+    min-height: 44px;
+    margin-top: 24px;
+    padding: 12px 13px;
+    justify-self: start;
+  }
+
+  .showreel__project-card {
+    right: auto;
+    bottom: 28px;
+    left: 10px;
+    width: auto;
+    max-width: calc(100% - 20px);
+    padding: 7px 9px;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "file title"
+      "file subtitle";
+    column-gap: 9px;
+    row-gap: 1px;
+    backdrop-filter: none;
+  }
+
+  .showreel__project-card p {
+    grid-area: file;
+    align-self: start;
+    padding-top: 2px;
+    white-space: nowrap;
+  }
+
+  .showreel__project-card strong {
+    grid-area: title;
+    min-width: 0;
+    font-size: clamp(0.78rem, 2.2vw, 1rem);
+    line-height: 1.08;
+  }
+
+  .showreel__project-card span {
+    grid-area: subtitle;
+    min-width: 0;
+    font-size: clamp(0.46rem, 1.1vw, 0.58rem);
+    overflow-wrap: anywhere;
   }
 
   .visual-slide__copy h3 {
@@ -5487,9 +5547,21 @@ html:not([data-initial-theme="manmatic"]) .loader--project.is-ready .project-loa
   }
 
   .visual-slide__open {
-    margin-top: 26px;
+    margin-top: 22px;
   }
 
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .material-texture {
+    display: none;
+  }
+
+  .ambient-signal {
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
 }
 
 @media (max-width: 560px) {
