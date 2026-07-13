@@ -3145,13 +3145,11 @@ html.loader-pending body {
 
 .visual-slide__open {
   width: max-content;
-  position: absolute;
-  top: 12px;
-  right: 12px;
+  position: static;
   z-index: 4;
-  min-height: 34px;
-  margin: 0;
-  padding: 9px 10px;
+  min-height: 44px;
+  margin-top: 24px;
+  padding: 12px 13px;
   border: 1px solid rgba(17, 17, 17, 0.22);
   background: rgba(255, 255, 255, 0.92);
   cursor: pointer;
@@ -3162,6 +3160,17 @@ html.loader-pending body {
   font: 500 0.62rem/1 var(--font-mono);
   letter-spacing: 0.02em;
   touch-action: manipulation;
+}
+
+@media (min-width: 1101px) and (hover: hover) and (pointer: fine) {
+  .visual-slide__open {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    min-height: 34px;
+    margin: 0;
+    padding: 9px 10px;
+  }
 }
 
 .visual-slide__open span {
@@ -4636,6 +4645,77 @@ html.loader-pending body {
 
 /* Final cross-device rules for the digital field components. */
 
+/* Safe layout for tablets, touch devices, and browsers using desktop-site mode. */
+@media (max-width: 1100px), (hover: none) and (pointer: coarse) {
+  .material-texture,
+  .ambient-signal {
+    display: none !important;
+  }
+
+  .visual-slide {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(22px, 4vw, 36px);
+  }
+
+  .visual-slide__copy {
+    min-height: 0;
+    padding: 0;
+  }
+
+  .visual-slide__media {
+    order: -1;
+    height: auto;
+  }
+
+  .visual-slide__open {
+    position: static;
+    inset: auto;
+    min-height: 44px;
+    margin-top: 22px;
+    padding: 12px 13px;
+    justify-self: start;
+  }
+
+  .showreel__project-card {
+    right: 10px;
+    bottom: 28px;
+    left: 10px;
+    width: auto;
+    max-width: calc(100% - 20px);
+    padding: 7px 9px;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "file title"
+      "file subtitle";
+    column-gap: 9px;
+    row-gap: 1px;
+    backdrop-filter: none;
+  }
+
+  .showreel__project-card p {
+    grid-area: file;
+    align-self: start;
+    padding-top: 2px;
+    white-space: nowrap;
+  }
+
+  .showreel__project-card strong {
+    grid-area: title;
+    min-width: 0;
+    font-size: clamp(0.78rem, 2.2vw, 1rem);
+    line-height: 1.08;
+  }
+
+  .showreel__project-card span {
+    grid-area: subtitle;
+    min-width: 0;
+    font-size: clamp(0.46rem, 1.1vw, 0.58rem);
+    overflow-wrap: anywhere;
+  }
+}
+
 @supports (height: 100dvh) {
   @media (max-width: 960px) {
     .site-nav {
@@ -5561,6 +5641,16 @@ html:not([data-initial-theme="manmatic"]) .loader--project.is-ready .project-loa
     animation: none;
     transform: none;
     will-change: auto;
+  }
+
+  .showreel__project-card {
+    bottom: 24px;
+    grid-template-areas: "file title";
+    row-gap: 0;
+  }
+
+  .showreel__project-card span {
+    display: none;
   }
 }
 
