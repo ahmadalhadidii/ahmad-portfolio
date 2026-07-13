@@ -99,6 +99,24 @@
     return `project.html?project=${encodeURIComponent(project.slug)}`;
   }
 
+  const canonicalBase = "https://www.ahmad.manmatic.institute/";
+
+  function absoluteProjectHref(project) {
+    return `${canonicalBase}${projectHref(project)}`;
+  }
+
+  function ensureMeta(selector, attributes) {
+    let node = document.querySelector(selector);
+    if (!node) {
+      node = document.createElement("meta");
+      Object.keys(attributes).forEach(function (name) {
+        node.setAttribute(name, attributes[name]);
+      });
+      document.head.appendChild(node);
+    }
+    return node;
+  }
+
   function setMeta(project) {
     const title = `${navigationTitle(project)} — Ahmad Alhadidii`;
     document.title = title;
@@ -108,9 +126,24 @@
     const descriptionMeta = document.querySelector('meta[name="description"]');
     const ogTitle = document.querySelector('meta[property="og:title"]');
     const ogDescription = document.querySelector('meta[property="og:description"]');
+    const canonicalUrl = absoluteProjectHref(project);
+    const imageUrl = project.hero && project.hero.src
+      ? new URL(project.hero.src, canonicalBase).href
+      : `${canonicalBase}assets/images/architecture-of-elsewhere-1400.jpg`;
     if (descriptionMeta) descriptionMeta.setAttribute("content", description);
     if (ogTitle) ogTitle.setAttribute("content", title);
     if (ogDescription) ogDescription.setAttribute("content", description);
+    [
+      ['meta[property="og:url"]', { property: "og:url" }, canonicalUrl],
+      ['meta[property="og:image"]', { property: "og:image" }, imageUrl],
+      ['meta[name="twitter:title"]', { name: "twitter:title" }, title],
+      ['meta[name="twitter:description"]', { name: "twitter:description" }, description],
+      ['meta[name="twitter:image"]', { name: "twitter:image" }, imageUrl]
+    ].forEach(function (entry) {
+      ensureMeta(entry[0], entry[1]).setAttribute("content", entry[2]);
+    });
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.setAttribute("href", canonicalUrl);
   }
 
   function appendMetadata(parent, project) {
@@ -133,7 +166,7 @@
   }
 
   function createProjectHeader(project) {
-    const header = element("header", "project-header page-width");
+    const header = element("header", "project-header");
     header.dataset.projectTheme = projectTheme(project);
     const eyebrow = element(
       "p",
@@ -151,7 +184,6 @@
     titleVisual.setAttribute("data-scramble", "");
     titleVisual.setAttribute("data-pointer-scan", "");
     titleVisual.setAttribute("data-pointer-text", archiveTitle(project));
-    titleVisual.setAttribute("aria-hidden", "true");
     title.appendChild(titleVisual);
     if (archiveSubtitle(project)) {
       const subtitleVisual = element(
@@ -159,7 +191,6 @@
         "project-header__archive-subtitle",
         archiveSubtitle(project)
       );
-      subtitleVisual.setAttribute("aria-hidden", "true");
       title.append(" ", subtitleVisual);
     }
     const definition = element("p", "project-header__definition", project.definition);
@@ -184,7 +215,7 @@
     const fit = ["contain", "cover"].includes(normalize(project.hero.fit))
       ? normalize(project.hero.fit)
       : "cover";
-    const section = element("section", "project-hero page-width");
+    const section = element("section", "project-hero");
     section.setAttribute("aria-label", "Project visual");
     const figure = element("figure", "project-hero__media image-frame image-reveal");
     figure.classList.add(`media--${fit}`);
@@ -200,22 +231,16 @@
     figure.setAttribute("data-image-reveal", "");
     const crop = element("div", "image-frame__crop");
     const image = element("img");
-    const orientation = normalize(project.hero.orientation) || "landscape";
-    const desktopSize = {
-      wide: "min(1480px, calc(100vw - 64px))",
-      landscape: "min(1180px, calc(100vw - 64px))",
-      square: "min(900px, calc(100vw - 64px))",
-      portrait: "min(700px, calc(100vw - 64px))"
-    }[orientation] || "min(1180px, calc(100vw - 64px))";
     image.src = project.hero.src;
     if (hasText(project.hero.srcset)) image.srcset = project.hero.srcset;
-    image.sizes = `(max-width: 760px) calc(100vw - 36px), ${desktopSize}`;
+    image.sizes = "(max-width: 760px) calc(100vw - 36px), (max-width: 960px) calc(100vw - 48px), min(960px, 56vw)";
     image.alt = project.hero.alt || "";
     if (project.hero.width) image.width = project.hero.width;
     if (project.hero.height) image.height = project.hero.height;
     image.loading = "eager";
     image.decoding = "async";
     image.fetchPriority = "high";
+    image.draggable = false;
     image.style.objectFit = fit;
     crop.appendChild(image);
     figure.appendChild(crop);
@@ -344,12 +369,15 @@
 
     const header = createProjectHeader(project);
     const hero = createHero(project);
+    const intro = element("div", "project-intro page-width");
+    intro.appendChild(header);
+    if (hero) intro.appendChild(hero);
     const overview = createCopySection("01", "OVERVIEW", "Project overview", project.overview);
     const framework = createFramework(project);
     const credits = createCredits(project);
     const navigation = createNavigation(projects, currentIndex);
 
-    [header, hero, overview, framework, credits, navigation].forEach(function (node) {
+    [intro, overview, framework, credits, navigation].forEach(function (node) {
       if (node) article.appendChild(node);
     });
 

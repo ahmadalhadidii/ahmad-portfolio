@@ -4,13 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Selected architecture, research, and computational design project by Ahmad Alhadidii.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#ffffff">
 
   <meta property="og:type" content="article">
   <meta property="og:title" content="Selected Project — Ahmad Alhadidii">
   <meta property="og:description" content="Selected architecture, research, and computational design project by Ahmad Alhadidii.">
+  <meta property="og:url" content="https://www.ahmad.manmatic.institute/project.html">
+  <meta property="og:image" content="https://www.ahmad.manmatic.institute/assets/images/architecture-of-elsewhere-1400.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Selected Project — Ahmad Alhadidii">
+  <meta name="twitter:description" content="Selected architecture, research, and computational design project by Ahmad Alhadidii.">
+  <meta name="twitter:image" content="https://www.ahmad.manmatic.institute/assets/images/architecture-of-elsewhere-1400.jpg">
 
   <title>Selected Project — Ahmad Alhadidii</title>
+  <link rel="canonical" href="https://www.ahmad.manmatic.institute/project.html">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/ad-mark-v1-16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/ad-mark-v1-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/ad-mark-v1-180.png">
@@ -39,6 +47,24 @@
       });
       var theme = project && project.theme === "manmatic" ? "manmatic" : "light";
       var themeColor = document.querySelector('meta[name="theme-color"]');
+
+      if (project) {
+        var displayTitle = project.navigationTitle || project.archiveTitle || project.title;
+        var pageTitle = displayTitle + " — Ahmad Alhadidii";
+        var pageDescription = project.definition || "Selected architecture and design research project by Ahmad Alhadidii.";
+        var canonicalUrl = "https://www.ahmad.manmatic.institute/project.html?project=" + encodeURIComponent(project.slug);
+        var imageUrl = new URL(project.hero.src, "https://www.ahmad.manmatic.institute/").href;
+        document.title = pageTitle;
+        document.querySelector('meta[name="description"]').setAttribute("content", pageDescription);
+        document.querySelector('meta[property="og:title"]').setAttribute("content", pageTitle);
+        document.querySelector('meta[property="og:description"]').setAttribute("content", pageDescription);
+        document.querySelector('meta[property="og:url"]').setAttribute("content", canonicalUrl);
+        document.querySelector('meta[property="og:image"]').setAttribute("content", imageUrl);
+        document.querySelector('meta[name="twitter:title"]').setAttribute("content", pageTitle);
+        document.querySelector('meta[name="twitter:description"]').setAttribute("content", pageDescription);
+        document.querySelector('meta[name="twitter:image"]').setAttribute("content", imageUrl);
+        document.querySelector('link[rel="canonical"]').setAttribute("href", canonicalUrl);
+      }
 
       window.__portfolioProjectLoaderData = project ? {
         number: String(parseInt(project.number, 10) || project.number || "").padStart(2, "0"),
@@ -105,7 +131,7 @@
       </header>
       <figure class="project-loader__visual">
           <div class="project-loader__image loader__preview-image">
-            <img data-loader-preview src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="">
+            <img data-loader-preview sizes="(max-width: 700px) calc(100vw - 36px), min(880px, 56vw)" width="1400" height="754" alt="">
             <span class="project-loader__scan"></span>
             <span class="project-loader__slice project-loader__slice--one"></span>
             <span class="project-loader__slice project-loader__slice--two"></span>

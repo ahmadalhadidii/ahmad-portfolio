@@ -39,6 +39,24 @@
     return `visual.html?visual=${encodeURIComponent(visual.slug)}`;
   }
 
+  const canonicalBase = "https://www.ahmad.manmatic.institute/";
+
+  function absoluteVisualHref(visual) {
+    return `${canonicalBase}${visualHref(visual)}`;
+  }
+
+  function ensureMeta(selector, attributes) {
+    let node = document.querySelector(selector);
+    if (!node) {
+      node = document.createElement("meta");
+      Object.keys(attributes).forEach(function (name) {
+        node.setAttribute(name, attributes[name]);
+      });
+      document.head.appendChild(node);
+    }
+    return node;
+  }
+
   function safeClass(value, fallback) {
     const normalized = normalize(value);
     return /^[a-z0-9_-]+$/.test(normalized) ? normalized : fallback;
@@ -46,20 +64,34 @@
 
   function setMeta(visual) {
     const title = `${visual.title} — Ahmad Alhadidii`;
-    const description = visual.description || "Selected visual narrative by Ahmad Alhadidii.";
+    const fullDescription = visual.description || "Selected visual narrative by Ahmad Alhadidii.";
+    const description = fullDescription.length > 158
+      ? `${fullDescription.slice(0, 155).trim()}…`
+      : fullDescription;
+    const canonicalUrl = absoluteVisualHref(visual);
+    const imageUrl = new URL(visual.src, canonicalBase).href;
     document.title = title;
     const selectors = [
       ['meta[name="description"]', description],
       ['meta[property="og:title"]', title],
       ['meta[property="og:description"]', description],
-      ['meta[property="og:image"]', visual.src]
+      ['meta[property="og:image"]', imageUrl],
+      ['meta[property="og:url"]', canonicalUrl],
+      ['meta[name="twitter:title"]', title],
+      ['meta[name="twitter:description"]', description],
+      ['meta[name="twitter:image"]', imageUrl]
     ];
     selectors.forEach(function (entry) {
-      const node = document.querySelector(entry[0]);
-      if (node) node.setAttribute("content", entry[1]);
+      let node = document.querySelector(entry[0]);
+      if (!node) {
+        const isProperty = entry[0].includes("property=");
+        const key = entry[0].match(/="([^"]+)"/)[1];
+        node = ensureMeta(entry[0], isProperty ? { property: key } : { name: key });
+      }
+      node.setAttribute("content", entry[1]);
     });
     const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) canonical.setAttribute("href", visualHref(visual));
+    if (canonical) canonical.setAttribute("href", canonicalUrl);
     const runningHeader = document.getElementById("running-header-text");
     if (runningHeader) {
       runningHeader.textContent = `VISUAL ${visual.index} / ${visual.title.toUpperCase()} / ${visual.year || "ARCHIVE"}`;
@@ -110,6 +142,7 @@
     image.loading = "eager";
     image.decoding = "async";
     image.fetchPriority = "high";
+    image.draggable = false;
     image.addEventListener("error", function () {
       figure.classList.add("is-media-missing");
     }, { once: true });
@@ -120,7 +153,20 @@
 
   function createNarrative(visual) {
     const narrative = element("div", "visual-record__narrative");
-    narrative.appendChild(element("p", "visual-record__description", visual.description || ""));
+    const description = element("p", "visual-record__description");
+    const text = visual.description || "";
+    const emphasis = hasText(visual.emphasis) ? visual.emphasis : "";
+    const emphasisIndex = emphasis ? text.indexOf(emphasis) : -1;
+    if (emphasisIndex >= 0) {
+      description.append(
+        document.createTextNode(text.slice(0, emphasisIndex)),
+        element("strong", "", emphasis),
+        document.createTextNode(text.slice(emphasisIndex + emphasis.length))
+      );
+    } else {
+      description.textContent = text;
+    }
+    narrative.appendChild(description);
     if (hasText(visual.context)) {
       narrative.appendChild(element("p", "visual-record__context", visual.context));
     }
@@ -184,6 +230,7 @@
       "section",
       `visual-record page-width orientation--${safeClass(visual.orientation, "landscape")}`
     );
+    if (visual.accent) record.style.setProperty("--visual-accent", visual.accent);
     record.dataset.visualId = visual.id;
     record.append(
       createHeader(visual, visuals.length),

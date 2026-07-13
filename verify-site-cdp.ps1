@@ -86,9 +86,24 @@ function Assert-SourceContract {
   Assert-State ($badFontDeclarations.Count -eq 0) ("Unexpected font-family declarations: {0}" -f ($badFontDeclarations -join '; '))
 
   $index = Get-Content -Raw -LiteralPath '.\index.html'
+  Assert-State ($index -match '<title>Ahmad Alhadidii — Architecture &amp; Design Portfolio</title>') 'The homepage SEO title is missing from the initial HTML.'
+  Assert-State ($index -match '<meta name="robots" content="index, follow, max-image-preview:large">' -and $index -notmatch 'noindex') 'The homepage robots directive is missing or blocks indexing.'
+  Assert-State ($index -match '<link rel="canonical" href="https://www\.ahmad\.manmatic\.institute/">') 'The homepage canonical URL is incorrect.'
+  Assert-State ($index -notmatch 'opening__name-arabic') 'The Arabic display name should not appear in the visible homepage identity.'
+  $jsonLdMatch = [regex]::Match($index, '<script type="application/ld\+json">\s*(\{.*?\})\s*</script>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+  Assert-State $jsonLdMatch.Success 'Homepage JSON-LD is missing.'
+  $jsonLd = $jsonLdMatch.Groups[1].Value | ConvertFrom-Json
+  Assert-State ($jsonLd.'@graph'.Count -eq 2 -and $jsonLd.'@graph'[1].mainEntity.name -eq 'Ahmad Alhadidii') 'Homepage JSON-LD graph is invalid or incomplete.'
+  Assert-State (Test-Path -LiteralPath '.\robots.txt' -PathType Leaf) 'robots.txt is missing.'
+  Assert-State (Test-Path -LiteralPath '.\sitemap.xml' -PathType Leaf) 'sitemap.xml is missing.'
+  $robots = Get-Content -Raw -LiteralPath '.\robots.txt'
+  $sitemap = Get-Content -Raw -LiteralPath '.\sitemap.xml'
+  Assert-State ($robots -match 'Allow:\s*/' -and $robots -match 'https://www\.ahmad\.manmatic\.institute/sitemap\.xml') 'robots.txt is blocking crawling or references the wrong sitemap.'
+  $sitemapXml = [xml]$sitemap
+  Assert-State ($null -ne $sitemapXml.urlset -and [regex]::Matches($sitemap, '<url>').Count -eq 10 -and $sitemap -notmatch 'project=project-04') 'The XML sitemap is invalid, incomplete, or still contains the removed project.'
   $projectRows = [regex]::Matches($index, 'data-project-id="(project-\d{2})"')
   $rowIds = @($projectRows | ForEach-Object { $_.Groups[1].Value })
-  Assert-State (($rowIds -join ',') -eq 'project-05,project-01,project-02,project-03,project-04') 'The homepage project archive order changed unexpectedly.'
+  Assert-State (($rowIds -join ',') -eq 'project-05,project-01,project-02,project-03') 'The homepage project archive order changed unexpectedly.'
   Assert-State ([regex]::Matches($index, 'data-manmatic-field').Count -eq 1) 'The homepage must contain one ManMaTIC activation field.'
   Assert-State ($index -match 'data-visual-slider' -and $index -match 'data-visual-prev' -and $index -match 'data-visual-next') 'The Visuals slider controls are missing from the source.'
   Assert-State ($index -notmatch 'data-visual-viewer' -and $index -notmatch 'class="visual-viewer') 'The obsolete modal visual viewer remains in the homepage source.'
@@ -134,8 +149,8 @@ $viewports = @(
 $desktopViewport = $viewports | Where-Object { $_.Name -eq '1440x900' } | Select-Object -First 1
 $phoneViewport = $viewports | Where-Object { $_.Name -eq '390x844' } | Select-Object -First 1
 $smallPhoneViewport = $viewports | Where-Object { $_.Name -eq '320x568' } | Select-Object -First 1
-$expectedSlugs = @('project-05', 'project-01', 'project-02', 'project-03', 'project-04')
-$expectedNumbers = @('001', '002', '003', '004', '005')
+$expectedSlugs = @('project-05', 'project-01', 'project-02', 'project-03')
+$expectedNumbers = @('001', '002', '003', '004')
 $expectedVisualSlugs = @('architecture-of-elsewhere', 'drawn-out-of-red', 'stone-by-moonlight', 'the-mechanics-of-becoming', 'the-last-room-before-tomorrow')
 
 function Receive-CdpMessage {
@@ -744,11 +759,13 @@ JSON.stringify((() => {
     dataImage: visual?.src || "",
     dataCaption: visual?.caption || "",
     dataDescription: visual?.description || "",
+    dataEmphasis: visual?.emphasis || "",
     dataOrientation: visual?.orientation || "",
     h1Count: document.querySelectorAll("main h1").length,
     title: title?.textContent.trim() || "",
     metadataRows: metadata?.querySelectorAll("div").length || 0,
     description: description?.textContent.trim() || "",
+    strongText: description?.querySelector("strong")?.textContent.trim() || "",
     caption: caption?.textContent.trim() || "",
     captionAttached: caption?.parentElement === figure,
     source: image?.getAttribute("src") || "",
@@ -782,7 +799,7 @@ JSON.stringify((() => {
 })())
 '@
   Assert-State ($state.slug -eq $slug -and $state.dataSlug -eq $slug -and $state.h1Count -eq 1 -and $state.title -eq $state.dataTitle) ("Visual route identity does not match central data: {0}." -f $slug)
-  Assert-State ($state.metadataRows -ge 3 -and $state.semanticOrder -and -not [string]::IsNullOrWhiteSpace([string]$state.description) -and $state.description -eq $state.dataDescription) ("Visual metadata, description, or semantic reading order is incomplete: {0}." -f $slug)
+  Assert-State ($state.metadataRows -ge 3 -and $state.semanticOrder -and -not [string]::IsNullOrWhiteSpace([string]$state.description) -and $state.description -eq $state.dataDescription -and $state.strongText -eq $state.dataEmphasis) ("Visual metadata, bold emphasis, description, or semantic reading order is incomplete: {0}." -f $slug)
   Assert-State ($state.loaded -and $state.visible -and $state.local -and -not [string]::IsNullOrWhiteSpace([string]$state.alt) -and $state.source -eq $state.dataImage) ("Visual image is remote, unloaded, invisible, or does not match central data: {0}." -f $slug)
   Assert-State (-not $state.mediaMissing -and $state.opacity -gt 0.98 -and $state.visibility -eq 'visible' -and $state.display -ne 'none') ("Visual image is not visibly painted: {0}." -f $slug)
   Assert-State ($state.objectFit -eq 'contain' -and $state.orientation -eq $state.dataOrientation -and $state.frameRatioError -lt 0.01) ("Visual image is cropped, stretched, ratio-clamped, or missing its orientation class: {0}." -f $slug)
@@ -971,6 +988,7 @@ JSON.stringify((() => {
   const bodyStyle = getComputedStyle(document.body);
   const htmlStyle = getComputedStyle(document.documentElement);
   const headerStyle = getComputedStyle(document.querySelector(".site-header"));
+  const headerBounds = document.querySelector(".site-header").getBoundingClientRect();
   const shellStyle = getComputedStyle(document.querySelector(".site-shell"));
   const row = document.querySelector(".project-row[data-manmatic-field]");
   const rowStyle = getComputedStyle(row);
@@ -998,6 +1016,8 @@ JSON.stringify((() => {
     htmlBackgroundLight: luminance(htmlStyle.backgroundColor),
     headerBackgroundLight: luminance(headerStyle.backgroundColor),
     headerTextLight: luminance(headerStyle.color),
+    headerPosition: headerStyle.position,
+    headerTop: headerBounds.top,
     rowBackgroundLight: luminance(rowStyle.backgroundColor),
     readingLight: readingWord ? luminance(getComputedStyle(readingWord).color) : -1,
     themeColor: document.querySelector('meta[name="theme-color"]')?.content || ""
@@ -1008,6 +1028,7 @@ JSON.stringify((() => {
   Assert-State ($dark.bodyBackgroundLight -ge 0 -and $dark.bodyBackgroundLight -lt 30 -and $dark.bodyTextLight -gt 180) 'The page body did not invert to dark with light text.'
   Assert-State ($dark.htmlBackgroundLight -ge 0 -and $dark.htmlBackgroundLight -lt 30) 'The root canvas remained light during ManMaTIC inversion.'
   Assert-State ($dark.headerBackgroundLight -ge 0 -and $dark.headerBackgroundLight -lt 35 -and $dark.headerTextLight -gt 150) 'The header did not participate in the ManMaTIC inversion.'
+  Assert-State ($dark.headerPosition -eq 'fixed' -and [Math]::Abs([double]$dark.headerTop) -le 1) 'The site header is not fixed at the top while scrolling.'
   Assert-State ($dark.rowBackgroundLight -ge 0 -and $dark.rowBackgroundLight -lt 30 -and $dark.themeColor.ToLower() -eq '#0a0a0a') 'The ManMaTIC field or browser theme color is not dark.'
   Assert-State ($dark.readingLight -gt 150) 'Completed reading text did not adapt to the globally inverted theme.'
 
@@ -1601,14 +1622,14 @@ try {
   Clear-CdpEvents
   Navigate $homeUrl
   $firstProbe = Assert-LoaderCycle 'initial homepage loader'
-  Assert-State ([int]$firstProbe.blackFlashCount -eq 0) 'The light homepage loader produced a reserved black flash.'
+  Assert-State ([int]$firstProbe.blackFlashCount -eq 2) 'The homepage loader did not restore both intentional black glitch flashes.'
   Assert-HomeStructure
   Assert-No-PageErrors 'initial homepage load'
 
   Clear-CdpEvents
   Reload-Page
   $refreshProbe = Assert-LoaderCycle 'refreshed homepage loader'
-  Assert-State ([int]$refreshProbe.blackFlashCount -eq 0) 'The refreshed light homepage loader produced a reserved black flash.'
+  Assert-State ([int]$refreshProbe.blackFlashCount -eq 2) 'The refreshed homepage loader did not replay both intentional black glitch flashes.'
   Assert-State ([double]$refreshProbe.timeOrigin -ne [double]$firstProbe.timeOrigin) 'The refresh did not create a new document loader cycle.'
   Assert-HomeStructure
   Assert-No-PageErrors 'refreshed homepage load'

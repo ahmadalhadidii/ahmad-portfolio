@@ -18,9 +18,9 @@ const sharedPortfolioVisual = {
 
 const siteContent = {
   meta: {
-    title: "Ahmad Alhadidii — Architecture Portfolio",
+    title: "Ahmad Alhadidii — Architecture & Design Portfolio",
     description:
-      "Architecture, design research, and computational design portfolio by Ahmad Alhadidii."
+      "The architecture and design portfolio of Ahmad Alhadidii — أحمد الحديدي, presenting architectural projects, design research, computational work, drawings, and visual explorations."
   },
 
   person: {
@@ -58,7 +58,9 @@ const siteContent = {
       year: "2026",
       category: "Visual Narrative / Conceptual Architecture",
       description:
-        "The red does not colour the space; it consumes it. It settles over the walls, the structure, and the sky until the whole place feels buried inside one heavy breath. Yet a few thin lines of light remain. They cut through the red, catch the edges, and slowly carve the architecture back into view. What survives is not the building itself, but the trace of light refusing to disappear.",
+        "Somewhere between the last drawn line and the first built wall, the ground begins to slip away from the familiar. Paths stretch forward, fragments hover, and the building appears as if it is still deciding what world it belongs to. Above it, distant planets turn the horizon from an ending into an opening. Architecture of Elsewhere holds that unfinished moment when a place is no longer entirely here, but has not yet fully arrived anywhere else.",
+      emphasis: "Architecture of Elsewhere",
+      accent: "#9b5b35",
       context:
         "This image originated from a shot developed during the ManMaTIC process, but it is presented here as an independent visual narrative and architectural experiment. It is not an accurate image or literal rendering of the ManMaTIC building; the actual design does not resemble this architecture.",
       src: "assets/images/architecture-of-elsewhere-2400.jpg",
@@ -81,7 +83,9 @@ const siteContent = {
       year: "2026",
       category: "Visual Narrative / Atmospheric Study",
       description:
-        "Before the place disappears, the red holds it in a final moment between presence and erasure. It fills the air, closes the distance, and leaves the world almost without form. Then a few lines of light begin to cut through, not enough to reveal everything, but enough to pull edges, depth, and space back into existence. What appears is not simply illuminated; it is rescued from the colour that nearly consumed it. If light is the last thing keeping a place alive, what remains when it is gone?",
+        "Before the place disappears, red holds it in a final moment between presence and erasure. It fills the air, closes the distance, and leaves the world almost without form. Then a few lines of light cut through—not enough to reveal everything, but enough to pull edges, depth, and space back into existence. What appears is not simply illuminated; it is rescued from the colour that nearly consumed it. Drawn Out of Red asks: if light is the last thing keeping a place alive, what remains when it is gone?",
+      emphasis: "Drawn Out of Red",
+      accent: "#8f241f",
       context: "Independent visual narrative / atmospheric study.",
       src: "assets/images/drawn-out-of-red.webp",
       srcset:
@@ -105,6 +109,8 @@ const siteContent = {
       relatedProject: "Shila Museum",
       description:
         "Before the night passes, the stone is given one quiet moment beneath the moon. Its roughness no longer speaks only of weight; in the pale light, something ancient begins to feel intimate. The stair does not lead toward a destination, but keeps the body within this encounter, allowing the stone to disappear and return with every step. Stone by Moonlight holds a brief meeting between earth and sky—between something shaped over millions of years and the light that touches it for only a night.",
+      emphasis: "Stone by Moonlight",
+      accent: "#8b603d",
       context:
         "Related to Shila Museum; presented through the visual narrative of stone, light, and spatial encounter rather than as an explanation of the full project.",
       src: "assets/images/stone-by-moonlight.webp",
@@ -127,7 +133,9 @@ const siteContent = {
       year: "2026",
       category: "Spatial Narrative / Human–Machine History",
       description:
-        "Human–Machine History traces the long evolution of the relationship between humans, tools, machines, and technological systems across generations. The journey begins with the Agricultural Revolution, where early tools transformed the way societies lived, worked, and organized themselves. Visitors move through a stone-carved timeline where inventions, mechanisms, and technological milestones unfold across centuries of progress. Through compressed sloping walls, filtered light, and engraved history, the passage turns development into an immersive spatial narrative. As the sequence progresses, the machine is revealed not as something separate from the human, but as part of humanity’s continuous becoming.",
+        "Human–Machine History traces the long evolution of the bond between humans, tools, machines, and technological systems. The journey begins with the Agricultural Revolution, when early tools changed how societies lived, worked, and organized themselves. Visitors move through a stone-carved timeline as inventions and mechanisms unfold across centuries of progress. Compressed sloping walls, filtered light, and engraved histories turn development into an immersive spatial sequence. The Mechanics of Becoming reveals the machine not as something separate from the human, but as part of humanity’s continuous becoming.",
+      emphasis: "The Mechanics of Becoming",
+      accent: "#835b37",
       context: "Human–Machine History / immersive spatial narrative.",
       src: "assets/images/the-mechanics-of-becoming.webp",
       srcset:
@@ -149,7 +157,9 @@ const siteContent = {
       year: "2026",
       category: "Speculative Spatial Narrative / Human–Machine Futures",
       description:
-        "Before tomorrow becomes real, this room holds both a warning and a beginning. The fractured stone is not only a sign of collapse; it is the image of a human–machine future left without human judgment, where machines continue to move while humans remain outside the logic that guides them. Yet the orange transparent layer suggests another possibility: potential still visible, still unfinished, still waiting to be shaped. This is the last room before tomorrow—a place where fear becomes a question, and the question becomes action. If a better future can still be formed, will you take part in shaping it?",
+        "Before tomorrow becomes real, this room holds both a warning and a beginning. The fractured stone is not merely a sign of collapse; it images a human–machine future left without human judgment, where machines continue to move while people remain outside the logic that guides them. Yet the transparent orange layer suggests another possibility: potential remains visible, unfinished, and waiting to be shaped. The Last Room Before Tomorrow is where fear becomes a question, and the question becomes action. If a better future can still be formed, will you take part in shaping it?",
+      emphasis: "The Last Room Before Tomorrow",
+      accent: "#9a4d2b",
       context:
         "Conceptually connected to ManMaTIC; presented as an independent visual narrative rather than a literal project rendering.",
       src: "assets/images/the-last-room-before-tomorrow.webp",
@@ -304,41 +314,6 @@ const siteContent = {
         caption: "GROUND OF CONTINUITY / JORDAN THROUGH MEMORY, MOVEMENT, AND EXCHANGE / 2026",
         alt:
           "Layered cultural map positioning Jordan among regional routes, memory fields, craft traditions, desert passages, and shared histories."
-      }
-    },
-    {
-      id: "project-04",
-      slug: "project-04",
-      number: "005",
-      navigationTitle: "The Mechanics of Becoming",
-      title: "The Mechanics of Becoming",
-      definition:
-        "A spatial timeline of human and machine evolution, carved as a threshold between tools, bodies, and complex systems.",
-      overview:
-        "The Mechanics of Becoming frames human-machine history as a carved architectural passage where milestones, shadows, and visitors become part of a larger temporal mechanism.",
-      year: "2026",
-      location: "",
-      category: "Drawing / Human–Machine History",
-      type: "Speculative Drawing / Timeline",
-      role: "Concept, digital painting, architectural narrative",
-      themes: ["Timeline", "Human–Machine"],
-      points: [
-        "Uses space as a historical timeline.",
-        "Turns technological development into an embodied architectural sequence.",
-        "Explores the threshold between tool, human, and machine."
-      ],
-      hero: {
-        src: "assets/images/the-mechanics-of-becoming.webp",
-        srcset:
-          "assets/images/the-mechanics-of-becoming-1100.webp 1100w, assets/images/the-mechanics-of-becoming.webp 1724w",
-        width: 1724,
-        height: 1293,
-        orientation: "landscape",
-        fit: "contain",
-        mediaClass: "media--landscape media--render",
-        caption: "THE MECHANICS OF BECOMING / HUMAN–MACHINE HISTORY / 2026",
-        alt:
-          "Warm sepia corridor of monumental engraved stone walls, an olive tree, mechanical artefacts, and a solitary walking figure."
       }
     }
   ]

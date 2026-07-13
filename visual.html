@@ -4,15 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Selected visual narrative by Ahmad Alhadidii.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#ffffff">
 
   <meta property="og:type" content="article">
   <meta property="og:title" content="Selected Visual — Ahmad Alhadidii">
   <meta property="og:description" content="Selected visual narrative by Ahmad Alhadidii.">
-  <meta property="og:image" content="assets/images/architecture-of-elsewhere-1400.jpg">
+  <meta property="og:url" content="https://www.ahmad.manmatic.institute/visual.html">
+  <meta property="og:image" content="https://www.ahmad.manmatic.institute/assets/images/architecture-of-elsewhere-1400.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Selected Visual — Ahmad Alhadidii">
+  <meta name="twitter:description" content="Selected visual narrative by Ahmad Alhadidii.">
+  <meta name="twitter:image" content="https://www.ahmad.manmatic.institute/assets/images/architecture-of-elsewhere-1400.jpg">
 
   <title>Selected Visual — Ahmad Alhadidii</title>
-  <link rel="canonical" href="visual.html">
+  <link rel="canonical" href="https://www.ahmad.manmatic.institute/visual.html">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/ad-mark-v1-16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/ad-mark-v1-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/ad-mark-v1-180.png">
@@ -39,6 +45,26 @@
           return String(alias || "").trim().toLowerCase() === normalizedKey;
         });
       });
+
+      if (visual) {
+        var fullDescription = visual.description || "Selected visual narrative by Ahmad Alhadidii.";
+        var pageDescription = fullDescription.length > 158
+          ? fullDescription.slice(0, 155).trim() + "…"
+          : fullDescription;
+        var pageTitle = visual.title + " — Ahmad Alhadidii";
+        var canonicalUrl = "https://www.ahmad.manmatic.institute/visual.html?visual=" + encodeURIComponent(visual.slug);
+        var imageUrl = new URL(visual.src, "https://www.ahmad.manmatic.institute/").href;
+        document.title = pageTitle;
+        document.querySelector('meta[name="description"]').setAttribute("content", pageDescription);
+        document.querySelector('meta[property="og:title"]').setAttribute("content", pageTitle);
+        document.querySelector('meta[property="og:description"]').setAttribute("content", pageDescription);
+        document.querySelector('meta[property="og:url"]').setAttribute("content", canonicalUrl);
+        document.querySelector('meta[property="og:image"]').setAttribute("content", imageUrl);
+        document.querySelector('meta[name="twitter:title"]').setAttribute("content", pageTitle);
+        document.querySelector('meta[name="twitter:description"]').setAttribute("content", pageDescription);
+        document.querySelector('meta[name="twitter:image"]').setAttribute("content", imageUrl);
+        document.querySelector('link[rel="canonical"]').setAttribute("href", canonicalUrl);
+      }
 
       window.__portfolioDetailLoaderData = visual ? {
         number: visual.index || "",

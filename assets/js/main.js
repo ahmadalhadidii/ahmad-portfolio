@@ -10,7 +10,7 @@
     index: "PORTFOLIO FIELD / ARCHITECTURE OF ELSEWHERE / 2026",
     profile: "SUBJECT FILE / AHMAD ALHADIDII / PROFILE",
     cv: "CURRICULUM VITAE / INDEXED RECORD / 2021–2026",
-    work: "SELECTED WORK / PROJECT ARCHIVE / 01–05",
+    work: "SELECTED WORK / PROJECT ARCHIVE / 01–04",
     visual: "VISUALS / IMAGE / THOUGHT / FIELD",
     contact: "CONTACT RECORD / AS-SALT, JORDAN / 2026",
     manmatic: "MANMATIC / HUMAN–MACHINE INTEGRATION / ACTIVE FIELD"
@@ -71,6 +71,39 @@
     if (className) node.className = className;
     if (text !== undefined && text !== null) node.textContent = text;
     return node;
+  }
+
+  function appendEmphasizedText(node, text, emphasis) {
+    const value = String(text || "");
+    const phrase = String(emphasis || "").trim();
+    const index = phrase ? value.indexOf(phrase) : -1;
+    if (index < 0) {
+      node.textContent = value;
+      return node;
+    }
+    node.append(
+      document.createTextNode(value.slice(0, index)),
+      element("strong", "", phrase),
+      document.createTextNode(value.slice(index + phrase.length))
+    );
+    return node;
+  }
+
+  function initProtectedMedia(scope) {
+    const selector = [
+      ".project-row__media img",
+      ".project-hero__media img",
+      ".visual-slide__media img",
+      ".visual-record__media img",
+      ".showreel img"
+    ].join(",");
+    elementsWithin(scope || document, selector).forEach(function (image) {
+      image.draggable = false;
+      if (image.dataset.protectedMedia === "true") return;
+      image.dataset.protectedMedia = "true";
+      image.addEventListener("dragstart", function (event) { event.preventDefault(); });
+      image.addEventListener("contextmenu", function (event) { event.preventDefault(); });
+    });
   }
 
   function setDocumentScrollLock(owner, locked) {
@@ -523,13 +556,13 @@
     }
     const startedAt = performance.now();
     const minimumDuration = isProjectPage
-      ? reducedMotion.matches ? 80 : 620
+      ? reducedMotion.matches ? 70 : 520
       : reducedMotion.matches ? 180 : 1280;
     const maximumDuration = isProjectPage
-      ? reducedMotion.matches ? 180 : 1050
+      ? reducedMotion.matches ? 150 : 820
       : reducedMotion.matches ? 340 : 2100;
     const exitDuration = isProjectPage
-      ? reducedMotion.matches ? 20 : 240
+      ? reducedMotion.matches ? 20 : 200
       : reducedMotion.matches ? 30 : 380;
     const timers = new Set();
     let frameRequest = 0;
@@ -539,6 +572,8 @@
     let resolveBoot;
     let currentProgress = 0;
     let signalStage = 0;
+    const blackFlashPoints = [35, 82];
+    const completedBlackFlashes = new Set();
 
     function schedule(callback, delay) {
       const timer = window.setTimeout(function () {
@@ -652,6 +687,17 @@
               ? "OPENING PROJECT"
               : "FILE ACCESS";
         }
+      }
+
+      if (!isProjectLoader && !reducedMotion.matches) {
+        blackFlashPoints.forEach(function (point) {
+          if (currentProgress < point || completedBlackFlashes.has(point)) return;
+          completedBlackFlashes.add(point);
+          loader.classList.add("is-black-flash");
+          schedule(function () {
+            loader.classList.remove("is-black-flash");
+          }, 90);
+        });
       }
 
       const nextSignalStage = currentProgress >= 100
@@ -1356,6 +1402,7 @@
 
     const slides = studies.map(function (study, slideIndex) {
       const slide = element("article", "visual-slide");
+      if (study.accent) slide.style.setProperty("--visual-accent", study.accent);
       slide.setAttribute("role", "group");
       slide.setAttribute("aria-roledescription", "slide");
       slide.setAttribute(
@@ -1374,7 +1421,12 @@
       const title = element("h3", "pointer-scan", study.title);
       title.setAttribute("data-pointer-scan", "");
       title.setAttribute("data-pointer-text", study.title);
-      copy.append(title, element("p", "", study.description || study.text || ""));
+      const description = appendEmphasizedText(
+        element("p"),
+        study.description || study.text || "",
+        study.emphasis
+      );
+      copy.append(title, description);
       const metadata = element("dl");
       addMetadata(metadata, "RELATED FIELD", study.relatedProject || study.project);
       addMetadata(metadata, "YEAR", study.year);
@@ -1386,7 +1438,6 @@
       const openIcon = element("span", "", "↗");
       openIcon.setAttribute("aria-hidden", "true");
       openButton.appendChild(openIcon);
-      copy.appendChild(openButton);
 
       const figure = element("figure", "visual-slide__media");
       applyMediaClasses(figure, study);
@@ -1398,6 +1449,7 @@
       image.sizes = "(max-width: 700px) calc(100vw - 36px), (max-width: 960px) 58vw, min(930px, 62vw)";
       image.loading = "lazy";
       image.decoding = "async";
+      image.draggable = false;
       image.addEventListener(
         "error",
         function () {
@@ -1408,7 +1460,11 @@
       const scan = element("span", "visual-slide__scan");
       scan.setAttribute("aria-hidden", "true");
       imageFrame.append(image, scan);
-      figure.append(imageFrame, element("figcaption", "", study.caption || "LOCAL ARCHIVE VISUAL"));
+      figure.append(
+        imageFrame,
+        openButton,
+        element("figcaption", "", study.caption || "LOCAL ARCHIVE VISUAL")
+      );
       slide.append(copy, figure);
       track.appendChild(slide);
       return slide;
@@ -1492,10 +1548,11 @@
       }
     });
     viewport.addEventListener("dragstart", function (event) {
-      event.preventDefault();
+      if (event.target.closest("img")) event.preventDefault();
     });
     viewport.addEventListener("pointerdown", function (event) {
       if (event.button !== undefined && event.button !== 0) return;
+      if (event.target.closest("a, button, input, select, textarea")) return;
       pointerId = event.pointerId;
       startX = event.clientX;
       startY = event.clientY;
@@ -1932,11 +1989,11 @@
     manmaticCommitTimer = window.setTimeout(function () {
       commitManmaticState(active, token);
       manmaticCommitTimer = 0;
-    }, active ? 330 : 300);
+    }, active ? 150 : 140);
     manmaticTransitionTimer = window.setTimeout(function () {
       clearManmaticTransition(token);
       manmaticTransitionTimer = 0;
-    }, 690);
+    }, 330);
   }
 
   function setManmaticActive(active) {
@@ -2394,6 +2451,7 @@
   }
 
   function refreshEnhancements(scope) {
+    initProtectedMedia(scope || document);
     initReadingProgress(scope || document);
     initHeadingMotion(scope || document);
     initScrambleText(scope || document);
@@ -2411,6 +2469,7 @@
     hydrateContentMedia();
     initRunningHeader();
     visualSliderController = initVisuals();
+    initProtectedMedia(document);
     initReadingProgress(document);
     initSectionObserver();
     initProjectInteractions();
