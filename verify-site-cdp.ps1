@@ -638,7 +638,7 @@ JSON.stringify((() => {
   Assert-State ($state.sliderDataCount -ge 5) 'Visuals must contain at least five data entries.'
   Assert-State $state.loaderBinaryRemoved 'Loader binary elements were not removed after completion.'
   Assert-State ($state.restoredRecordCount -ge 10 -and $state.visibleRestoredRecords -eq $state.restoredRecordCount) 'Profile, CV, or Contact content is still visually clipped or hidden.'
-  Assert-State ($state.profileMetaCount -eq 6 -and $state.cvGroupCount -ge 8 -and $state.contactLinkCount -eq 5) 'Profile, CV, or Contact content is incomplete.'
+  Assert-State ($state.profileMetaCount -eq 6 -and $state.cvGroupCount -ge 8 -and $state.contactLinkCount -eq 6) 'Profile, CV, or Contact content is incomplete.'
 }
 
 function Assert-ProjectImages {
@@ -912,7 +912,7 @@ function Assert-VisualRoutes {
   Wait-For 'document.querySelectorAll(".visual-detail__error").length === 1' 'The invalid visual route did not render its error state.' 80
   Wait-For-AppReady 'invalid visual route'
   $invalid = Evaluate-Json 'JSON.stringify({ heading: document.querySelector(".visual-detail__error h1")?.textContent.trim() || "", returnHref: document.querySelector(".visual-detail__error a")?.getAttribute("href") || "", h1Count: document.querySelectorAll("main h1").length, darkLoader: document.getElementById("loader")?.classList.contains("loader--project-dark") })'
-  Assert-State ($invalid.heading -eq 'VISUAL NOT FOUND' -and $invalid.returnHref -eq 'index.html#visual-studies' -and $invalid.h1Count -eq 1 -and -not $invalid.darkLoader) 'The invalid visual route is not a complete light accessible fallback.'
+  Assert-State ($invalid.heading -eq 'VISUAL NOT FOUND' -and $invalid.returnHref -eq '/#visual-studies' -and $invalid.h1Count -eq 1 -and -not $invalid.darkLoader) 'The invalid visual route is not a complete light accessible fallback.'
   Assert-No-PageErrors 'invalid visual route'
 }
 
@@ -1524,7 +1524,7 @@ JSON.stringify({
   clientWidth: document.documentElement.clientWidth
 })
 '@
-  Assert-State ($invalid.heading -eq 'PROJECT NOT FOUND' -and $invalid.returnHref -eq 'index.html#work' -and $invalid.h1Count -eq 1) 'The invalid project route is not a complete accessible fallback.'
+  Assert-State ($invalid.heading -eq 'PROJECT NOT FOUND' -and $invalid.returnHref -eq '/#work' -and $invalid.h1Count -eq 1) 'The invalid project route is not a complete accessible fallback.'
   Assert-State ($invalid.scrollWidth -le ($invalid.clientWidth + 1)) 'The invalid project route has horizontal overflow.'
   Assert-No-PageErrors 'invalid project route'
 }

@@ -25,7 +25,7 @@
     const section = element("section", "computation-detail__error page-width");
     section.append(element("p", "", "COMPUTATIONAL ARCHIVE / INVALID ROUTE"), element("h1", "", "STUDY NOT FOUND"));
     const link = element("a", "", "RETURN TO COMPUTATION");
-    link.href = "index.html#computation";
+    link.href = "/#computation";
     section.appendChild(link);
     main.appendChild(section);
   }

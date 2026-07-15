@@ -2508,7 +2508,8 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
   border-left: 1px solid var(--line);
 }
 
-.contact__links a {
+.contact__links > a,
+.contact__phone {
   padding: 15px 0 15px 20px;
   display: grid;
   grid-template-columns: 100px minmax(0, 1fr);
@@ -2518,8 +2519,34 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
   overflow-wrap: anywhere;
 }
 
-.contact__links a span:first-child {
+.contact__links > a span:first-child,
+.contact__phone > span:first-child {
   color: var(--text-secondary);
+}
+
+.contact__phone-content {
+  display: grid;
+  grid-template-columns: minmax(max-content, 1fr) auto;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.contact__phone-number {
+  white-space: nowrap;
+  touch-action: pan-y pinch-zoom;
+}
+
+.contact__phone-actions {
+  display: inline-flex;
+  gap: 16px;
+  white-space: nowrap;
+}
+
+.contact__phone-actions a {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .site-footer {
@@ -4312,7 +4339,8 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
     font-size: clamp(1.75rem, 10vw, 2.7rem);
   }
 
-  .contact__links a {
+  .contact__links > a,
+  .contact__phone {
     grid-template-columns: 1fr;
     gap: 4px;
   }
@@ -4556,7 +4584,8 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
     border-left: 0;
   }
 
-  .contact__links a {
+  .contact__links > a,
+  .contact__phone {
     padding-left: 0;
   }
 
@@ -4740,7 +4769,8 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
     font-size: 1.45rem;
   }
 
-  .contact__links a {
+  .contact__links > a,
+  .contact__phone {
     grid-template-columns: 1fr;
     gap: 4px;
   }

@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
   <meta name="portfolio-build" content="20260715-seo-static-01">
   <meta name="description" content="Ahmad Alhadidii is an architectural designer and design researcher exploring architecture through systems, human experience, computational methods, emerging technologies, and visual communication.">
   <meta name="robots" content="index, follow, max-image-preview:large">
@@ -69,6 +70,13 @@
   <script>
     (function () {
       var root = document.documentElement;
+      var legacyHomePaths = ["/index", "/index/", "/index.html"];
+
+      if (legacyHomePaths.indexOf(window.location.pathname) !== -1) {
+        var cleanHomeUrl = "/" + window.location.search + window.location.hash;
+        window.history.replaceState(window.history.state, "", cleanHomeUrl);
+      }
+
       root.classList.remove("no-js");
       root.classList.add("js");
 
@@ -96,7 +104,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="preload" href="assets/images/architecture-of-elsewhere-1400.jpg" as="image" imagesrcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" imagesizes="(max-width: 960px) 100vw, min(1360px, 86vw)">
-  <link rel="stylesheet" href="assets/css/style.css?v=20260715-seo-static-01">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260715-phone-actions-01">
 
   <script src="content.js?v=20260715-seo-static-01" defer></script>
   <script src="assets/js/main.js?v=20260715-seo-static-01" defer></script>
@@ -658,7 +666,16 @@
           <address class="contact__links">
             <a href="mailto:ahmadalhadidii@manmatic.institute"><span>EMAIL 01</span><span>ahmadalhadidii@manmatic.institute</span></a>
             <a href="mailto:alhadidiahamd@gmail.com"><span>EMAIL 02</span><span>alhadidiahamd@gmail.com</span></a>
-            <a href="tel:+962790652697"><span>PHONE</span><span>+962 79 065 2697</span></a>
+            <div class="contact__phone">
+              <span>PHONE</span>
+              <span class="contact__phone-content">
+                <span class="contact__phone-number">+962 79 065 2697</span>
+                <span class="contact__phone-actions" role="group" aria-label="Phone actions">
+                  <a href="tel:+962790652697">CALL</a>
+                  <a href="https://wa.me/962790652697" target="_blank" rel="noopener noreferrer">WHATSAPP</a>
+                </span>
+              </span>
+            </div>
             <a href="https://www.linkedin.com/in/ahmad-alhadidii-97b796290/" target="_blank" rel="noopener noreferrer"><span>LINKEDIN</span><span>Ahmad Alhadidii ↗</span></a>
             <a href="https://www.instagram.com/ahmad.alhadidii/" target="_blank" rel="noopener noreferrer" aria-label="Instagram profile for Ahmad Alhadidii"><span>INSTAGRAM</span><span>@ahmad.alhadidii ↗</span></a>
           </address>

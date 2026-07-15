@@ -8,11 +8,22 @@
   <meta name="description" content="The requested page is not part of Ahmad Alhadidii’s public architecture and design portfolio.">
   <meta name="theme-color" content="#ffffff">
   <title>Page Not Found — Ahmad Alhadidii</title>
+  <script>
+    (function () {
+      var legacyHomePaths = ["/index", "/index/", "/index.html"];
+
+      if (legacyHomePaths.indexOf(window.location.pathname) !== -1) {
+        var cleanHomeUrl = "/" + window.location.search + window.location.hash;
+        window.history.replaceState(window.history.state, "", cleanHomeUrl);
+        window.location.reload();
+      }
+    })();
+  </script>
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/ad-mark-v1-32.png">
   <link rel="stylesheet" href="/assets/css/style.css?v=20260715-seo-static-01">
 </head>
 <body class="project-page">
-  <header class="site-header"><div class="site-header__inner page-width"><a class="site-header__name" href="/#index">AHMAD ALHADIDII</a><nav class="site-nav" aria-label="404 navigation"><a href="/#index">INDEX</a><a href="/#work">SELECTED WORK</a></nav></div></header>
+  <header class="site-header"><div class="site-header__inner page-width"><a class="site-header__name" href="/">AHMAD ALHADIDII</a><nav class="site-nav" aria-label="404 navigation"><a href="/">INDEX</a><a href="/#work">SELECTED WORK</a></nav></div></header>
   <main id="main-content">
     <section class="project-detail__error page-width" aria-labelledby="not-found-title">
       <p>PORTFOLIO ARCHIVE / 404</p>

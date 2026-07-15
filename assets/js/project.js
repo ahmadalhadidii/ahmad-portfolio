@@ -466,7 +466,7 @@
     const back = element("a", "", "BACK TO WORK ←");
     back.href = "/#work";
     const indexLink = element("a", "", "PORTFOLIO INDEX ↑");
-    indexLink.href = "/#index";
+    indexLink.href = "/";
     top.append(back, indexLink);
 
     if (currentIndex < 0) {
