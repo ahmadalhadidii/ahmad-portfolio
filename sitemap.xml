@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://www.ahmad.manmatic.institute/</loc></url>
-  <url><loc>https://www.ahmad.manmatic.institute/project.html?project=project-05</loc></url>
   <url><loc>https://www.ahmad.manmatic.institute/project.html?project=project-01</loc></url>
+  <url><loc>https://www.ahmad.manmatic.institute/project.html?project=project-05</loc></url>
   <url><loc>https://www.ahmad.manmatic.institute/project.html?project=project-02</loc></url>
-  <url><loc>https://www.ahmad.manmatic.institute/project.html?project=project-03</loc></url>
+  <url><loc>https://www.ahmad.manmatic.institute/project.html?project=khalda-residential-building</loc></url>
+  <url><loc>https://www.ahmad.manmatic.institute/computation.html?study=animated-parametric-model</loc></url>
+  <url><loc>https://www.ahmad.manmatic.institute/computation.html?study=lemniscate-ramp</loc></url>
   <url><loc>https://www.ahmad.manmatic.institute/visual.html?visual=architecture-of-elsewhere</loc></url>
   <url><loc>https://www.ahmad.manmatic.institute/visual.html?visual=drawn-out-of-red</loc></url>
   <url><loc>https://www.ahmad.manmatic.institute/visual.html?visual=stone-by-moonlight</loc></url>

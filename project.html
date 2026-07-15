@@ -54,7 +54,9 @@
         var pageTitle = displayTitle + " — Ahmad Alhadidii";
         var pageDescription = project.definition || "Selected architecture and design research project by Ahmad Alhadidii.";
         var canonicalUrl = "https://www.ahmad.manmatic.institute/project.html?project=" + encodeURIComponent(project.slug);
-        var imageUrl = new URL(project.hero.src, "https://www.ahmad.manmatic.institute/").href;
+        var imageUrl = project.hero && project.hero.src
+          ? new URL(project.hero.src, "https://www.ahmad.manmatic.institute/").href
+          : "https://www.ahmad.manmatic.institute/assets/images/architecture-of-elsewhere-1400.jpg";
         document.title = pageTitle;
         document.querySelector('meta[name="description"]').setAttribute("content", pageDescription);
         document.querySelector('meta[property="og:title"]').setAttribute("content", pageTitle);
@@ -75,7 +77,8 @@
         year: project.year || "ARCHIVE",
         location: project.location || "",
         theme: theme,
-        image: project.hero && project.hero.src ? project.hero.src : "assets/images/architecture-of-elsewhere-1400.jpg",
+        image: project.hero && project.hero.src ? project.hero.src : "",
+        hasImage: Boolean(project.hero && project.hero.src),
         srcset: project.hero && project.hero.srcset ? project.hero.srcset : "",
         objectPosition: project.hero && project.hero.loaderObjectPosition ? project.hero.loaderObjectPosition : "50% 50%"
       } : null;
@@ -178,6 +181,7 @@
           <a href="index.html#profile"><span data-scramble>PROFILE</span></a>
           <a href="index.html#cv"><span data-scramble>CV</span></a>
           <a class="is-active" href="index.html#work" aria-current="location"><span data-scramble>WORK</span></a>
+          <a href="index.html#computation"><span data-scramble>COMPUTATION</span></a>
           <a href="index.html#visual-studies"><span data-scramble>VISUALS</span></a>
           <a href="index.html#contact"><span data-scramble>CONTACT</span></a>
           <a class="site-nav__external" href="https://www.manmatic.institute/" target="_blank" rel="noopener noreferrer" aria-label="Open the ManMaTIC Institute field website in a new tab">MANMATIC FIELD <span aria-hidden="true">↗</span></a>

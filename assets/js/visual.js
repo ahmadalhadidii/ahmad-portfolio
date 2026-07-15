@@ -170,6 +170,18 @@
     if (hasText(visual.context)) {
       narrative.appendChild(element("p", "visual-record__context", visual.context));
     }
+    const processRecord = element("section", "visual-record__process");
+    processRecord.appendChild(element("h2", "", "PROCESS RECORD"));
+    const processMeta = element("dl", "visual-record__process-meta");
+    processMeta.appendChild(metadataRow("AUTHORSHIP", visual.authorship || "Ahmad Alhadidii"));
+    processMeta.appendChild(metadataRow("PROCESS", visual.process || "Pending verification"));
+    processMeta.appendChild(metadataRow("TOOLS", visual.tools || "Pending verification"));
+    processMeta.appendChild(metadataRow("AI ROLE", visual.aiRole || "Pending verification"));
+    if (hasText(visual.finalProcess)) {
+      processMeta.appendChild(metadataRow("FINAL PROCESS", visual.finalProcess));
+    }
+    processRecord.appendChild(processMeta);
+    narrative.appendChild(processRecord);
     return narrative;
   }
 

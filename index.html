@@ -183,6 +183,7 @@
           <a href="#profile" data-section-link="profile"><span data-scramble>PROFILE</span></a>
           <a href="#cv" data-section-link="cv"><span data-scramble>CV</span></a>
           <a href="#work" data-section-link="work"><span data-scramble>WORK</span></a>
+          <a href="#computation" data-section-link="computation"><span data-scramble>COMPUTATION</span></a>
           <a href="#visual-studies" data-section-link="visual"><span data-scramble>VISUALS</span></a>
           <a href="#contact" data-section-link="contact"><span data-scramble>CONTACT</span></a>
           <a class="site-nav__external" href="https://www.manmatic.institute/" target="_blank" rel="noopener noreferrer" aria-label="Open the ManMaTIC Institute field website in a new tab">MANMATIC FIELD <span aria-hidden="true">↗</span></a>
@@ -283,7 +284,7 @@
               <span class="profile-portrait__axis profile-portrait__axis--y" aria-hidden="true"></span>
               <span class="profile-portrait__coordinate profile-portrait__coordinate--top" aria-hidden="true">AX / 31.08.03 / 32.0392° N</span>
               <span class="profile-portrait__coordinate profile-portrait__coordinate--side" aria-hidden="true">SUBJECT 001 / REG. A</span>
-              <img class="profile-portrait__image" data-pixel-image src="assets/images/profile.webp" srcset="assets/images/profile-800.webp 800w, assets/images/profile.webp 1200w" sizes="(max-width: 760px) calc(100vw - 36px), 34vw" width="1200" height="1500" alt="Portrait of architect and design researcher Ahmad Alhadidii." loading="lazy" decoding="async">
+              <img class="profile-portrait__image" data-pixel-image src="assets/images/profile.webp" sizes="(max-width: 760px) calc(100vw - 36px), 34vw" width="1200" height="1500" alt="Portrait of architect and design researcher Ahmad Alhadidii." loading="lazy" decoding="async">
               <span class="pixel-portrait__grid" data-pixel-grid aria-hidden="true"></span>
               <span class="profile-portrait__scan" aria-hidden="true"></span>
               <span class="profile-portrait__registration" aria-hidden="true">+ &nbsp; 001 &nbsp; +</span>
@@ -347,7 +348,6 @@
                 <p class="cv-entry__note">Supervised by Eng. Shaker Khulief</p>
                 <ol class="indexed-list">
                   <li>Worked on architectural plans, elevations, and design development tasks.</li>
-                  <li>Assisted with light design modifications under supervision.</li>
                   <li>Produced architectural drawings, presentation visuals, and AI-assisted renderings.</li>
                   <li>Gained practical exposure to basic BIM workflows, architectural detailing, and office documentation.</li>
                 </ol>
@@ -487,14 +487,14 @@
         <p class="work__intro reading-text">A selection of projects developed across architecture, research, mapping, environmental design, and speculative drawing.</p>
 
         <div class="project-index" aria-label="Selected projects">
-          <article class="project-row project-row--shila" data-project-index="01" data-project-id="project-05">
-            <a class="project-row__link" href="project.html?project=project-05" aria-label="Project file 01, Shila Museum, The Quarry That Folds Inward">
+          <article class="project-row project-row--shila" data-project-index="01" data-project-order="1" data-project-id="project-05">
+            <a class="project-row__link" href="project.html?project=project-05" aria-label="Project file 01, Shila Stone Museum, The Quarry That Folds Inward">
               <p class="project-row__number" data-scramble aria-hidden="true">001</p>
               <div class="project-row__copy">
                 <p class="project-row__file">PROJECT FILE 01</p>
-                <h3 data-heading aria-label="Shila Museum — The Quarry That Folds Inward"><span class="project-row__archive-title pointer-scan" data-pointer-scan data-pointer-text="SHILA MUSEUM" data-scramble aria-hidden="true">SHILA MUSEUM</span><span class="project-row__archive-subtitle">THE QUARRY THAT FOLDS INWARD</span></h3>
+                <h3 data-heading aria-label="Shila Stone Museum — The Quarry That Folds Inward"><span class="project-row__archive-title pointer-scan" data-pointer-scan data-pointer-text="SHILA (STONE) MUSEUM" data-scramble aria-hidden="true">SHILA (STONE) MUSEUM</span><span class="project-row__archive-subtitle">THE QUARRY THAT FOLDS INWARD</span></h3>
                 <p>A museum concept where the quarry folds inward, turning stone, water, shadow, and void into spatial memory.</p>
-                <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>TYPE</dt><dd>Museum / Stone Memory</dd></div><div><dt>ROLE</dt><dd>Concept, atmosphere, spatial storytelling</dd></div></dl>
+                <dl><div><dt>YEAR</dt><dd>2025</dd></div><div><dt>LOCATION</dt><dd>Sadahalli Quarry / Bengaluru, India</dd></div><div><dt>TYPE</dt><dd>Museum of Geology / Quarry Intervention</dd></div></dl>
               </div>
               <figure class="project-row__media image-frame image-reveal media--contain media--drawing" data-image-reveal data-project-media>
                 <div class="image-frame__crop"><img src="assets/images/shilla.webp" srcset="assets/images/shilla-1400.webp 1400w, assets/images/shilla.webp 2400w" sizes="(max-width: 960px) calc(100vw - 48px), 48vw" width="2400" height="1293" alt="Pale hand-drawn study of Shila Museum arranged around a reflective quarry pool." loading="lazy" decoding="async"></div>
@@ -504,25 +504,41 @@
             </a>
           </article>
 
-          <article class="project-row project-row--manmatic" id="manmatic-project" data-project-index="02" data-project-id="project-01" data-manmatic-field>
-            <a class="project-row__link" href="project.html?project=project-01" aria-label="Project file 02, ManMaTIC, Human–Machine Integration Institute">
+          <article class="project-row project-row--manmatic manmatic-system" id="manmatic-project" data-project-index="02" data-project-order="2" data-project-id="project-01" data-manmatic-system>
+            <a class="project-row__link" href="project.html?project=project-01" aria-label="Project file 02, ManMaTIC, Field to Application">
               <p class="project-row__number" data-scramble aria-hidden="true">002</p>
               <div class="project-row__copy">
                 <p class="project-row__file">PROJECT FILE 02</p>
-                <h3 data-heading aria-label="ManMaTIC — Human–Machine Integration Institute"><span class="project-row__archive-title pointer-scan" data-pointer-scan data-pointer-text="MANMATIC" data-scramble aria-hidden="true">MANMATIC</span><span class="project-row__archive-subtitle">HUMAN–MACHINE INTEGRATION INSTITUTE</span></h3>
-                <p>A research-based institute exploring how humans and intelligent systems collaborate, negotiate, and deploy decisions in real environments.</p>
-                <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>LOCATION</dt><dd>Aqaba</dd></div><div><dt>TYPE</dt><dd>Research Institute</dd></div><div><dt>ROLE</dt><dd>Architecture, research, systems thinking, visual communication</dd></div></dl>
+                <h3 data-heading aria-label="ManMaTIC — Field to Application"><span class="project-row__archive-title pointer-scan" data-pointer-scan data-pointer-text="MANMATIC" data-scramble aria-hidden="true">MANMATIC</span><span class="project-row__archive-subtitle">FIELD TO APPLICATION</span></h3>
+                <p>A research and design field connecting evidence, criteria, protocols, systems, and architectural applications.</p>
+                <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>TYPE</dt><dd>Methodology / Architectural Research and Design Framework</dd></div><div><dt>APPLICATION</dt><dd>Protocol Port / Aqaba</dd></div></dl>
               </div>
               <figure class="project-row__media image-frame image-reveal media--contain media--board" data-image-reveal data-project-media>
-                <div class="image-frame__crop"><img src="assets/images/architecture-of-elsewhere-1400.jpg" srcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" sizes="(max-width: 760px) calc(100vw - 36px), 48vw" width="1400" height="754" alt="Architecture of Elsewhere visual field for the ManMaTIC Institute, combining architectural, planetary, and systems imagery." loading="lazy" decoding="async"></div>
-                <figcaption><span>FIG. 02</span><span>INDEPENDENT VISUAL NARRATIVE / NOT A LITERAL BUILDING RENDERING</span></figcaption>
+                <div class="image-frame__crop"><img src="assets/images/manmatic-field-live.png" sizes="(max-width: 760px) calc(100vw - 36px), 48vw" width="1600" height="1000" alt="Live ManMaTIC field interface showing the research network and evidence structure." loading="lazy" decoding="async"></div>
+                <figcaption><span>THE FIELD</span><span>METHODOLOGY / ARCHITECTURAL RESEARCH AND DESIGN FRAMEWORK</span></figcaption>
               </figure>
               <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
             </a>
-            <a class="manmatic-field__external" href="https://www.manmatic.institute/" target="_blank" rel="noopener noreferrer" aria-label="Open the ManMaTIC Institute field website in a new tab">MANMATIC FIELD <span aria-hidden="true">↗</span></a>
+            <nav class="manmatic-system__index" aria-label="ManMaTIC system index"><p>MANMATIC SYSTEM</p><a href="project.html?project=project-01#methodology">01 / METHODOLOGY</a><a href="project.html?project=project-01#the-field">02 / THE FIELD</a><a href="project.html?project=project-01#thesis-criteria">03 / THESIS + CRITERIA</a><a href="project.html?project=project-01#field-interface">04 / FIELD INTERFACE</a><a href="project.html?project=project-01#protocol-port">05 / PROTOCOL PORT</a></nav>
+            <div class="manmatic-category" aria-label="ManMaTIC field and architectural application records">
+              <article class="manmatic-category__record">
+                <p>01 / THE FIELD</p>
+                <h4>METHODOLOGY / ARCHITECTURAL RESEARCH AND DESIGN FRAMEWORK</h4>
+                <a href="project.html?project=project-01#the-field">READ THE FIELD WITHIN MANMATIC ↗</a>
+              </article>
+              <article class="manmatic-category__record">
+                <p>FROM FIELD TO APPLICATION</p>
+                <h4>PROTOCOL PORT / HUMAN–MACHINE INTEGRATION INSTITUTE</h4>
+                <p>The Field does not end as a diagram or archive. Protocol Port translates its research, criteria, protocols, and design dialogue into the first site-specific architectural application in Aqaba.</p>
+                <figure><img src="assets/images/manmatic/protocol-port-001-1200.jpg" width="1200" height="743" loading="lazy" decoding="async" alt="Axonometric drawing of Protocol Port across an industrial logistics landscape."><figcaption>AQABA / FUNCTION: HUMAN–MACHINE INTEGRATION INSTITUTE</figcaption></figure>
+                <div class="manmatic-category__gallery"><figure><img src="assets/images/manmatic/protocol-port-process-002-900.jpg" width="506" height="900" loading="lazy" decoding="async" alt="Protocol Port hand-drawn development sketches."><figcaption>PROCESS 002 / HAND-DRAWN DEVELOPMENT</figcaption></figure><figure><img src="assets/images/manmatic/protocol-port-process-003-900.jpg" width="653" height="900" loading="lazy" decoding="async" alt="Protocol Port section and elevation studies."><figcaption>PROCESS 003 / SECTION AND ELEVATION STUDIES</figcaption></figure></div>
+                <p>STATUS / UNDER MODIFICATION<br>STILL NEGOTIATING ITS FINAL FORM.</p>
+                <a href="project.html?project=project-01#protocol-port">ENTER PROTOCOL PORT →</a>
+              </article>
+            </div>
           </article>
 
-          <article class="project-row" data-project-index="03" data-project-id="project-02">
+          <article class="project-row" data-project-index="03" data-project-order="3" data-project-id="project-02">
             <a class="project-row__link" href="project.html?project=project-02" aria-label="Project file 03, From Concrete Fatigue to Green Asset">
               <p class="project-row__number" data-scramble aria-hidden="true">003</p>
               <div class="project-row__copy">
@@ -539,7 +555,21 @@
             </a>
           </article>
 
-          <article class="project-row" data-project-index="04" data-project-id="project-03">
+          <article class="project-row project-row--source-pending" data-project-index="04" data-project-order="4" data-project-id="khalda-residential-building">
+            <a class="project-row__link" href="project.html?project=khalda-residential-building" aria-label="Project file 04, Khalda Residential Building, professional training project">
+              <p class="project-row__number" aria-hidden="true">004</p>
+              <div class="project-row__copy">
+                <p class="project-row__file">PROJECT FILE 04</p>
+                <h3 data-heading aria-label="Khalda Residential Building — Professional Training Project"><span class="project-row__archive-title pointer-scan" data-pointer-scan data-pointer-text="KHALDA RESIDENTIAL BUILDING" data-scramble aria-hidden="true">KHALDA RESIDENTIAL BUILDING</span><span class="project-row__archive-subtitle">PROFESSIONAL TRAINING PROJECT</span></h3>
+                <p>A residential building study developed during professional training at BIM Lab within an active office workflow.</p>
+                <dl><div><dt>YEAR</dt><dd>2025</dd></div><div><dt>LOCATION</dt><dd>Khalda / Amman, Jordan</dd></div><div><dt>OFFICE</dt><dd>BIM Lab</dd></div><div><dt>ROLE</dt><dd>Architectural plans, elevations, design development, drawings, and presentation visuals under supervision</dd></div></dl>
+              </div>
+              <div class="project-row__media-status" role="note"><span>MEDIA RECORD</span><strong>IMAGE 004 / SOURCE FILE REQUIRED</strong><p>No substitute image has been assigned.</p></div>
+              <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
+            </a>
+          </article>
+
+          <article class="project-row" data-project-index="99" data-project-order="99" data-project-id="project-03" hidden>
             <a class="project-row__link" href="project.html?project=project-03" aria-label="Project file 04, Ground of Continuity">
               <p class="project-row__number" data-scramble aria-hidden="true">004</p>
               <div class="project-row__copy">
@@ -559,9 +589,32 @@
         </div>
       </section>
 
+      <section class="section computation page-width" id="computation" data-nav-section="computation" aria-labelledby="computation-title">
+        <header class="section-heading section-heading--record">
+          <h2 id="computation-title"><span class="section-heading__code">005 /</span> COMPUTATIONAL SYSTEMS</h2>
+          <p class="section-heading__note">SCRIPT / GEOMETRY / BEHAVIOUR</p>
+        </header>
+        <article class="computation-record" aria-labelledby="computation-study-01">
+          <p class="editorial-label">COMPUTATIONAL STUDY 01</p>
+          <h3 id="computation-study-01">COMPUTATIONAL STUDY 01 / ANIMATED PARAMETRIC MODEL</h3>
+          <p>The source Rhino model, Grasshopper definition, animation, and physical-model files are required before the geometric operation, controlled parameters, transformation cause, or final professional title can be stated accurately.</p>
+          <ol aria-label="Computational study sequence"><li>INPUT</li><li>SCRIPT</li><li>TRANSFORMATION</li><li>BEHAVIOUR</li><li>SPATIAL OUTPUT</li></ol>
+          <p class="computation-record__status">STATUS / SOURCE FILES PENDING INSPECTION</p>
+          <a class="computation-record__open" href="computation.html?study=animated-parametric-model">OPEN STUDY RECORD <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="computation-record" aria-labelledby="computation-study-02">
+          <p class="editorial-label">COMPUTATIONAL STUDY 02</p>
+          <h3 id="computation-study-02">LEMNISCATE RAMP</h3>
+          <p>A mathematical curve is translated into an architectural path. The exact curve and equation remain unpublished until they can be verified directly from the supplied definition.</p>
+          <ol aria-label="Lemniscate ramp sequence"><li>EQUATION</li><li>CURVE</li><li>CONTROL GEOMETRY</li><li>RAMP</li><li>MOVEMENT</li></ol>
+          <p class="computation-record__status">STATUS / EQUATION AND SOURCE FILES PENDING</p>
+          <a class="computation-record__open" href="computation.html?study=lemniscate-ramp">OPEN STUDY RECORD <span aria-hidden="true">↗</span></a>
+        </article>
+      </section>
+
       <section class="section visual-studies page-width" id="visual-studies" data-nav-section="visual" aria-labelledby="visual-studies-title">
         <header class="section-heading section-heading--record">
-          <h2 id="visual-studies-title" aria-label="Visuals"><span class="section-heading__code">004 /</span> <span class="pointer-scan" data-pointer-scan data-pointer-text="VISUALS" data-scramble aria-hidden="true">VISUALS</span></h2>
+          <h2 id="visual-studies-title" aria-label="Visuals"><span class="section-heading__code">006 /</span> <span class="pointer-scan" data-pointer-scan data-pointer-text="VISUALS" data-scramble aria-hidden="true">VISUALS</span></h2>
           <p class="section-heading__note">[ IMAGE / THOUGHT / FIELD ]</p>
         </header>
 
@@ -602,7 +655,7 @@
 
       <section class="section contact page-width" id="contact" data-nav-section="contact" aria-labelledby="contact-title">
         <header class="contact__marker" data-section-marker>
-          <h2 id="contact-title" aria-label="05 / Contact"><span>05</span><span>/</span><span class="pointer-scan" data-pointer-scan data-pointer-text="CONTACT" data-scramble aria-hidden="true">CONTACT</span></h2>
+          <h2 id="contact-title" aria-label="07 / Contact"><span>07</span><span>/</span><span class="pointer-scan" data-pointer-scan data-pointer-text="CONTACT" data-scramble aria-hidden="true">CONTACT</span></h2>
           <span class="contact__marker-rule" aria-hidden="true"></span>
         </header>
 

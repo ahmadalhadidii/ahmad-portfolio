@@ -448,7 +448,7 @@
         function (entries) {
           entries.forEach(function (entry) {
             if (!entry.isIntersecting) return;
-            const isManmaticHeading = Boolean(entry.target.closest("[data-manmatic-field]"));
+            const isManmaticHeading = Boolean(entry.target.closest("[data-manmatic-system]"));
             if (isManmaticHeading && !manmaticActive) return;
             activateHeading(entry.target);
             headingObserver.unobserve(entry.target);
@@ -469,7 +469,7 @@
         textElement.setAttribute("data-scramble", "");
       });
 
-      const isManmaticHeading = Boolean(container.closest("[data-manmatic-field]"));
+      const isManmaticHeading = Boolean(container.closest("[data-manmatic-system]"));
       const bounds = container.getBoundingClientRect();
       if (
         reducedMotion.matches ||
@@ -546,7 +546,11 @@
           preview.removeAttribute("src");
         };
         preview.addEventListener("error", markImageMissing, { once: true });
-        preview.src = projectLoaderData.image;
+        if (projectLoaderData.hasImage === false || !projectLoaderData.image) {
+          markImageMissing();
+        } else {
+          preview.src = projectLoaderData.image;
+        }
         if (projectLoaderData.srcset) preview.srcset = projectLoaderData.srcset;
         else preview.removeAttribute("srcset");
         if (projectLoaderData.objectPosition) {
@@ -1431,6 +1435,7 @@
       addMetadata(metadata, "RELATED FIELD", study.relatedProject || study.project);
       addMetadata(metadata, "YEAR", study.year);
       addMetadata(metadata, "CATEGORY", study.category);
+      addMetadata(metadata, "AI ROLE", study.aiRole || "PENDING VERIFICATION");
       copy.appendChild(metadata);
       const openButton = element("a", "visual-slide__open", "OPEN VISUAL ");
       openButton.href = `visual.html?visual=${encodeURIComponent(study.slug || study.id || String(slideIndex + 1))}`;
@@ -2014,18 +2019,17 @@
       1,
       Math.min(bounds.height, viewportHeight)
     );
-    const center = bounds.top + bounds.height * 0.5;
-    const enterZone = visibilityRatio >= 0.3 &&
-      center >= viewportHeight * 0.25 && center <= viewportHeight * 0.75;
-    const holdZone = visibilityRatio > 0.12 &&
-      center >= viewportHeight * 0.2 && center <= viewportHeight * 0.8;
+    const enterZone = visibilityRatio >= 0.03 &&
+      bounds.top <= viewportHeight * 0.88 && bounds.bottom > viewportHeight * 0.5;
+    const holdZone = visibilityRatio > 0.01 &&
+      bounds.top <= viewportHeight * 0.94 && bounds.bottom > viewportHeight * 0.5;
     const shouldActivate = manmaticDesiredActive ? holdZone : enterZone;
     setManmaticActive(shouldActivate);
   }
 
   function initManmaticTheme() {
     if (!document.body.classList.contains("home-page")) return;
-    manmaticTarget = document.querySelector("[data-manmatic-field]");
+    manmaticTarget = document.querySelector("[data-manmatic-system]");
     manmaticTransitionElement = document.querySelector("[data-manmatic-transition]");
     if (!manmaticTarget) {
       setSiteTheme("light");
@@ -2093,7 +2097,7 @@
 
   function initProjectInteractions() {
     projectRows = Array.from(
-      document.querySelectorAll(".project-row[data-project-index], [data-project-id]")
+      document.querySelectorAll(".project-row[data-project-index]:not([hidden]), .project-row[data-project-id]:not([hidden])")
     );
     if (!projectRows.length) return;
 
@@ -2462,10 +2466,19 @@
     requestScrollEffects();
   }
 
+  function normalizeProjectArchiveOrder() {
+    const archive = document.querySelector(".project-index");
+    if (!archive) return;
+    Array.from(archive.querySelectorAll(":scope > .project-row[data-project-order]"))
+      .sort(function (a, b) { return Number(a.dataset.projectOrder) - Number(b.dataset.projectOrder); })
+      .forEach(function (row) { archive.appendChild(row); });
+  }
+
   function init() {
     respectReducedMotion();
     initAmbientMotion();
     initMobileNavigation();
+    normalizeProjectArchiveOrder();
     hydrateContentMedia();
     initRunningHeader();
     visualSliderController = initVisuals();

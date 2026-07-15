@@ -196,6 +196,14 @@
     const definition = element("p", "project-header__definition", project.definition);
     header.append(eyebrow, title, definition);
     appendMetadata(header, project);
+    if (hasText(project.status)) {
+      const status = element("div", "project-status");
+      status.append(
+        element("p", "project-status__label", `STATUS / ${project.status}`),
+        element("p", "project-status__note", project.statusNote || "")
+      );
+      header.appendChild(status);
+    }
     if (projectTheme(project) === "manmatic") {
       const fieldLink = element("a", "project-header__field-link", "MANMATIC FIELD ↗");
       fieldLink.href = "https://www.manmatic.institute/";
@@ -282,10 +290,113 @@
     return section;
   }
 
+  function createProjectSection(record) {
+    if (!record || !hasText(record.title)) return null;
+    const section = element("section", "project-copy-section project-expanded-section page-width");
+    section.id = normalize(record.title).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const sectionLabel = element("p", "project-copy-section__label", `${record.code || "--"} / RECORD`);
+    const body = element("div", "project-copy-section__body");
+    body.appendChild(element("h2", "", record.title));
+    if (hasText(record.text)) body.appendChild(element("p", "", record.text));
+    if (hasText(record.status)) {
+      body.appendChild(element("p", "project-status__label", `STATUS / ${record.status}`));
+    }
+
+    function createRecordFigure(media, className) {
+      if (!media || !hasText(media.src)) return null;
+      const figure = element("figure", className || "project-record-media");
+      const image = element("img");
+      image.src = media.src;
+      if (hasText(media.srcset)) image.srcset = media.srcset;
+      image.sizes = "(max-width: 760px) calc(100vw - 36px), min(1180px, 82vw)";
+      image.alt = media.alt || "";
+      if (media.width) image.width = media.width;
+      if (media.height) image.height = media.height;
+      image.loading = "lazy";
+      image.decoding = "async";
+      figure.appendChild(image);
+      if (hasText(media.caption)) figure.appendChild(element("figcaption", "", media.caption));
+      return figure;
+    }
+
+    const primaryMedia = createRecordFigure(record.media);
+    if (primaryMedia) body.appendChild(primaryMedia);
+
+    if (Array.isArray(record.facts) && record.facts.length) {
+      const facts = element("dl", "project-facts");
+      record.facts.forEach(function (fact) {
+        if (!Array.isArray(fact) || fact.length < 2) return;
+        const row = element("div");
+        row.append(element("dt", "", fact[0]), element("dd", "", fact[1]));
+        facts.appendChild(row);
+      });
+      body.appendChild(facts);
+    }
+
+    if (Array.isArray(record.items) && record.items.length) {
+      const list = element("ol", "project-sequence");
+      record.items.filter(hasText).forEach(function (item, index) {
+        const row = element("li");
+        row.append(element("span", "", String(index + 1).padStart(2, "0")), element("p", "", item));
+        list.appendChild(row);
+      });
+      body.appendChild(list);
+    }
+
+    if (Array.isArray(record.groups) && record.groups.length) {
+      const groups = element("dl", "project-programme");
+      record.groups.forEach(function (group) {
+        if (!Array.isArray(group) || group.length < 2) return;
+        const row = element("div");
+        row.append(element("dt", "", group[0]), element("dd", "", group[1]));
+        groups.appendChild(row);
+      });
+      body.appendChild(groups);
+    }
+
+    if (Array.isArray(record.roomIndex) && record.roomIndex.length) {
+      body.appendChild(element("h3", "project-room-index__title", "ROOM INDEX"));
+      const rooms = element("dl", "project-room-index");
+      record.roomIndex.forEach(function (room) {
+        if (!Array.isArray(room) || room.length < 2) return;
+        const row = element("div");
+        row.append(element("dt", "", room[0]), element("dd", "", room[1]));
+        rooms.appendChild(row);
+      });
+      body.appendChild(rooms);
+    }
+
+    if (Array.isArray(record.gallery) && record.gallery.length) {
+      const gallery = element("div", "project-record-gallery");
+      record.gallery.forEach(function (media) {
+        const figure = createRecordFigure(media, "project-record-media");
+        if (figure) gallery.appendChild(figure);
+      });
+      body.appendChild(gallery);
+    }
+
+    if (Array.isArray(record.links) && record.links.length) {
+      const links = element("div", "project-record-links");
+      record.links.forEach(function (entry) {
+        if (!Array.isArray(entry) || entry.length < 2) return;
+        const link = element("a", "", entry[0]);
+        link.href = entry[1];
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        links.appendChild(link);
+      });
+      body.appendChild(links);
+    }
+    section.append(sectionLabel, body);
+    return section;
+  }
+
   function createCredits(project) {
     const credits = [
       ["ROLE", project.role],
-      ["CATEGORY", project.category]
+      ["CATEGORY", project.category],
+      ["OFFICE", project.office],
+      ["SUPERVISION", project.supervision]
     ].filter(function (item) {
       return hasText(item[1]);
     });
@@ -373,11 +484,16 @@
     intro.appendChild(header);
     if (hero) intro.appendChild(hero);
     const overview = createCopySection("01", "OVERVIEW", "Project overview", project.overview);
-    const framework = createFramework(project);
+    const framework = Array.isArray(project.sections) && project.sections.length
+      ? null
+      : createFramework(project);
+    const expanded = Array.isArray(project.sections)
+      ? project.sections.map(createProjectSection).filter(Boolean)
+      : [];
     const credits = createCredits(project);
     const navigation = createNavigation(projects, currentIndex);
 
-    [intro, overview, framework, credits, navigation].forEach(function (node) {
+    [intro, overview, framework].concat(expanded, [credits, navigation]).forEach(function (node) {
       if (node) article.appendChild(node);
     });
 
@@ -395,19 +511,31 @@
   function init() {
     const article = document.getElementById("project-detail");
     const content = window.siteContent;
-    const projects = content && Array.isArray(content.projects) ? content.projects : [];
+    const allProjects = content && Array.isArray(content.projects) ? content.projects : [];
+    const projects = allProjects
+      .filter(function (project) { return project.featured !== false; })
+      .sort(function (a, b) { return (a.displayOrder || 999) - (b.displayOrder || 999); });
     if (!article || !projects.length) {
       if (article) renderInvalid(article);
       return;
     }
 
-    const project = findProject(projects, requestedKey());
+    const requested = findProject(allProjects, requestedKey());
+    const project = requested && requested.parentSystem
+      ? findProject(allProjects, requested.parentSystem)
+      : requested;
     if (!project) {
       renderInvalid(article);
       return;
     }
 
     renderProject(article, projects, project);
+    if (requested && requested.parentSystem) {
+      window.requestAnimationFrame(function () {
+        const target = document.getElementById("protocol-port");
+        if (target) target.scrollIntoView({ block: "start" });
+      });
+    }
   }
 
   if (document.readyState === "loading") {

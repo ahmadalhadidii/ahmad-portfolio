@@ -100,11 +100,11 @@ function Assert-SourceContract {
   $sitemap = Get-Content -Raw -LiteralPath '.\sitemap.xml'
   Assert-State ($robots -match 'Allow:\s*/' -and $robots -match 'https://www\.ahmad\.manmatic\.institute/sitemap\.xml') 'robots.txt is blocking crawling or references the wrong sitemap.'
   $sitemapXml = [xml]$sitemap
-  Assert-State ($null -ne $sitemapXml.urlset -and [regex]::Matches($sitemap, '<url>').Count -eq 10 -and $sitemap -notmatch 'project=project-04') 'The XML sitemap is invalid, incomplete, or still contains the removed project.'
-  $projectRows = [regex]::Matches($index, 'data-project-id="(project-\d{2})"')
+  Assert-State ($null -ne $sitemapXml.urlset -and [regex]::Matches($sitemap, '<url>').Count -eq 12 -and $sitemap -notmatch 'project=(project-03|protocol-port)') 'The XML sitemap is invalid, incomplete, or still contains an archived project.'
+  $projectRows = [regex]::Matches($index, 'data-project-id="([^"]+)"')
   $rowIds = @($projectRows | ForEach-Object { $_.Groups[1].Value })
-  Assert-State (($rowIds -join ',') -eq 'project-05,project-01,project-02,project-03') 'The homepage project archive order changed unexpectedly.'
-  Assert-State ([regex]::Matches($index, 'data-manmatic-field').Count -eq 1) 'The homepage must contain one ManMaTIC activation field.'
+  Assert-State (($rowIds -join ',') -eq 'project-05,project-01,project-02,khalda-residential-building,project-03') 'The homepage project source records are incomplete.'
+  Assert-State ([regex]::Matches($index, 'data-manmatic-system').Count -eq 1) 'The homepage must contain one ManMaTIC system boundary.'
   Assert-State ($index -match 'data-visual-slider' -and $index -match 'data-visual-prev' -and $index -match 'data-visual-next') 'The Visuals slider controls are missing from the source.'
   Assert-State ($index -notmatch 'data-visual-viewer' -and $index -notmatch 'class="visual-viewer') 'The obsolete modal visual viewer remains in the homepage source.'
   Assert-State ($index -match 'visual\.html\?visual=architecture-of-elsewhere') 'The initial Open Visual control is not a semantic routed link.'
@@ -149,7 +149,8 @@ $viewports = @(
 $desktopViewport = $viewports | Where-Object { $_.Name -eq '1440x900' } | Select-Object -First 1
 $phoneViewport = $viewports | Where-Object { $_.Name -eq '390x844' } | Select-Object -First 1
 $smallPhoneViewport = $viewports | Where-Object { $_.Name -eq '320x568' } | Select-Object -First 1
-$expectedSlugs = @('project-05', 'project-01', 'project-02', 'project-03')
+$expectedSlugs = @('project-05', 'project-01', 'project-02', 'khalda-residential-building')
+$expectedRowIds = @('project-05', 'project-01', 'project-02', 'khalda-residential-building')
 $expectedNumbers = @('001', '002', '003', '004')
 $expectedVisualSlugs = @('architecture-of-elsewhere', 'drawn-out-of-red', 'stone-by-moonlight', 'the-mechanics-of-becoming', 'the-last-room-before-tomorrow')
 
@@ -519,9 +520,9 @@ function Place-Element([string]$selector, [double]$viewportFraction) {
 function Assert-HomeStructure {
   $expression = @'
 JSON.stringify((() => {
-  const rows = Array.from(document.querySelectorAll(".project-row[data-project-id]"));
+  const rows = Array.from(document.querySelectorAll(".project-row[data-project-id]:not([hidden])"));
   const projects = window.siteContent && Array.isArray(window.siteContent.projects)
-    ? window.siteContent.projects
+    ? window.siteContent.projects.filter(project => project.featured !== false).sort((a, b) => (a.displayOrder || 999) - (b.displayOrder || 999))
     : [];
   const studies = window.siteContent && Array.isArray(window.siteContent.visuals)
     ? window.siteContent.visuals
@@ -538,7 +539,7 @@ JSON.stringify((() => {
     rowIds: rows.map(row => row.dataset.projectId || ""),
     rowNumbers: rows.map(row => (row.querySelector(".project-row__number")?.textContent || "").trim()),
     rowHrefs: rows.map(row => row.querySelector(".project-row__link")?.getAttribute("href") || ""),
-    rowImages: rows.map(row => Boolean(row.querySelector(".project-row__media img"))),
+    rowImages: rows.map(row => Boolean(row.querySelector(".project-row__media img, .project-row__media-status"))),
     dataIds: projects.map(project => project.slug || project.id || ""),
     dataNumbers: projects.map(project => String(project.number || "")),
     duplicateIds: ids.filter((id, index) => ids.indexOf(id) !== index),
@@ -572,7 +573,7 @@ JSON.stringify((() => {
   $state = Evaluate-Json $expression
   Assert-State $state.home 'The homepage body contract is missing.'
   Assert-State ($state.h1Count -eq 1) 'The homepage must have one main h1.'
-  Assert-State ((@($state.rowIds) -join ',') -eq ($expectedSlugs -join ',')) 'Homepage project IDs are out of archive order.'
+  Assert-State ((@($state.rowIds) -join ',') -eq ($expectedRowIds -join ',')) 'Homepage project IDs are out of archive order.'
   Assert-State ((@($state.rowNumbers) -join ',') -eq ($expectedNumbers -join ',')) 'Homepage project numbers are out of archive order.'
   $expectedHrefs = @($expectedSlugs | ForEach-Object { "project.html?project=$_" })
   Assert-State ((@($state.rowHrefs) -join ',') -eq ($expectedHrefs -join ',')) 'Homepage project routes do not match the archive.'
@@ -591,6 +592,11 @@ function Assert-ProjectImages {
   foreach ($slug in $expectedSlugs) {
     $selector = ".project-row[data-project-id='$slug']"
     Center-Element $selector
+    if ($slug -eq 'khalda-residential-building') {
+      $pendingSelector = ConvertTo-Json -InputObject $selector -Compress
+      Assert-State ([bool](Evaluate "Boolean(document.querySelector($pendingSelector)?.querySelector('.project-row__media-status'))")) 'Khalda must expose a controlled media-source record while image 004 is unavailable.'
+      continue
+    }
     $selectorLiteral = ConvertTo-Json -InputObject $selector -Compress
     $readyExpression = @"
 (() => {
@@ -980,7 +986,7 @@ JSON.stringify((() => {
 }
 
 function Assert-ManmaticThemeInversion {
-  Center-Element '.project-row[data-manmatic-field]'
+  Center-Element '.project-row[data-manmatic-system]'
   Wait-For 'document.documentElement.dataset.siteTheme === "manmatic" && document.querySelector("meta[name=theme-color]").content.toLowerCase() === "#0a0a0a"' 'The global ManMaTIC state did not activate.' 50
   Start-Sleep -Milliseconds 1050
   $dark = Evaluate-Json @'
@@ -990,7 +996,7 @@ JSON.stringify((() => {
   const headerStyle = getComputedStyle(document.querySelector(".site-header"));
   const headerBounds = document.querySelector(".site-header").getBoundingClientRect();
   const shellStyle = getComputedStyle(document.querySelector(".site-shell"));
-  const row = document.querySelector(".project-row[data-manmatic-field]");
+  const row = document.querySelector(".project-row[data-manmatic-system]");
   const rowStyle = getComputedStyle(row);
   const readingWord = document.querySelector(".reading-word");
   const numbers = color => (color.match(/[\d.]+/g) || []).map(Number);
@@ -1169,7 +1175,7 @@ JSON.stringify((() => {
     const bounds = button.getBoundingClientRect();
     return { width: bounds.width, height: bounds.height };
   });
-  const projectImages = Array.from(document.querySelectorAll(".project-row__media img, .project-hero img"));
+  const projectImages = Array.from(document.querySelectorAll(".project-row:not([hidden]) .project-row__media img, .project-hero img"));
   const requestedWidth = Number(document.documentElement.dataset.auditWidth || innerWidth);
   const overflowElements = Array.from(document.body.querySelectorAll("*")).filter(visible).map(element => {
     const bounds = element.getBoundingClientRect();
@@ -1395,6 +1401,7 @@ JSON.stringify((() => {
     heroVisible: image ? image.getBoundingClientRect().width > 40 && image.getBoundingClientRect().height > 24 && getComputedStyle(image).visibility !== "hidden" : false,
     overview: document.querySelectorAll(".project-copy-section").length,
     frameworkPoints: document.querySelectorAll(".project-logic-list li").length,
+    expandedSections: document.querySelectorAll(".project-expanded-section").length,
     navigation: links.length,
     navHrefs: links.map(link => link.getAttribute("href") || ""),
     bodyLight: luminance(bodyStyle.backgroundColor),
@@ -1415,13 +1422,17 @@ JSON.stringify((() => {
 '@
   Assert-State ($state.slug -eq $slug -and $state.h1Count -eq 1 -and $state.headerCount -eq 1) ("Project identity structure is invalid: {0}." -f $slug)
   Assert-State ($state.number -eq $number.Substring(1, 2) -and -not [string]::IsNullOrWhiteSpace([string]$state.title) -and $state.title -eq $state.dataTitle) ("Project number or title does not match central data: {0}." -f $slug)
-  Assert-State ($state.heroCount -eq 1 -and $state.heroComplete -and $state.heroLocal -and $state.heroVisible) ("Project hero is missing, remote, unloaded, or invisible: {0}." -f $slug)
-  Assert-State ($state.overview -ge 2 -and $state.frameworkPoints -ge 1) ("Project overview/framework is incomplete: {0}." -f $slug)
+  if ($slug -eq 'khalda-residential-building') {
+    Assert-State ($state.heroCount -eq 0) 'Khalda must not receive an unrelated substitute hero while image 004 is unavailable.'
+  } else {
+    Assert-State ($state.heroCount -eq 1 -and $state.heroComplete -and $state.heroLocal -and $state.heroVisible) ("Project hero is missing, remote, unloaded, or invisible: {0}." -f $slug)
+  }
+  Assert-State ($state.overview -ge 2 -and ($state.frameworkPoints -ge 1 -or $state.expandedSections -ge 1)) ("Project overview/framework is incomplete: {0}." -f $slug)
   Assert-State ($state.navigation -eq 2) ("Project previous/next navigation is incomplete: {0}." -f $slug)
   Assert-State ((@($state.navHrefs) -join ',') -eq ("project.html?project={0},project.html?project={1}" -f $previousSlug, $nextSlug)) ("Project navigation order is invalid: {0}." -f $slug)
   Assert-State ($state.scrollWidth -le ($state.clientWidth + 1)) ("Project route has horizontal overflow: {0}." -f $slug)
   Assert-State ($state.loaderTitle -eq $state.dataLoaderTitle -and $state.loaderKicker -eq ("PROJECT FILE {0}" -f $number.Substring(1, 2))) ("Project loader title or number is not dynamic: {0}." -f $slug)
-  Assert-State ($state.loaderCaption -match [regex]::Escape([string]$state.dataLoaderTitle) -and $state.loaderImage -eq $state.dataLoaderImage) ("Project loader image or caption does not match the selected project: {0}." -f $slug)
+  Assert-State ($state.loaderCaption -match [regex]::Escape([string]$state.dataLoaderTitle) -and ($state.loaderImage -eq $state.dataLoaderImage -or ($slug -eq 'khalda-residential-building' -and [string]::IsNullOrWhiteSpace([string]$state.loaderImage)))) ("Project loader image or caption does not match the selected project: {0}." -f $slug)
 
   if ($slug -eq 'project-01') {
     Assert-State ($state.loaderProjectClass -and $state.loaderDarkClass -and $state.loaderBackgroundLight -ge 0 -and $state.loaderBackgroundLight -lt 20) 'The ManMaTIC project loader is not using the dedicated black opening system.'
