@@ -14,11 +14,25 @@
 
   function requestedKey() {
     const params = new URLSearchParams(window.location.search);
-    return params.get("project") || params.get("slug") || params.get("id") || "";
+    return document.documentElement.dataset.projectKey ||
+      params.get("project") ||
+      params.get("slug") ||
+      params.get("id") ||
+      "";
   }
 
   function normalize(value) {
     return String(value || "").trim().toLowerCase();
+  }
+
+  function assetHref(value) {
+    const href = String(value || "");
+    if (/^(?:[a-z]+:|\/\/|\/)/i.test(href)) return href;
+    return `/${href.replace(/^\/+/, "")}`;
+  }
+
+  function assetSrcset(value) {
+    return String(value || "").replace(/(^|,\s*)assets\//g, "$1/assets/");
   }
 
   function archiveTitle(project) {
@@ -66,7 +80,7 @@
       return;
     }
     if (projectTheme(project) === "manmatic") {
-      target.textContent = "MANMATIC / HUMAN–MACHINE INTEGRATION / ACTIVE FIELD";
+      target.textContent = "MANMATIC / HUMAN–MACHINE COLLABORATION / ACTIVE FIELD";
       return;
     }
     target.textContent = `PROJECT FILE ${projectFileNumber(project)} / ${archiveTitle(project)} / ${project.year || "ARCHIVE"}`;
@@ -98,13 +112,13 @@
   }
 
   function projectHref(project) {
-    return `project.html?project=${encodeURIComponent(project.slug)}`;
+    return `/${String(project.route || `projects/${project.slug}/`).replace(/^\/+/, "")}`;
   }
 
-  const canonicalBase = "https://www.ahmad.manmatic.institute/";
+  const canonicalBase = "https://www.ahmadalhadidii.manmatic.institute/";
 
   function absoluteProjectHref(project) {
-    return `${canonicalBase}${projectHref(project)}`;
+    return new URL(projectHref(project), canonicalBase).href;
   }
 
   function ensureMeta(selector, attributes) {
@@ -120,11 +134,15 @@
   }
 
   function setMeta(project) {
-    const title = `${navigationTitle(project)} — Ahmad Alhadidii`;
+    const title = hasText(project.seoTitle)
+      ? project.seoTitle
+      : `${navigationTitle(project)} — Ahmad Alhadidii`;
     document.title = title;
-    const description = hasText(project.definition)
-      ? project.definition
-      : "Selected architecture and design research project by Ahmad Alhadidii.";
+    const description = hasText(project.metaDescription)
+      ? project.metaDescription
+      : hasText(project.definition)
+        ? project.definition
+        : "Selected architecture and design research project by Ahmad Alhadidii.";
     const descriptionMeta = document.querySelector('meta[name="description"]');
     const ogTitle = document.querySelector('meta[property="og:title"]');
     const ogDescription = document.querySelector('meta[property="og:description"]');
@@ -156,6 +174,7 @@
       ["CONTEXT", project.context],
       ["OFFICE", project.office],
       ["RELATION", project.relation],
+      ["AWARD", project.award],
       ["ROLE", project.role]
     ].filter(function (item) {
       return hasText(item[1]);
@@ -254,8 +273,8 @@
     figure.setAttribute("data-image-reveal", "");
     const crop = element("div", "image-frame__crop");
     const image = element("img");
-    image.src = project.hero.src;
-    if (hasText(project.hero.srcset)) image.srcset = project.hero.srcset;
+    image.src = assetHref(project.hero.src);
+    if (hasText(project.hero.srcset)) image.srcset = assetSrcset(project.hero.srcset);
     image.sizes = "(max-width: 760px) calc(100vw - 36px), (max-width: 960px) calc(100vw - 48px), min(960px, 56vw)";
     image.alt = project.hero.alt || "";
     if (project.hero.width) image.width = project.hero.width;
@@ -322,8 +341,8 @@
       if (!media || !hasText(media.src)) return null;
       const figure = element("figure", className || "project-record-media");
       const image = element("img");
-      image.src = media.src;
-      if (hasText(media.srcset)) image.srcset = media.srcset;
+      image.src = assetHref(media.src);
+      if (hasText(media.srcset)) image.srcset = assetSrcset(media.srcset);
       image.sizes = "(max-width: 760px) calc(100vw - 36px), min(1180px, 82vw)";
       image.alt = media.alt || "";
       if (media.width) image.width = media.width;
@@ -413,6 +432,8 @@
     const credits = [
       ["ROLE", project.role],
       ["CATEGORY", project.category],
+      ["CONTEXT", project.context],
+      ["ORGANISATIONS", project.organisations],
       ["OFFICE", project.office],
       ["SUPERVISION", project.supervision]
     ].filter(function (item) {
@@ -443,10 +464,17 @@
 
     const top = element("div", "project-navigation__top");
     const back = element("a", "", "BACK TO WORK ←");
-    back.href = "index.html#work";
+    back.href = "/#work";
     const indexLink = element("a", "", "PORTFOLIO INDEX ↑");
-    indexLink.href = "index.html#index";
+    indexLink.href = "/#index";
     top.append(back, indexLink);
+
+    if (currentIndex < 0) {
+      const systemLink = element("a", "project-navigation__link", "BACK TO MANMATIC METHODOLOGY ←");
+      systemLink.href = "/projects/manmatic/";
+      section.append(top, systemLink);
+      return section;
+    }
 
     const grid = element("div", "project-navigation__grid");
     const previousLink = element("a", "project-navigation__link");
@@ -483,7 +511,7 @@
       element("p", "", "The requested project is not part of the selected work index.")
     );
     const link = element("a", "", "RETURN TO SELECTED WORK");
-    link.href = "index.html#work";
+    link.href = "/#work";
     section.appendChild(link);
     article.appendChild(section);
   }

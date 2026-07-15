@@ -2165,6 +2165,7 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
 .manmatic-threshold__mark { display: block; width: clamp(250px, 22vw, 300px); height: auto; overflow: visible; transform: translateY(-1%); }
 .manmatic-threshold__mark g { fill: none; stroke: #fff; stroke-width: 1.15; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
 .manmatic-threshold__mark path, .manmatic-threshold__mark line, .manmatic-threshold__mark circle { stroke-dasharray: 420; stroke-dashoffset: 420; }
+.manmatic-threshold__mark .threshold-mark__ghost { opacity: .34; stroke-width: .62; }
 .manmatic-threshold__mark text { fill: #fff; stroke: none; font: 500 8px/1 var(--font-mono); letter-spacing: .05em; }
 .project-row--manmatic.is-field-active .threshold-mark__axis { animation: threshold-mark-show .25s .05s ease-out forwards; }
 .project-row--manmatic.is-field-active .threshold-mark__axis path { animation: threshold-mark-draw .35s .05s ease-out forwards; }

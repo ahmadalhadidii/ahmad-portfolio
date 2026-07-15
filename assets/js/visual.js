@@ -39,7 +39,7 @@
     return `visual.html?visual=${encodeURIComponent(visual.slug)}`;
   }
 
-  const canonicalBase = "https://www.ahmad.manmatic.institute/";
+  const canonicalBase = "https://www.ahmadalhadidii.manmatic.institute/";
 
   function absoluteVisualHref(visual) {
     return `${canonicalBase}${visualHref(visual)}`;

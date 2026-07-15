@@ -33,7 +33,7 @@
   function render(main, studies, study) {
     document.title = `${study.title} — Ahmad Alhadidii`;
     const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) canonical.href = new URL(href(study), "https://www.ahmad.manmatic.institute/").href;
+    if (canonical) canonical.href = new URL(href(study), "https://www.ahmadalhadidii.manmatic.institute/").href;
     const header = element("header", "computation-detail__header page-width");
     header.append(
       element("p", "editorial-label", `COMPUTATIONAL STUDY ${study.number}`),

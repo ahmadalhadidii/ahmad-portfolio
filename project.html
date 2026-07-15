@@ -1,218 +1,43 @@
 <!doctype html>
-<html lang="en" class="no-js" data-page="project" data-build="20260713-mobile-fix-02">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="portfolio-build" content="20260713-mobile-fix-02">
-  <meta name="description" content="Selected architecture, research, and computational design project by Ahmad Alhadidii.">
-  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="robots" content="noindex, follow">
   <meta name="theme-color" content="#ffffff">
-
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="Selected Project — Ahmad Alhadidii">
-  <meta property="og:description" content="Selected architecture, research, and computational design project by Ahmad Alhadidii.">
-  <meta property="og:url" content="https://www.ahmad.manmatic.institute/project.html">
-  <meta property="og:image" content="https://www.ahmad.manmatic.institute/assets/images/architecture-of-elsewhere-1400.jpg">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Selected Project — Ahmad Alhadidii">
-  <meta name="twitter:description" content="Selected architecture, research, and computational design project by Ahmad Alhadidii.">
-  <meta name="twitter:image" content="https://www.ahmad.manmatic.institute/assets/images/architecture-of-elsewhere-1400.jpg">
-
-  <title>Selected Project — Ahmad Alhadidii</title>
-  <link rel="canonical" href="https://www.ahmad.manmatic.institute/project.html">
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/ad-mark-v1-16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/ad-mark-v1-32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/ad-mark-v1-180.png">
-  <link rel="manifest" href="site.webmanifest">
-
-  <script src="content.js?v=20260713-mobile-fix-02"></script>
+  <title>Project Route Updated | Ahmad Alhadidii</title>
+  <link rel="canonical" href="https://www.ahmadalhadidii.manmatic.institute/">
+  <link rel="stylesheet" href="/assets/css/style.css?v=20260715-seo-static-01">
   <script>
     (function () {
-      var root = document.documentElement;
-      var params = new URLSearchParams(window.location.search);
-      var key = params.get("project") || params.get("slug") || params.get("id") || "";
-      var normalizedKey = String(key).trim().toLowerCase();
-      var projects = window.siteContent && Array.isArray(window.siteContent.projects)
-        ? window.siteContent.projects
-        : [];
-      var project = projects.find(function (item, index) {
-        return [
-          item.slug,
-          item.id,
-          item.number,
-          String(index + 1),
-          String(index + 1).padStart(2, "0")
-        ].some(function (alias) {
-          return String(alias || "").trim().toLowerCase() === normalizedKey;
-        });
-      });
-      var theme = project && project.theme === "manmatic" ? "manmatic" : "light";
-      var themeColor = document.querySelector('meta[name="theme-color"]');
-
-      if (project) {
-        var displayTitle = project.navigationTitle || project.archiveTitle || project.title;
-        var pageTitle = displayTitle + " — Ahmad Alhadidii";
-        var pageDescription = project.definition || "Selected architecture and design research project by Ahmad Alhadidii.";
-        var canonicalUrl = "https://www.ahmad.manmatic.institute/project.html?project=" + encodeURIComponent(project.slug);
-        var imageUrl = project.hero && project.hero.src
-          ? new URL(project.hero.src, "https://www.ahmad.manmatic.institute/").href
-          : "https://www.ahmad.manmatic.institute/assets/images/architecture-of-elsewhere-1400.jpg";
-        document.title = pageTitle;
-        document.querySelector('meta[name="description"]').setAttribute("content", pageDescription);
-        document.querySelector('meta[property="og:title"]').setAttribute("content", pageTitle);
-        document.querySelector('meta[property="og:description"]').setAttribute("content", pageDescription);
-        document.querySelector('meta[property="og:url"]').setAttribute("content", canonicalUrl);
-        document.querySelector('meta[property="og:image"]').setAttribute("content", imageUrl);
-        document.querySelector('meta[name="twitter:title"]').setAttribute("content", pageTitle);
-        document.querySelector('meta[name="twitter:description"]').setAttribute("content", pageDescription);
-        document.querySelector('meta[name="twitter:image"]').setAttribute("content", imageUrl);
-        document.querySelector('link[rel="canonical"]').setAttribute("href", canonicalUrl);
-      }
-
-      window.__portfolioProjectLoaderData = project ? {
-        number: /^(\d+)\.([a-z])$/i.test(String(project.number || ""))
-          ? String(project.number).replace(/^(\d+)\.([a-z])$/i, function (_, n, branch) { return n.padStart(3, "0") + "." + branch.toUpperCase(); })
-          : String(parseInt(project.number, 10) || project.number || "").padStart(2, "0"),
-        title: project.archiveTitle || project.title || "SELECTED PROJECT",
-        subtitle: project.archiveSubtitle || project.type || project.category || "",
-        type: project.type || project.category || "PROJECT FILE",
-        year: project.year || "ARCHIVE",
-        location: project.location || "",
-        theme: theme,
-        image: project.hero && project.hero.src ? project.hero.src : "",
-        hasImage: Boolean(project.hero && project.hero.src),
-        srcset: project.hero && project.hero.srcset ? project.hero.srcset : "",
-        objectPosition: project.hero && project.hero.loaderObjectPosition ? project.hero.loaderObjectPosition : "50% 50%"
-      } : null;
-
-      root.classList.remove("no-js");
-      root.classList.add("js");
-      root.classList.add("loader-pending");
-      root.dataset.initialTheme = theme;
-      root.dataset.siteTheme = theme;
-      if (themeColor) themeColor.setAttribute("content", theme === "manmatic" ? "#0a0a0a" : "#ffffff");
-
-      window.__portfolioLoaderFallback = window.setTimeout(function () {
-        if (root.classList.contains("loader-pending")) {
-          var loader = document.getElementById("loader");
-          root.classList.remove("loader-pending");
-          root.classList.add("loader-complete", "motion-ready");
-          if (loader) {
-            loader.hidden = true;
-            loader.setAttribute("aria-hidden", "true");
-          }
-        }
-      }, 3200);
+      var key = String(new URLSearchParams(location.search).get("project") || "").trim().toLowerCase();
+      var routes = {
+        "project-05": "/projects/shila/",
+        "shila": "/projects/shila/",
+        "project-01": "/projects/manmatic/",
+        "manmatic": "/projects/manmatic/",
+        "manmatic-field": "/projects/manmatic/#the-manmatic-field",
+        "protocol-port": "/projects/protocol-port/",
+        "dabouq-residential-building": "/projects/dabouq/",
+        "dabouq": "/projects/dabouq/",
+        "project-02": "/projects/concrete-fatigue/",
+        "concrete-fatigue": "/projects/concrete-fatigue/",
+        "project-03": "/#work",
+        "ground-of-continuity": "/#work"
+      };
+      var destination = routes[key] || "/#work";
+      var canonical = document.querySelector('link[rel="canonical"]');
+      if (canonical) canonical.href = new URL(destination, "https://www.ahmadalhadidii.manmatic.institute/").href;
+      location.replace(destination);
     })();
   </script>
-
-  <style>
-    html, body, main { background: #ffffff; color: #111111; }
-    .no-js .loader { display: none; }
-    html[data-initial-theme="manmatic"],
-    html[data-initial-theme="manmatic"] body,
-    html[data-initial-theme="manmatic"] main { background: #0a0a0a; color: #f2f2f2; }
-  </style>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=20260713-mobile-fix-02">
-
-  <script src="assets/js/main.js?v=20260713-mobile-fix-02" defer></script>
-  <script src="assets/js/project.js?v=20260713-mobile-fix-02" defer></script>
 </head>
 <body class="project-page">
-  <div class="loader loader--project" id="loader" role="status" aria-label="Opening selected project file">
-    <p class="visually-hidden" id="loader-announcement" aria-live="polite">Selected project file is opening.</p>
-    <div class="project-loader" aria-hidden="true">
-      <header class="project-loader__identity">
-        <p class="project-loader__file" data-project-loader-kicker>PROJECT FILE</p>
-        <h1 class="project-loader__title" id="loader-name">SELECTED PROJECT</h1>
-        <p class="project-loader__subtitle" data-project-loader-subtitle>PROJECT ARCHIVE</p>
-        <dl>
-          <div><dt>LOCATION / YEAR</dt><dd data-project-loader-year>ARCHIVE / 2026</dd></div>
-          <div><dt>TYPE</dt><dd data-project-loader-type>PROJECT FILE</dd></div>
-          <div><dt>STATE</dt><dd id="loader-state">FILE INDEXING</dd></div>
-        </dl>
-      </header>
-      <figure class="project-loader__visual">
-          <div class="project-loader__image loader__preview-image">
-            <img data-loader-preview sizes="(max-width: 700px) calc(100vw - 36px), min(880px, 56vw)" width="1400" height="754" alt="">
-            <span class="project-loader__scan"></span>
-            <span class="project-loader__slice project-loader__slice--one"></span>
-            <span class="project-loader__slice project-loader__slice--two"></span>
-            <p class="project-loader__fallback" data-project-loader-fallback>PROJECT IMAGE UNAVAILABLE</p>
-          </div>
-          <figcaption><span data-project-loader-caption>PROJECT IMAGE</span><span>FRAME <b id="loader-frame">01 / 06</b> · SIGNAL <b id="loader-signal">000.000</b></span></figcaption>
-      </figure>
-      <footer class="project-loader__footer">
-        <div class="project-loader__opening"><span>OPENING FILE</span><div class="project-loader__count"><strong id="loader-progress">000</strong><small>/ 100</small></div></div>
-        <div class="loader__progress-track"><span id="loader-progress-bar"></span></div>
-        <div class="project-loader__status">
-          <p data-project-loader-status-type>PROJECT FILE</p>
-          <p id="loader-phase">FILE ACCESS</p>
-          <p><span id="loader-progress-secondary">000</span> / 100</p>
-        </div>
-      </footer>
-    </div>
-  </div>
-
-  <noscript><style>.loader, .nav-toggle { display: none !important; }</style></noscript>
-
-  <a class="skip-link" href="#main-content">Skip to project content</a>
-
-  <div class="ambient-signal" aria-hidden="true"></div>
-  <div class="material-texture" aria-hidden="true"></div>
-
-  <div class="site-shell">
-    <header class="site-header" id="site-header">
-      <div class="site-header__inner page-width">
-        <a class="site-header__name" href="index.html#index" aria-label="Ahmad Alhadidii, return to portfolio index">AHMAD ALHADIDII</a>
-
-        <p class="running-header" aria-hidden="true"><span id="running-header-text">PROJECT ARCHIVE / SELECTED WORK / 2026</span></p>
-
-        <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Open navigation">
-          <span class="nav-toggle__open">MENU</span>
-          <span class="nav-toggle__close">CLOSE</span>
-        </button>
-
-        <button class="nav-backdrop" type="button" data-nav-dismiss tabindex="-1" aria-label="Close navigation"></button>
-
-        <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation">
-          <a href="index.html#index"><span data-scramble>INDEX</span></a>
-          <a href="index.html#profile"><span data-scramble>PROFILE</span></a>
-          <a href="index.html#cv"><span data-scramble>CV</span></a>
-          <a class="is-active" href="index.html#work" aria-current="location"><span data-scramble>WORK</span></a>
-          <a href="index.html#computation"><span data-scramble>COMPUTATION</span></a>
-          <a href="index.html#visual-studies"><span data-scramble>VISUALS</span></a>
-          <a href="index.html#contact"><span data-scramble>CONTACT</span></a>
-          <a class="site-nav__external" href="https://www.manmatic.institute/" target="_blank" rel="noopener noreferrer" aria-label="Open the ManMaTIC Institute field website in a new tab">MANMATIC FIELD <span aria-hidden="true">↗</span></a>
-        </nav>
-      </div>
-    </header>
-
-    <main id="main-content" tabindex="-1">
-      <article class="project-detail" id="project-detail">
-        <div class="project-detail__loading page-width" id="project-loading" role="status">
-          <p>LOADING PROJECT</p>
-        </div>
-
-        <noscript>
-          <section class="project-detail__error page-width" aria-labelledby="script-required-title">
-            <p>PROJECT ARCHIVE</p>
-            <h1 id="script-required-title">PROJECT DATA NEEDS JAVASCRIPT</h1>
-            <p>The complete project index and all core portfolio information remain available on the homepage.</p>
-            <a href="index.html#work">RETURN TO SELECTED WORK</a>
-          </section>
-        </noscript>
-      </article>
-    </main>
-
-    <footer class="site-footer page-width">
-      <p>© 2026 AHMAD ALHADIDII</p>
-      <p>AS-SALT, JORDAN</p>
-      <a href="index.html#index">PORTFOLIO INDEX <span aria-hidden="true">↗</span></a>
-    </footer>
-  </div>
+  <main class="project-detail__error page-width" id="main-content">
+    <p>PROJECT ARCHIVE / ROUTE UPDATED</p>
+    <h1>THIS PROJECT HAS A NEW ADDRESS</h1>
+    <p>The portfolio now uses static, crawlable project pages.</p>
+    <a href="/#work">RETURN TO SELECTED WORK</a>
+  </main>
 </body>
 </html>

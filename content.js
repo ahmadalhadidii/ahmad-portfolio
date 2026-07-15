@@ -18,9 +18,9 @@ const sharedPortfolioVisual = {
 
 const siteContent = {
   meta: {
-    title: "Ahmad Alhadidii — Architecture & Design Portfolio",
+    title: "Ahmad Alhadidii — Architect, Design Researcher & Computational Design Explorer",
     description:
-      "The architecture and design portfolio of Ahmad Alhadidii — أحمد الحديدي, presenting architectural projects, design research, computational work, drawings, and visual explorations."
+      "Ahmad Alhadidii is an architectural designer and design researcher exploring architecture through systems, human experience, computational methods, emerging technologies, and visual communication."
   },
 
   person: {
@@ -196,39 +196,15 @@ const siteContent = {
     }
   ],
 
-  computations: [
-    {
-      id: "computational-study-01",
-      slug: "animated-parametric-model",
-      number: "01",
-      title: "COMPUTATIONAL STUDY 01 / ANIMATED PARAMETRIC MODEL",
-      subtitle: "TITLE PENDING SCRIPT INSPECTION",
-      statement: "A computational study authored through a Rhino and Grasshopper workflow. The geometric operation, controlled parameters, transformation driver, and final title remain deliberately unstated until the original definition and animation are available for inspection.",
-      sequence: ["Input", "Script", "Transformation", "Behaviour", "Spatial Output"],
-      status: "SOURCE FILES REQUIRED",
-      sourceRequirements: ["Rhino model", "Grasshopper definition", "Animation video", "Model photographs"],
-      equation: null,
-      media: []
-    },
-    {
-      id: "computational-study-02",
-      slug: "lemniscate-ramp",
-      number: "02",
-      title: "LEMNISCATE RAMP",
-      subtitle: "FROM EQUATION TO CIRCULATION",
-      statement: "A mathematical curve is translated into an architectural path. The equation field remains blank until the exact curve and expression can be verified from the original script.",
-      sequence: ["Equation", "Curve", "Control Geometry", "Ramp", "Movement"],
-      status: "EQUATION AND SOURCE FILES REQUIRED",
-      sourceRequirements: ["Grasshopper definition", "Equation source", "Curve geometry", "Process animation"],
-      equation: null,
-      media: []
-    }
-  ],
+  computations: [],
 
   projects: [
     {
       id: "project-05",
-      slug: "project-05",
+      slug: "shila",
+      route: "projects/shila/",
+      seoTitle: "Shila Museum — The Quarry That Folds Inward | Ahmad Alhadidii",
+      metaDescription: "Shila Museum transforms Sadahalli Quarry into an inward-folding architectural journey through stone, water, shadow, geology, and spatial memory.",
       number: "001",
       archiveTitle: "SHILA (STONE) MUSEUM",
       archiveSubtitle: "THE QUARRY THAT FOLDS INWARD",
@@ -366,22 +342,25 @@ const siteContent = {
     },
     {
       id: "project-01",
-      slug: "project-01",
+      slug: "manmatic",
+      route: "projects/manmatic/",
+      seoTitle: "ManMaTIC — Human–Machine Collaboration Research and Design Methodology | Ahmad Alhadidii",
+      metaDescription: "ManMaTIC is Ahmad Alhadidii’s human–machine collaboration research and design methodology, connecting an active knowledge field to Protocol Port as its architectural application.",
       number: "002",
       archiveTitle: "MANMATIC",
-      archiveSubtitle: "AN ARCHITECTURAL METHODOLOGY FOR HUMAN–MACHINE INTEGRATION",
+      archiveSubtitle: "AN ARCHITECTURAL METHODOLOGY FOR HUMAN–MACHINE COLLABORATION",
       navigationTitle: "ManMaTIC — Architectural Methodology",
       theme: "manmatic",
       title: "ManMaTIC",
-      definition: "An architectural methodology for translating changing human–machine conditions into institutional and spatial systems.",
-      overview: "ManMaTIC is an architectural research methodology developed to translate changing human–machine conditions into institutional and spatial systems. It connects research, evaluation criteria, design dialogue, technological systems, and architectural application within one evolving framework.",
+      definition: "An architectural methodology for translating changing human–machine collaboration into institutional and spatial systems.",
+      overview: "ManMaTIC is an architectural research methodology developed to translate changing human–machine collaboration into institutional and spatial systems. It connects research, evaluation criteria, design dialogue, technological systems, and architectural application within one evolving framework.",
       year: "2026",
       location: "",
-      category: "Human–Machine Integration",
+      category: "Human–Machine Collaboration",
       type: "Architectural Research Methodology",
       role: "Architecture, research, systems thinking, visual communication",
-      themes: ["Research Institute", "Human–Machine Systems"],
-      points: ["DOMAIN / HUMAN–MACHINE INTEGRATION", "STRUCTURE / FIELD → DESIGN → APPLICATION", "STATUS / ACTIVE DEVELOPMENT"],
+      themes: ["Research Methodology", "Human–Machine Collaboration"],
+      points: ["DOMAIN / HUMAN–MACHINE COLLABORATION", "STRUCTURE / FIELD → DESIGN → APPLICATION", "STATUS / ACTIVE DEVELOPMENT"],
       featured: true,
       displayOrder: 2,
       sections: [
@@ -390,13 +369,13 @@ const siteContent = {
           title: "THE MANMATIC FIELD",
           text: "A project-specific knowledge environment that organises research, thesis logic, criteria, case studies, design dialogue, and outputs into a readable operating field.",
           facts: [["RECORD", "002.A"], ["TYPE", "KNOWLEDGE + DESIGN OPERATING ENVIRONMENT"]],
-          links: [["ENTER THE FIELD →", "project.html?project=manmatic-field"]]
+          links: [["ENTER THE FIELD →", "/projects/manmatic/#the-manmatic-field"]]
         },
         {
           code: "02",
           title: "PROTOCOL PORT",
           text: "The first site-specific architectural application of the ManMaTIC methodology, translating its research, criteria, and design dialogue into an institutional project for Aqaba.",
-          facts: [["RECORD", "002.B"], ["FUNCTION", "HUMAN–MACHINE INTEGRATION INSTITUTE"], ["LOCATION", "AQABA, JORDAN"]],
+          facts: [["RECORD", "002.B"], ["FUNCTION", "HUMAN–MACHINE COLLABORATION INSTITUTE"], ["LOCATION", "AQABA, JORDAN"]],
           media: {
             src: "assets/images/manmatic/protocol-port-001-1200.jpg",
             width: 1200,
@@ -404,7 +383,7 @@ const siteContent = {
             alt: "Axonometric drawing of Protocol Port extending across an industrial and logistics landscape with controlled orange elements.",
             caption: "PROTOCOL PORT / APPLICATION 01 / MAIN AXONOMETRIC"
           },
-          links: [["ENTER PROTOCOL PORT →", "project.html?project=protocol-port"]]
+          links: [["ENTER PROTOCOL PORT →", "/projects/protocol-port/"]]
         }
       ],
       hero: {
@@ -421,13 +400,14 @@ const siteContent = {
     {
       id: "project-manmatic-field",
       slug: "manmatic-field",
+      route: "projects/manmatic/#the-manmatic-field",
       number: "002.A",
       archiveTitle: "THE MANMATIC FIELD",
       archiveSubtitle: "KNOWLEDGE + DESIGN OPERATING ENVIRONMENT",
       navigationTitle: "ManMaTIC System — The Field",
       theme: "manmatic",
       systemMarker: "MANMATIC SYSTEM / THE FIELD",
-      systemBack: "project.html?project=project-01",
+      systemBack: "/projects/manmatic/",
       title: "The ManMaTIC Field",
       definition: "A project-specific knowledge and design environment that organises research, criteria, dialogue, evidence, and architectural decisions into a readable operating network.",
       overview: "The Field studies a moving subject. Machines, artificial intelligence, automation, data systems, and future work change faster than a conventional linear research process can capture, so research remains active through thesis development, evaluation criteria, design dialogue, and architectural decisions.",
@@ -455,7 +435,10 @@ const siteContent = {
     },
     {
       id: "project-02",
-      slug: "project-02",
+      slug: "concrete-fatigue",
+      route: "projects/concrete-fatigue/",
+      seoTitle: "From Concrete Fatigue to Green Asset | Ahmad Alhadidii",
+      metaDescription: "First-place Environmental Legacy Makers Award team project transforming Jabal Al-Zuhour’s concrete stairs into green civic infrastructure.",
       number: "004",
       navigationTitle: "From Concrete Fatigue to Green Asset",
       title: "From Concrete Fatigue to Green Asset",
@@ -464,13 +447,16 @@ const siteContent = {
       overview:
         "The project rethinks Jabal Al-Zuhour staircase as more than circulation. Through shade, planting, water management, and social pauses, it turns a repeated daily climb into a green civic asset.",
       year: "2026",
-      location: "Amman",
-      category: "Environmental Legacy Makers Award / Urban Intervention",
-      type: "Urban Stairs / Environmental Design",
-      role: "Concept, environmental strategy, visual communication",
+      location: "Amman, Jordan",
+      category: "1st Place — Environmental Legacy Makers Award",
+      award: "1st Place — Environmental Legacy Makers Award",
+      type: "Urban and Environmental Intervention",
+      context: "Award-Winning Team Project",
+      role: "Concept Development, Environmental Strategy, and Visual Communication",
+      organisations: "Greater Amman Municipality, UN-Habitat Jordan, and the Royal Society for the Conservation of Nature, with support from the Government of the Netherlands.",
       themes: ["Urban Stairs", "Environmental Design"],
       points: [
-        "Won first place in the Environmental Legacy Makers Award.",
+        "Awarded 1st Place in the Environmental Legacy Makers Award as a team project.",
         "Uses the staircase as daily environmental infrastructure.",
         "Introduces a modular tree unit for shade, planting, and water management."
       ],
@@ -491,68 +477,34 @@ const siteContent = {
       }
     },
     {
-      id: "project-03",
-      slug: "project-03",
-      number: "004",
-      navigationTitle: "Ground of Continuity",
-      title: "Ground of Continuity",
-      definition:
-        "A cultural map reading Jordan as a ground of continuity between memory, borders, routes, and shared regional identity.",
-      overview:
-        "Ground of Continuity presents Jordan as a cultural crossroads shaped by memory, movement, trade, displacement, desert routes, and shared Arab imagination.",
-      year: "2026",
-      location: "Jordan",
-      category: "Cultural Map / Visual Research",
-      type: "Mapping / Cultural Representation",
-      role: "Mapping, cultural research, graphic composition",
-      themes: ["Mapping", "Cultural Representation"],
-      points: [
-        "Maps cultural relationships rather than only geographic borders.",
-        "Uses neighboring territories as fields of memory and exchange.",
-        "Combines cartographic logic with cultural storytelling."
-      ],
-      featured: false,
-      displayOrder: 99,
-      hero: {
-        src: "assets/images/ground-of-continuity-2200.jpg",
-        srcset:
-          "assets/images/ground-of-continuity-1400.jpg 1400w, assets/images/ground-of-continuity-2200.jpg 2200w",
-        width: 2200,
-        height: 1556,
-        orientation: "landscape",
-        fit: "contain",
-        mediaClass: "media--landscape media--map",
-        caption: "GROUND OF CONTINUITY / JORDAN THROUGH MEMORY, MOVEMENT, AND EXCHANGE / 2026",
-        alt:
-          "Layered cultural map positioning Jordan among regional routes, memory fields, craft traditions, desert passages, and shared histories."
-      }
-    },
-    {
       id: "project-protocol-port",
       slug: "protocol-port",
+      route: "projects/protocol-port/",
+      seoTitle: "Protocol Port — Human–Machine Collaboration Institute | Ahmad Alhadidii",
+      metaDescription: "Protocol Port is the site-specific Human–Machine Collaboration Institute developed in Aqaba as the first architectural application of the ManMaTIC methodology.",
       number: "002.B",
       archiveTitle: "PROTOCOL PORT",
       archiveSubtitle: "FIRST ARCHITECTURAL APPLICATION OF THE MANMATIC FIELD",
       navigationTitle: "Protocol Port — First ManMaTIC Application",
       title: "Protocol Port",
-      definition: "The first architectural application through which ManMaTIC criteria, decision protocols, and human–machine negotiations are tested spatially.",
-      overview: "Protocol Port is the first site-specific architectural application of ManMaTIC. It translates the methodology’s research, evaluation criteria, and author-led design dialogue into a Human–Machine Integration Institute for Aqaba.",
+      definition: "The first architectural application through which ManMaTIC criteria, decision protocols, and human–machine collaboration are tested spatially.",
+      overview: "Protocol Port is the first site-specific architectural application of ManMaTIC. It translates the methodology’s research, evaluation criteria, and author-led design dialogue into a Human–Machine Collaboration Institute for Aqaba.",
       year: "2026",
       location: "Aqaba Digital City / Middle Logistics Area / Aqaba, Jordan",
       category: "ManMaTIC / Architectural Application 01",
-      type: "Human–Machine Integration Institute",
+      type: "Human–Machine Collaboration Institute",
       relation: "First Architectural Application of ManMaTIC",
       role: "Architecture, research, systems thinking, visual communication",
       status: "UNDER MODIFICATION",
       statusNote: "STILL NEGOTIATING ITS FINAL FORM.",
       theme: "manmatic",
       systemMarker: "MANMATIC SYSTEM / PROTOCOL PORT",
-      systemBack: "project.html?project=project-01",
+      systemBack: "/projects/manmatic/",
       featured: false,
       displayOrder: 98,
       sections: [
-        { code: "01", title: "PROJECT OPENING", text: "The first architectural application of ManMaTIC: a Human–Machine Integration Institute developed for Aqaba." },
-        { code: "02", title: "FUNCTION AND SITE", text: "The institutional programme addresses human–machine integration within Aqaba’s logistics and technological context.", facts: [["FUNCTION", "HUMAN–MACHINE INTEGRATION INSTITUTE"], ["LOCATION", "AQABA DIGITAL CITY / MIDDLE LOGISTICS AREA / AQABA, JORDAN"]] },
+        { code: "01", title: "PROJECT OPENING", text: "The first architectural application of ManMaTIC: a Human–Machine Collaboration Institute developed for Aqaba." },
+        { code: "02", title: "FUNCTION AND SITE", text: "The institutional programme addresses human–machine collaboration within Aqaba’s logistics and technological context.", facts: [["FUNCTION", "HUMAN–MACHINE COLLABORATION INSTITUTE"], ["LOCATION", "AQABA DIGITAL CITY / MIDDLE LOGISTICS AREA / AQABA, JORDAN"]] },
         { code: "03", title: "FROM FIELD TO APPLICATION", text: "Research, criteria, protocols, and design dialogue move from the ManMaTIC Field into a site-specific institutional proposal. The Field remains a decision environment; Protocol Port is its first spatial application." },
         { code: "04", title: "DESIGN DEVELOPMENT", text: "Hand drawing and iterative section studies record the author-led development of the project.", media: { src: "assets/images/manmatic/protocol-port-process-002-900.jpg", width: 506, height: 900, alt: "Protocol Port hand sketches arranged around a pen and laptop.", caption: "FIG. 01 / IMAGE 002 / HAND-DRAWN DEVELOPMENT" } },
         { code: "05", title: "ARCHITECTURAL SYSTEM", text: "The developing system coordinates institutional programme, circulation, technical elements, and the project’s relationship to the logistics landscape." },
@@ -563,20 +515,23 @@ const siteContent = {
     },
     {
       id: "project-dabouq-residential",
-      slug: "dabouq-residential-building",
+      slug: "dabouq",
+      route: "projects/dabouq/",
+      seoTitle: "Dabouq Residential Building — BIM Lab Training Project | Ahmad Alhadidii",
+      metaDescription: "Dabouq Residential Building is a 2025 professional training project at BIM Lab involving architectural drawings, elevations, minor design modifications, and visual development under supervision.",
       number: "003",
       archiveTitle: "DABOUQ RESIDENTIAL BUILDING",
       archiveSubtitle: "PROFESSIONAL TRAINING PROJECT",
       navigationTitle: "Dabouq Residential Building — Professional Training Project",
       title: "Dabouq Residential Building",
-      definition: "A residential building study developed during professional training at BIM Lab.",
-      overview: "A residential building study developed during professional training at BIM Lab, involving architectural drawings, elevation development, controlled design adjustments, and visual documentation within an active office workflow.",
-      year: "2026",
+      definition: "A residential project developed during professional training at BIM Lab, contributing to architectural drawings, elevation development, minor design modifications, and visual development under supervision.",
+      overview: "A residential project developed during professional training at BIM Lab, contributing to architectural drawings, elevation development, minor design modifications, and visual development under supervision.",
+      year: "2025",
       location: "Dabouq, Amman, Jordan",
       category: "Professional Training",
       type: "Residential Architecture",
       context: "Professional Training",
-      role: "Architectural drawings, elevation development, light design modifications, and visual development under supervision",
+      role: "Architectural drawings, elevation development, minor design modifications, and visual development under supervision.",
       office: "BIM Lab",
       supervision: "Eng. Shaker Khulief",
       featured: true,

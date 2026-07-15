@@ -13,7 +13,7 @@
     work: "SELECTED WORK / PROJECT ARCHIVE / 01–04",
     visual: "VISUALS / IMAGE / THOUGHT / FIELD",
     contact: "CONTACT RECORD / AS-SALT, JORDAN / 2026",
-    manmatic: "MANMATIC / HUMAN–MACHINE INTEGRATION / ACTIVE FIELD"
+    manmatic: "MANMATIC / HUMAN–MACHINE COLLABORATION / ACTIVE FIELD"
   };
 
   let imageObserver = null;

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.ahmad.manmatic.institute/sitemap.xml
+Sitemap: https://www.ahmadalhadidii.manmatic.institute/sitemap.xml
