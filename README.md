@@ -37,6 +37,9 @@ ahmad-portfolio/
 - `projects/*/index.html` are crawlable static project pages generated from one shared template by `scripts/generate-project-pages.ps1`.
 - `project.html` is a temporary `noindex` compatibility redirect for legacy query-string URLs.
 - `assets/js/project.js` enhances the static project content and builds clean cyclic previous/next navigation.
+- `visuals/*/index.html` are crawlable static Visual pages generated from `siteContent.visuals` by `scripts/generate-visual-pages.ps1`.
+- `visual.html` is a `noindex` compatibility redirect from legacy Visual query-string URLs to the clean static routes.
+- `assets/js/visual.js` enhances each static Visual page while preserving its URL-owned title, image, description, metadata, and cyclic previous/next links.
 - `assets/css/style.css` contains the two-font visual system, loader and monitor treatments, global ManMaTIC transition, Visuals layout, paper/signal texture, responsive and safe-area rules, reduced-motion behavior, and A4 CV print styles.
 
 ## Homepage architecture
@@ -79,7 +82,7 @@ The counter is an interface status value and is not announced on every increment
 
 ## Visuals
 
-`siteContent.visuals` in `content.js` drives the slider. Each record supports an index, title, interpretation, related project, year, category, local image, responsive sources, dimensions, crop position, caption, and alternative text.
+`siteContent.visuals` in `content.js` drives the slider and the five clean routes under `/visuals/{slug}/`. Each record supports an index, title, interpretation, related project, year, category, local image, responsive sources, dimensions, crop position, caption, and alternative text. After changing a Visual record, run `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/generate-visual-pages.ps1` to regenerate its static page.
 
 The current five entries use dedicated local visual assets and are progressively enhanced from the single semantic fallback slide. JavaScript provides:
 

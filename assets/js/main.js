@@ -1438,7 +1438,7 @@
       addMetadata(metadata, "AI ROLE", study.aiRole || "PENDING VERIFICATION");
       copy.appendChild(metadata);
       const openButton = element("a", "visual-slide__open", "OPEN VISUAL ");
-      openButton.href = `visual.html?visual=${encodeURIComponent(study.slug || study.id || String(slideIndex + 1))}`;
+      openButton.href = `/visuals/${encodeURIComponent(study.slug || study.id || String(slideIndex + 1))}/`;
       openButton.setAttribute("aria-label", `Open visual: ${study.title}`);
       const openIcon = element("span", "", "↗");
       openIcon.setAttribute("aria-hidden", "true");

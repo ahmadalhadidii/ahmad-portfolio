@@ -17,6 +17,10 @@
   }
 
   function requestedKey() {
+    const embeddedSlug = document.body && document.body.dataset.visualSlug;
+    if (embeddedSlug) return embeddedSlug;
+    const pathMatch = window.location.pathname.match(/\/visuals\/([^/]+)\/?$/i);
+    if (pathMatch) return decodeURIComponent(pathMatch[1]);
     const params = new URLSearchParams(window.location.search);
     return params.get("visual") || params.get("slug") || params.get("id") || "";
   }
@@ -36,13 +40,31 @@
   }
 
   function visualHref(visual) {
-    return `visual.html?visual=${encodeURIComponent(visual.slug)}`;
+    return `/visuals/${encodeURIComponent(visual.slug)}/`;
   }
 
-  const canonicalBase = "https://www.ahmadalhadidii.manmatic.institute/";
+  const canonicalBase = "https://www.ahmadalhadidii.manmatic.institute";
 
   function absoluteVisualHref(visual) {
     return `${canonicalBase}${visualHref(visual)}`;
+  }
+
+  function rootPath(value) {
+    const path = String(value || "").trim();
+    if (!path || /^(?:https?:)?\/\//i.test(path) || path.startsWith("/")) return path;
+    return `/${path.replace(/^\.\//, "")}`;
+  }
+
+  function rootSrcset(value) {
+    return String(value || "")
+      .split(",")
+      .map(function (candidate) {
+        const parts = candidate.trim().split(/\s+/);
+        parts[0] = rootPath(parts[0]);
+        return parts.join(" ");
+      })
+      .filter(Boolean)
+      .join(", ");
   }
 
   function ensureMeta(selector, attributes) {
@@ -63,13 +85,13 @@
   }
 
   function setMeta(visual) {
-    const title = `${visual.title} — Ahmad Alhadidii`;
+    const title = `${visual.title} | Ahmad Alhadidii`;
     const fullDescription = visual.description || "Selected visual narrative by Ahmad Alhadidii.";
     const description = fullDescription.length > 158
       ? `${fullDescription.slice(0, 155).trim()}…`
       : fullDescription;
     const canonicalUrl = absoluteVisualHref(visual);
-    const imageUrl = new URL(visual.src, canonicalBase).href;
+    const imageUrl = new URL(rootPath(visual.src), canonicalBase).href;
     document.title = title;
     const selectors = [
       ['meta[name="description"]', description],
@@ -133,8 +155,8 @@
 
     const frame = element("div", "visual-record__image-frame");
     const image = element("img");
-    image.src = visual.src;
-    if (hasText(visual.srcset)) image.srcset = visual.srcset;
+    image.src = rootPath(visual.src);
+    if (hasText(visual.srcset)) image.srcset = rootSrcset(visual.srcset);
     image.sizes = "(max-width: 700px) calc(100vw - 36px), (max-width: 1100px) 58vw, min(980px, 62vw)";
     image.alt = visual.alt || "";
     if (visual.width) image.width = visual.width;
@@ -192,7 +214,7 @@
     navigation.setAttribute("aria-label", "Visual narrative navigation");
 
     const indexLink = element("a", "visual-record__all", "ALL VISUALS ↗");
-    indexLink.href = "index.html#visual-studies";
+    indexLink.href = "/#visual-studies";
 
     const previousLink = element("a", "visual-record__previous");
     previousLink.href = visualHref(previous);
@@ -218,7 +240,7 @@
       element("p", "", "The requested visual record is unavailable or the link is incomplete.")
     );
     const link = element("a", "", "RETURN TO VISUALS ↗");
-    link.href = "index.html#visual-studies";
+    link.href = "/#visual-studies";
     error.appendChild(link);
     container.replaceChildren(error);
   }
