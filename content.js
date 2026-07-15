@@ -113,7 +113,6 @@ const siteContent = {
       title: "Stone by Moonlight",
       year: "2026",
       category: "Visual Narrative / Material and Light Study",
-      relatedProject: "Shila Museum",
       description:
         "Before the night passes, the stone is given one quiet moment beneath the moon. Its roughness no longer speaks only of weight; in the pale light, something ancient begins to feel intimate. The stair does not lead toward a destination, but keeps the body within this encounter, allowing the stone to disappear and return with every step. Stone by Moonlight holds a brief meeting between earth and sky—between something shaped over millions of years and the light that touches it for only a night.",
       emphasis: "Stone by Moonlight",
@@ -158,10 +157,10 @@ const siteContent = {
       mediaClass: "media--landscape media--render",
       caption: "VISUAL 04 / THE MECHANICS OF BECOMING / 2026",
       authorship: "Ahmad Alhadidii",
-      process: "Author-directed composition, material development, textures, light, shadow, stone detailing, atmosphere, Photoshop editing, and digital painting",
+      process: "Author-directed composition, material development, textures, light, shadow, detailing, atmosphere, Photoshop editing, and digital painting",
       tools: "Photoshop and digital painting tools",
       aiRole: "Early exploratory visualisation for initial renderings and selected graphic elements",
-      finalProcess: "Composition, material development, textures, light, shadow, stone detailing, atmosphere, Photoshop editing, and digital painting by Ahmad Alhadidii",
+      finalProcess: "Composition, material development, textures, light, shadow, detailing, atmosphere, Photoshop editing, and digital painting by Ahmad Alhadidii",
       alt:
         "Warm sepia corridor of monumental engraved stone walls, an olive tree, mechanical artefacts, and a solitary walking figure."
     },
@@ -238,7 +237,7 @@ const siteContent = {
       definition:
         "A museum concept where the quarry folds inward, turning stone, water, shadow, and void into spatial memory.",
       overview:
-        "Shila (Stone) Museum explores stone as both material and meaning through an architectural journey carved into a quarry. The quarry becomes the exhibition: descending and ascending paths reveal relationships between earth, time, water, and memory, culminating in a place of arrival and reflection.",
+        "Shila (Stone) Museum explores stone as both material and meaning through an architectural journey carved into a quarry. The project transforms the quarry itself into the exhibition, guiding visitors through descending and ascending paths that reveal the relationship between earth, time, and memory. Inspired by a symbolic idea drawn from Hindu philosophy, the journey is conceived as a return to origin and roots, culminating in a final place of arrival and reflection. Architecture becomes an immersive experience that turns geology into a lived and contemplative spatial narrative.",
       year: "2025",
       location: "Sadahalli Quarry / Bengaluru, India",
       category: "The Drawing Board 2025 / Echoes in Stone",
@@ -256,7 +255,7 @@ const siteContent = {
         {
           code: "02",
           title: "THE QUARRY THAT FOLDS INWARD",
-          text: "Shila (Stone) Museum begins where the quarry folds inward. Instead of treating the quarry as a background, the project turns its cut ground into the exhibition itself. The visitor moves into the depth of the stone through carved layers, water, shadow, and open voids shaped by geological time. As the quarry folds, walls, paths, and platforms emerge from the same rock body, making the museum part of the quarry rather than an object placed inside it."
+          text: "Shila (Stone) Museum begins where the quarry folds inward. Instead of treating the quarry as a background, the project turns its cut ground into the exhibition itself. The visitor moves into the depth of the stone through carved layers, water, shadow, and open voids shaped by geological time. As the quarry folds, walls, paths, and platforms emerge from the same rock body, making the museum part of the quarry rather than an object placed inside it. The journey transforms the stone’s million-year memory into an experience of material, reflection, and spirit."
         },
         {
           code: "03",
@@ -282,8 +281,8 @@ const siteContent = {
         {
           code: "04",
           title: "DESIGN PRINCIPLES",
-          text: "Five source-board principles organise the architectural reading. Their drawings will be separated only when the original high-resolution board is supplied.",
-          items: ["Continuity", "Patterned Light", "Sense of Volume", "Principle 04 / source label incomplete", "Mandala Core"],
+          text: "Five design principles organise the architectural reading and are re-typeset below the extracted source sketches.",
+          items: ["Continuity", "Patterned Light", "Sense of Volume", "Power", "Mandala Core"],
           media: {
             src: "assets/images/shila/shila-principles.jpg",
             width: 1200,
@@ -295,7 +294,8 @@ const siteContent = {
         {
           code: "05",
           title: "THE DESCENT AS EXPERIENCE",
-          text: "The visitor’s journey is organised through controlled differences in level. Movement begins near the quarry surface and gradually descends into the cut ground, changing light, temperature, scale, and material character. After the deepest point, the path rises again and the same quarry walls are encountered from a different direction.",
+          text: "The visitor’s journey is organised through controlled differences in level. Movement begins near the quarry surface and gradually descends into the cut ground, allowing scale, light, temperature, and material character to change with each stage. The descent becomes the museum’s main interpretive experience: a movement from the exposed surface toward the depth, memory, and geological origin of the stone. After the deepest point, the path rises again; the return changes the reading of the same quarry walls and culminates in a place of pause and reflection.",
+          facts: [["MOVEMENT", "DESCENT AND RETURN"], ["PRIMARY MEDIUM", "LEVEL CHANGE"], ["EXPERIENCE", "LIGHT, STONE, WATER, SHADOW"], ["SEQUENCE", "SURFACE → DEPTH → ORIGIN → RETURN"]],
           media: {
             src: "assets/images/shila/shila-user-experience.jpg",
             width: 1200,
@@ -369,61 +369,34 @@ const siteContent = {
       slug: "project-01",
       number: "002",
       archiveTitle: "MANMATIC",
-      archiveSubtitle: "FIELD TO APPLICATION",
-      navigationTitle: "ManMaTIC — Field to Application",
+      archiveSubtitle: "AN ARCHITECTURAL METHODOLOGY FOR HUMAN–MACHINE INTEGRATION",
+      navigationTitle: "ManMaTIC — Architectural Methodology",
       theme: "manmatic",
       title: "ManMaTIC",
       definition: "An architectural methodology for translating changing human–machine conditions into institutional and spatial systems.",
-      overview: "ManMaTIC is an architectural research methodology developed to study human–machine integration as a continuously changing subject. It connects research, thesis development, evaluation criteria, author-led design dialogue, technological systems, and spatial decisions within one evolving framework. Rather than producing one fixed formal answer, the methodology establishes a structure through which changing technological conditions can be translated into specific architectural institutions.",
+      overview: "ManMaTIC is an architectural research methodology developed to translate changing human–machine conditions into institutional and spatial systems. It connects research, evaluation criteria, design dialogue, technological systems, and architectural application within one evolving framework.",
       year: "2026",
       location: "",
       category: "Human–Machine Integration",
       type: "Architectural Research Methodology",
       role: "Architecture, research, systems thinking, visual communication",
       themes: ["Research Institute", "Human–Machine Systems"],
-      points: ["DOMAIN / HUMAN–MACHINE INTEGRATION", "STRUCTURE / RESEARCH → CRITERIA → DESIGN → APPLICATION", "STATUS / ACTIVE DEVELOPMENT"],
+      points: ["DOMAIN / HUMAN–MACHINE INTEGRATION", "STRUCTURE / FIELD → DESIGN → APPLICATION", "STATUS / ACTIVE DEVELOPMENT"],
       featured: true,
       displayOrder: 2,
       sections: [
         {
           code: "01",
-          title: "METHODOLOGY",
-          text: "MANMATIC is an architectural research methodology developed to study human–machine integration as a continuously changing subject. Research, criteria, design dialogue, technological systems, and spatial decisions remain connected within one evolving framework.",
-          facts: [["TYPE", "ARCHITECTURAL RESEARCH METHODOLOGY"], ["DOMAIN", "HUMAN–MACHINE INTEGRATION"], ["STRUCTURE", "RESEARCH → CRITERIA → DESIGN → APPLICATION"], ["STATUS", "ACTIVE DEVELOPMENT"]]
+          title: "THE MANMATIC FIELD",
+          text: "A project-specific knowledge environment that organises research, thesis logic, criteria, case studies, design dialogue, and outputs into a readable operating field.",
+          facts: [["RECORD", "002.A"], ["TYPE", "KNOWLEDGE + DESIGN OPERATING ENVIRONMENT"]],
+          links: [["ENTER THE FIELD →", "project.html?project=manmatic-field"]]
         },
         {
           code: "02",
-          title: "THE FIELD",
-          text: "The ManMaTIC Field is a project-specific knowledge environment that organises research, thesis logic, case studies, evaluation criteria, design discussions, drawings, systems, and outputs into a readable network. It allows architectural decisions to be traced, compared, questioned, refined, and expanded while the technological subject continues to change.",
-          links: [["OPEN MANMATIC FIELD ↗", "https://www.manmatic.institute/"]],
-          facts: [["FIELD TYPE", "KNOWLEDGE AND DESIGN OPERATING ENVIRONMENT"], ["FIELD STATE", "ACTIVE RESEARCH NETWORK"]]
-        },
-        {
-          code: "03",
-          title: "THESIS + CRITERIA",
-          text: "The Field began with the methodological problem of studying a moving subject: machines, artificial intelligence, automation, data systems, and future work evolve faster than conventional architectural research can fully capture. Research therefore remains active through thesis, criteria, design dialogue, and architectural development.",
-          groups: [
-            ["01 / RESEARCH BEFORE ARCHITECTURE", "Research is treated as an active design structure rather than a preliminary phase."],
-            ["02 / FROM RESEARCH TO THESIS FRAMEWORK", "Prospective reading, problem definition, site and context analysis, case studies, theory, function development, programme logic, and system relationships establish the thesis framework."],
-            ["03 / FROM THESIS TO EVOLUTION CRITERIA", "Thesis claims are translated into criteria that can be traced, compared, questioned, and revised."],
-            ["04 / FROM CRITERIA TO ORION OPERATING FIELD", "Criteria enter an operating field where proposals, evidence, and architectural decisions can be examined together."],
-            ["05 / AUTHOR-LED DESIGN DIALOGUE", "The architect remains the author who directs, evaluates, contests, and selects within the human–machine dialogue."]
-          ]
-        },
-        {
-          code: "04",
-          title: "FIELD INTERFACE",
-          text: "The interface makes relationships between research nodes, evidence, criteria, dialogue, drawings, systems, and outputs readable. The manual explains how this information is organised and how selected-node logic supports adaptive knowledge transfer.",
-          groups: [["06 / FIELD INTERFACE AND DATA STRUCTURE", "Search, nodes, connections, and selected-node reading panels reveal how project knowledge is related."], ["07 / ADAPTIVE KNOWLEDGE TRANSFER", "New evidence can update the field without separating research from the continuing design process."]],
-          media: { src: "assets/images/manmatic-field-live.png", width: 1600, height: 1000, alt: "The actual ManMaTIC Field interface with its node network and reading structure.", caption: "THE MANMATIC FIELD / INTERFACE AND DATA STRUCTURE" }
-        },
-        {
-          code: "05",
           title: "PROTOCOL PORT",
-          text: "The Field does not end as a diagram or archive. Its research, criteria, protocols, and design dialogue are translated into a site-specific institutional proposal. Protocol Port is the first architectural application of this process: a Human–Machine Integration Institute developed for Aqaba.",
-          status: "UNDER MODIFICATION",
-          statusNote: "STILL NEGOTIATING ITS FINAL FORM.",
-          facts: [["RELATION", "FIRST ARCHITECTURAL APPLICATION OF MANMATIC"], ["FUNCTION", "HUMAN–MACHINE INTEGRATION INSTITUTE"], ["LOCATION", "AQABA DIGITAL CITY / MIDDLE LOGISTICS AREA / AQABA, JORDAN"]],
+          text: "The first site-specific architectural application of the ManMaTIC methodology, translating its research, criteria, and design dialogue into an institutional project for Aqaba.",
+          facts: [["RECORD", "002.B"], ["FUNCTION", "HUMAN–MACHINE INTEGRATION INSTITUTE"], ["LOCATION", "AQABA, JORDAN"]],
           media: {
             src: "assets/images/manmatic/protocol-port-001-1200.jpg",
             width: 1200,
@@ -431,27 +404,59 @@ const siteContent = {
             alt: "Axonometric drawing of Protocol Port extending across an industrial and logistics landscape with controlled orange elements.",
             caption: "PROTOCOL PORT / APPLICATION 01 / MAIN AXONOMETRIC"
           },
-          gallery: [
-            { src: "assets/images/manmatic/protocol-port-process-002-900.jpg", width: 506, height: 900, alt: "Protocol Port hand sketches arranged around a pen and laptop.", caption: "PROCESS 002 / HAND-DRAWN DEVELOPMENT" },
-            { src: "assets/images/manmatic/protocol-port-process-003-900.jpg", width: 653, height: 900, alt: "Protocol Port elevation sketches and tablet drawing study.", caption: "PROCESS 003 / SECTION AND ELEVATION STUDIES" }
-          ]
+          links: [["ENTER PROTOCOL PORT →", "project.html?project=protocol-port"]]
         }
       ],
       hero: {
-        src: "assets/images/manmatic-field-live.png",
+        src: "assets/images/manmatic-field-interface-live.png",
         width: 1600,
         height: 1000,
         orientation: "wide",
         fit: "contain",
         mediaClass: "media--wide media--screen",
-        alt: "Live ManMaTIC field interface showing the project research network and evidence structure.",
-        caption: "THE MANMATIC FIELD / VERIFIED LIVE FIELD CAPTURE"
+        alt: "ManMaTIC parent network connecting research, criteria, design dialogue, and architectural application.",
+        caption: "MANMATIC / THE FIELD + PROTOCOL PORT / ACTIVE DEVELOPMENT"
       }
+    },
+    {
+      id: "project-manmatic-field",
+      slug: "manmatic-field",
+      number: "002.A",
+      archiveTitle: "THE MANMATIC FIELD",
+      archiveSubtitle: "KNOWLEDGE + DESIGN OPERATING ENVIRONMENT",
+      navigationTitle: "ManMaTIC System — The Field",
+      theme: "manmatic",
+      systemMarker: "MANMATIC SYSTEM / THE FIELD",
+      systemBack: "project.html?project=project-01",
+      title: "The ManMaTIC Field",
+      definition: "A project-specific knowledge and design environment that organises research, criteria, dialogue, evidence, and architectural decisions into a readable operating network.",
+      overview: "The Field studies a moving subject. Machines, artificial intelligence, automation, data systems, and future work change faster than a conventional linear research process can capture, so research remains active through thesis development, evaluation criteria, design dialogue, and architectural decisions.",
+      year: "2026",
+      location: "",
+      category: "ManMaTIC System / The Field",
+      type: "Knowledge and Design Operating Environment",
+      relation: "Operational Field within ManMaTIC",
+      role: "Architectural research, methodology, field structure, design dialogue, visual communication",
+      themeRelation: "Operational Field within ManMaTIC",
+      featured: false,
+      displayOrder: 97,
+      sections: [
+        { code: "01", title: "STUDYING A MOVING SUBJECT", text: "Technological conditions continue to change while architecture is being researched and designed. The Field therefore keeps evidence, thesis logic, evaluation criteria, and design decisions connected rather than treating research as a phase that ends before architecture begins." },
+        { code: "02", title: "RESEARCH BEFORE ARCHITECTURE", text: "Research is organised as an active project structure. Evidence, case studies, technological change, institutional questions, and spatial implications remain traceable as the architectural problem develops." },
+        { code: "03", title: "FROM RESEARCH TO THESIS FRAMEWORK", text: "The research corpus is translated into prospective reading, problem definition, site and context analysis, case studies, theory, function development, programme logic, and system relationships." },
+        { code: "04", title: "FROM THESIS TO EVOLUTION CRITERIA", text: "Thesis claims become evaluation criteria that can be compared, questioned, refined, and revised as technological and architectural conditions evolve." },
+        { code: "05", title: "FROM CRITERIA TO ORION OPERATING FIELD", text: "Criteria enter an operating field where evidence, proposals, discussion, and architectural decisions can be examined together rather than hidden behind a single output." },
+        { code: "06", title: "AUTHOR-LED DESIGN DIALOGUE", text: "The architect remains the author who frames the problem, directs the dialogue, evaluates proposals, contests unsuitable responses, and selects the decisions carried into the project." },
+        { code: "07", title: "FIELD INTERFACE", text: "The interface makes the relationships between research nodes, criteria, evidence, dialogue, drawings, systems, and outputs readable.", media: { src: "assets/images/manmatic-field-interface-live.png", width: 1600, height: 1000, alt: "The live ManMaTIC Field interface showing evidence nodes, process links, labels, and project records.", caption: "FIELD INTERFACE / KNOWLEDGE + DESIGN OPERATING ENVIRONMENT" } },
+        { code: "08", title: "FIELD DATA STRUCTURE", text: "Search, connections, and selected-node reading logic allow each item to be read individually and as part of the wider project network." },
+        { code: "09", title: "MANMATIC FIELD AS AN ADAPTIVE DESIGN FRAMEWORK", text: "New evidence can update the field without separating research from the continuing design process. The framework transfers changing knowledge into criteria, dialogue, and project decisions.", links: [["ENTER LIVE MANMATIC FIELD ↗", "https://www.manmatic.institute/"]] }
+      ],
+      hero: { src: "assets/images/manmatic-field-interface-live.png", width: 1600, height: 1000, orientation: "wide", fit: "contain", mediaClass: "media--wide media--screen", alt: "Live ManMaTIC Field interface with evidence, criteria, knowledge links, and selected project nodes.", caption: "MANMATIC SYSTEM / THE FIELD" }
     },
     {
       id: "project-02",
       slug: "project-02",
-      number: "003",
+      number: "004",
       navigationTitle: "From Concrete Fatigue to Green Asset",
       title: "From Concrete Fatigue to Green Asset",
       definition:
@@ -470,7 +475,7 @@ const siteContent = {
         "Introduces a modular tree unit for shade, planting, and water management."
       ],
       featured: true,
-      displayOrder: 3,
+      displayOrder: 4,
       hero: {
         src: "assets/images/green-asset-1920.jpg",
         srcset:
@@ -525,54 +530,63 @@ const siteContent = {
     {
       id: "project-protocol-port",
       slug: "protocol-port",
-      number: "002",
+      number: "002.B",
       archiveTitle: "PROTOCOL PORT",
       archiveSubtitle: "FIRST ARCHITECTURAL APPLICATION OF THE MANMATIC FIELD",
       navigationTitle: "Protocol Port — First ManMaTIC Application",
       title: "Protocol Port",
       definition: "The first architectural application through which ManMaTIC criteria, decision protocols, and human–machine negotiations are tested spatially.",
-      overview: "Protocol Port translates the ManMaTIC Field from research structure into an architectural application. Its current form remains under modification while field criteria and project decisions continue to be tested.",
+      overview: "Protocol Port is the first site-specific architectural application of ManMaTIC. It translates the methodology’s research, evaluation criteria, and author-led design dialogue into a Human–Machine Integration Institute for Aqaba.",
       year: "2026",
       location: "Aqaba Digital City / Middle Logistics Area / Aqaba, Jordan",
       category: "ManMaTIC / Architectural Application 01",
       type: "Human–Machine Integration Institute",
+      relation: "First Architectural Application of ManMaTIC",
       role: "Architecture, research, systems thinking, visual communication",
       status: "UNDER MODIFICATION",
       statusNote: "STILL NEGOTIATING ITS FINAL FORM.",
       theme: "manmatic",
-      parentSystem: "project-01",
+      systemMarker: "MANMATIC SYSTEM / PROTOCOL PORT",
+      systemBack: "project.html?project=project-01",
       featured: false,
       displayOrder: 98,
-      points: [
-        "Field criteria are translated into architectural decisions.",
-        "Human review, machine proposals, contestation, and authorisation remain visible in the process.",
-        "Images 001–003 record the architectural application and its author-led development process."
-      ]
+      sections: [
+        { code: "01", title: "PROJECT OPENING", text: "The first architectural application of ManMaTIC: a Human–Machine Integration Institute developed for Aqaba." },
+        { code: "02", title: "FUNCTION AND SITE", text: "The institutional programme addresses human–machine integration within Aqaba’s logistics and technological context.", facts: [["FUNCTION", "HUMAN–MACHINE INTEGRATION INSTITUTE"], ["LOCATION", "AQABA DIGITAL CITY / MIDDLE LOGISTICS AREA / AQABA, JORDAN"]] },
+        { code: "03", title: "FROM FIELD TO APPLICATION", text: "Research, criteria, protocols, and design dialogue move from the ManMaTIC Field into a site-specific institutional proposal. The Field remains a decision environment; Protocol Port is its first spatial application." },
+        { code: "04", title: "DESIGN DEVELOPMENT", text: "Hand drawing and iterative section studies record the author-led development of the project.", media: { src: "assets/images/manmatic/protocol-port-process-002-900.jpg", width: 506, height: 900, alt: "Protocol Port hand sketches arranged around a pen and laptop.", caption: "FIG. 01 / IMAGE 002 / HAND-DRAWN DEVELOPMENT" } },
+        { code: "05", title: "ARCHITECTURAL SYSTEM", text: "The developing system coordinates institutional programme, circulation, technical elements, and the project’s relationship to the logistics landscape." },
+        { code: "06", title: "IMAGES AND DRAWINGS", text: "Section and elevation studies test the project’s vertical elements, long spatial sequence, and architectural thresholds.", media: { src: "assets/images/manmatic/protocol-port-process-003-900.jpg", width: 653, height: 900, alt: "Protocol Port section and elevation sketches surrounding a tablet drawing.", caption: "FIG. 02 / IMAGE 003 / SECTION AND ELEVATION STUDIES" } },
+        { code: "07", title: "STATUS AND NEXT DEVELOPMENT", text: "The architectural application remains iterative while its institutional and spatial systems are refined.", status: "UNDER MODIFICATION", statusNote: "STILL NEGOTIATING ITS FINAL FORM." }
+      ],
+      hero: { src: "assets/images/manmatic/protocol-port-001-1200.jpg", width: 1200, height: 743, orientation: "wide", fit: "contain", mediaClass: "media--wide media--drawing", alt: "Protocol Port axonometric drawing across Aqaba’s logistics landscape.", caption: "MANMATIC SYSTEM / PROTOCOL PORT / AQABA, JORDAN" }
     },
     {
-      id: "project-khalda-residential",
-      slug: "khalda-residential-building",
-      number: "004",
-      archiveTitle: "KHALDA RESIDENTIAL BUILDING",
+      id: "project-dabouq-residential",
+      slug: "dabouq-residential-building",
+      number: "003",
+      archiveTitle: "DABOUQ RESIDENTIAL BUILDING",
       archiveSubtitle: "PROFESSIONAL TRAINING PROJECT",
-      navigationTitle: "Khalda Residential Building — Professional Training Project",
-      title: "Khalda Residential Building",
+      navigationTitle: "Dabouq Residential Building — Professional Training Project",
+      title: "Dabouq Residential Building",
       definition: "A residential building study developed during professional training at BIM Lab.",
-      overview: "A residential building study developed during professional training at BIM Lab, involving architectural plans, elevations, design development, drawings, and presentation visuals within an active office workflow.",
-      year: "2025",
-      location: "Khalda / Amman, Jordan",
+      overview: "A residential building study developed during professional training at BIM Lab, involving architectural drawings, elevation development, controlled design adjustments, and visual documentation within an active office workflow.",
+      year: "2026",
+      location: "Dabouq, Amman, Jordan",
       category: "Professional Training",
       type: "Residential Architecture",
-      role: "Architectural plans, elevations, design development, drawings, and presentation visuals under supervision",
+      context: "Professional Training",
+      role: "Architectural drawings, elevation development, light design modifications, and visual development under supervision",
       office: "BIM Lab",
       supervision: "Eng. Shaker Khulief",
       featured: true,
-      displayOrder: 4,
+      displayOrder: 3,
       points: [
         "Developed during professional training at BIM Lab.",
-        "Work was produced within an active office workflow and is not presented as an independent commission.",
-        "Image 004 remains unlinked until its original file is supplied."
-      ]
+        "Developed during professional training at BIM Lab and not presented as an independent commission.",
+        "Developed during professional training at BIM Lab."
+      ],
+      hero: { src: "assets/images/dabouq/dabouq-residential-preview.jpg", width: 1600, height: 1600, orientation: "square", fit: "natural", mediaClass: "media--natural", alt: "Architectural presentation drawing of a residential building developed during professional training at BIM Lab in Dabouq, Amman.", caption: "RESIDENTIAL PROJECT / PROFESSIONAL TRAINING AT BIM LAB" }
     }
   ]
 };

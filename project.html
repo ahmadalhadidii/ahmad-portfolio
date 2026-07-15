@@ -70,7 +70,9 @@
       }
 
       window.__portfolioProjectLoaderData = project ? {
-        number: String(parseInt(project.number, 10) || project.number || "").padStart(2, "0"),
+        number: /^(\d+)\.([a-z])$/i.test(String(project.number || ""))
+          ? String(project.number).replace(/^(\d+)\.([a-z])$/i, function (_, n, branch) { return n.padStart(3, "0") + "." + branch.toUpperCase(); })
+          : String(parseInt(project.number, 10) || project.number || "").padStart(2, "0"),
         title: project.archiveTitle || project.title || "SELECTED PROJECT",
         subtitle: project.archiveSubtitle || project.type || project.category || "",
         type: project.type || project.category || "PROJECT FILE",

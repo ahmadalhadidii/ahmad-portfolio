@@ -100,10 +100,10 @@ function Assert-SourceContract {
   $sitemap = Get-Content -Raw -LiteralPath '.\sitemap.xml'
   Assert-State ($robots -match 'Allow:\s*/' -and $robots -match 'https://www\.ahmad\.manmatic\.institute/sitemap\.xml') 'robots.txt is blocking crawling or references the wrong sitemap.'
   $sitemapXml = [xml]$sitemap
-  Assert-State ($null -ne $sitemapXml.urlset -and [regex]::Matches($sitemap, '<url>').Count -eq 12 -and $sitemap -notmatch 'project=(project-03|protocol-port)') 'The XML sitemap is invalid, incomplete, or still contains an archived project.'
+  Assert-State ($null -ne $sitemapXml.urlset -and [regex]::Matches($sitemap, '<url>').Count -eq 14 -and $sitemap -notmatch 'project=project-03' -and $sitemap -match 'project=manmatic-field' -and $sitemap -match 'project=protocol-port') 'The XML sitemap is invalid, incomplete, or missing the ManMaTIC child routes.'
   $projectRows = [regex]::Matches($index, 'data-project-id="([^"]+)"')
   $rowIds = @($projectRows | ForEach-Object { $_.Groups[1].Value })
-  Assert-State (($rowIds -join ',') -eq 'project-05,project-01,project-02,khalda-residential-building,project-03') 'The homepage project source records are incomplete.'
+  Assert-State (($rowIds -join ',') -eq 'project-05,project-01,project-02,dabouq-residential-building,project-03') 'The homepage project source records are incomplete.'
   Assert-State ([regex]::Matches($index, 'data-manmatic-system').Count -eq 1) 'The homepage must contain one ManMaTIC system boundary.'
   Assert-State ($index -match 'data-visual-slider' -and $index -match 'data-visual-prev' -and $index -match 'data-visual-next') 'The Visuals slider controls are missing from the source.'
   Assert-State ($index -notmatch 'data-visual-viewer' -and $index -notmatch 'class="visual-viewer') 'The obsolete modal visual viewer remains in the homepage source.'
@@ -149,8 +149,8 @@ $viewports = @(
 $desktopViewport = $viewports | Where-Object { $_.Name -eq '1440x900' } | Select-Object -First 1
 $phoneViewport = $viewports | Where-Object { $_.Name -eq '390x844' } | Select-Object -First 1
 $smallPhoneViewport = $viewports | Where-Object { $_.Name -eq '320x568' } | Select-Object -First 1
-$expectedSlugs = @('project-05', 'project-01', 'project-02', 'khalda-residential-building')
-$expectedRowIds = @('project-05', 'project-01', 'project-02', 'khalda-residential-building')
+$expectedSlugs = @('project-05', 'project-01', 'dabouq-residential-building', 'project-02')
+$expectedRowIds = @('project-05', 'project-01', 'dabouq-residential-building', 'project-02')
 $expectedNumbers = @('001', '002', '003', '004')
 $expectedVisualSlugs = @('architecture-of-elsewhere', 'drawn-out-of-red', 'stone-by-moonlight', 'the-mechanics-of-becoming', 'the-last-room-before-tomorrow')
 
@@ -258,6 +258,59 @@ function Wait-For([string]$expression, [string]$message, [int]$attempts = 160) {
     Start-Sleep -Milliseconds 100
   }
   throw $message
+}
+
+function Capture-Viewport([string]$name) {
+  $capture = Invoke-Cdp 'Page.captureScreenshot' @{ format = 'png'; fromSurface = $true }
+  $path = Join-Path $outDir ("evidence-{0}.png" -f $name)
+  [System.IO.File]::WriteAllBytes($path, [Convert]::FromBase64String([string]$capture.data))
+}
+
+function Capture-ManmaticEvidence {
+  Set-Viewport $desktopViewport
+  Navigate $homeUrl
+  Wait-For-AppReady 'ManMaTIC screenshot pass'
+  $null = Evaluate 'document.documentElement.style.scrollBehavior = "auto"; true'
+  $null = Evaluate 'window.scrollTo(0, 0); true'
+  Start-Sleep -Milliseconds 500
+  foreach ($frame in 2..6) {
+    $frameCode = $frame.ToString('00')
+    $null = Evaluate "(() => { const slides = [...document.querySelectorAll('[data-showreel-slide]')]; slides.forEach(slide => { const active = slide.dataset.frame === '$frameCode'; slide.classList.toggle('is-active', active); slide.setAttribute('aria-hidden', active ? 'false' : 'true'); }); return true; })()"
+    Start-Sleep -Milliseconds 180
+    Capture-Viewport ("showreel-{0}-desktop" -f $frameCode)
+  }
+  Set-Viewport @{ Name = 'mobile-showreel-evidence'; Width = 390; Height = 844; Mobile = $true; Touch = $true }
+  foreach ($frameCode in @('03', '05', '06')) {
+    $null = Evaluate "(() => { const slides = [...document.querySelectorAll('[data-showreel-slide]')]; slides.forEach(slide => { const active = slide.dataset.frame === '$frameCode'; slide.classList.toggle('is-active', active); slide.setAttribute('aria-hidden', active ? 'false' : 'true'); }); return true; })()"
+    Start-Sleep -Milliseconds 180
+    Capture-Viewport ("showreel-{0}-mobile" -f $frameCode)
+  }
+  Set-Viewport $desktopViewport
+  $null = Evaluate '(() => { const target = document.querySelector("[data-manmatic-system]"); window.scrollTo(0, scrollY + target.getBoundingClientRect().top - innerHeight - 40); return true; })()'
+  Start-Sleep -Milliseconds 500
+  Capture-Viewport '01-before-glitch-desktop'
+  $null = Evaluate 'window.scrollBy(0, 180); true'
+  Start-Sleep -Milliseconds 100
+  Capture-Viewport '02-white-flash-desktop'
+  Start-Sleep -Milliseconds 1450
+  Capture-Viewport '03-symbol-desktop'
+  Center-Element '.project-row--manmatic > .project-row__link'
+  Start-Sleep -Milliseconds 850
+  Capture-Viewport '04-introduction-desktop'
+  Center-Element '.manmatic-category__record:first-child'
+  Start-Sleep -Milliseconds 900
+  Capture-Viewport '05-field-live-window-desktop'
+  Center-Element '.manmatic-category__record:nth-child(2)'
+  Capture-Viewport '06-protocol-port-desktop'
+  Center-Element '.project-row[data-project-id="dabouq-residential-building"]'
+  Capture-Viewport '07-next-project-desktop'
+  Set-Viewport @{ Name = 'mobile-evidence'; Width = 390; Height = 844; Mobile = $true; Touch = $true }
+  Center-Element '.manmatic-threshold'
+  Start-Sleep -Milliseconds 1500
+  Capture-Viewport '08-symbol-mobile'
+  Center-Element '.manmatic-category__record:first-child'
+  Start-Sleep -Milliseconds 900
+  Capture-Viewport '09-field-live-window-mobile'
 }
 
 function Set-Viewport($viewport) {
@@ -578,7 +631,7 @@ JSON.stringify((() => {
   $expectedHrefs = @($expectedSlugs | ForEach-Object { "project.html?project=$_" })
   Assert-State ((@($state.rowHrefs) -join ',') -eq ($expectedHrefs -join ',')) 'Homepage project routes do not match the archive.'
   Assert-State ((@($state.dataIds) -join ',') -eq ($expectedSlugs -join ',') -and (@($state.dataNumbers) -join ',') -eq ($expectedNumbers -join ',')) 'Central project data does not match homepage order and numbering.'
-  Assert-State (-not (@($state.rowImages) -contains $false)) 'At least one homepage project entry has no cover image.'
+  Assert-State ((@($state.rowImages | Where-Object { -not $_ })).Count -eq 1) 'The text-only ManMaTIC introduction is not the only homepage project without a cover image.'
   Assert-State (@($state.duplicateIds).Count -eq 0 -and $state.emptyLinks -eq 0 -and @($state.brokenInternalLinks).Count -eq 0) 'The homepage contains duplicate IDs, empty links, or broken internal fragments.'
   Assert-State ($state.unsafeExternalLinks -eq 0) 'A new-tab external link is missing noopener/noreferrer.'
   Assert-State ($state.showreelSlides -ge 5 -and $state.showreelActive -eq 1) 'The homepage showreel frame structure is incomplete.'
@@ -592,11 +645,7 @@ function Assert-ProjectImages {
   foreach ($slug in $expectedSlugs) {
     $selector = ".project-row[data-project-id='$slug']"
     Center-Element $selector
-    if ($slug -eq 'khalda-residential-building') {
-      $pendingSelector = ConvertTo-Json -InputObject $selector -Compress
-      Assert-State ([bool](Evaluate "Boolean(document.querySelector($pendingSelector)?.querySelector('.project-row__media-status'))")) 'Khalda must expose a controlled media-source record while image 004 is unavailable.'
-      continue
-    }
+    if ($slug -eq 'project-01') { continue }
     $selectorLiteral = ConvertTo-Json -InputObject $selector -Compress
     $readyExpression = @"
 (() => {
@@ -1210,7 +1259,7 @@ JSON.stringify((() => {
     badProjectImages: projectImages.filter(image => {
       const bounds = image.getBoundingClientRect();
       return bounds.width <= 0 || bounds.height <= 0;
-    }).length,
+    }).map(image => ({ src: image.currentSrc || image.getAttribute("src"), className: image.className, width: image.getBoundingClientRect().width, height: image.getBoundingClientRect().height })),
     loaderHidden: Boolean(document.getElementById("loader")?.hidden)
   };
 })())
@@ -1221,7 +1270,7 @@ JSON.stringify((() => {
   Assert-State (@($state.headingOverflow).Count -eq 0) ("A heading clips or overflows for {0} at {1}: {2}." -f $label, $viewport.Name, (@($state.headingOverflow) -join ', '))
   Assert-State (@($state.emailOverflow).Count -eq 0) ("An email address overflows for {0} at {1}." -f $label, $viewport.Name)
   Assert-State ($state.bodyScrollHeight -gt $height -and $state.loaderHidden -and -not $state.menuOpen) ("The page is clipped, loading, or menu-locked for {0} at {1}." -f $label, $viewport.Name)
-  Assert-State ($state.badProjectImages -eq 0) ("A project image has no layout box for {0} at {1}." -f $label, $viewport.Name)
+  Assert-State (@($state.badProjectImages).Count -eq 0) ("A project image has no layout box for {0} at {1}: {2}." -f $label, $viewport.Name, (($state.badProjectImages | ConvertTo-Json -Compress) -join ''))
 
   if ((Evaluate 'document.body.classList.contains("home-page")')) {
     Assert-State ($state.monitorWidth -gt 0 -and $state.monitorLeft -ge -1 -and $state.monitorRight -le ($width + 1)) ("Opening monitor overflows at {0}." -f $viewport.Name)
@@ -1422,17 +1471,13 @@ JSON.stringify((() => {
 '@
   Assert-State ($state.slug -eq $slug -and $state.h1Count -eq 1 -and $state.headerCount -eq 1) ("Project identity structure is invalid: {0}." -f $slug)
   Assert-State ($state.number -eq $number.Substring(1, 2) -and -not [string]::IsNullOrWhiteSpace([string]$state.title) -and $state.title -eq $state.dataTitle) ("Project number or title does not match central data: {0}." -f $slug)
-  if ($slug -eq 'khalda-residential-building') {
-    Assert-State ($state.heroCount -eq 0) 'Khalda must not receive an unrelated substitute hero while image 004 is unavailable.'
-  } else {
-    Assert-State ($state.heroCount -eq 1 -and $state.heroComplete -and $state.heroLocal -and $state.heroVisible) ("Project hero is missing, remote, unloaded, or invisible: {0}." -f $slug)
-  }
+  Assert-State ($state.heroCount -eq 1 -and $state.heroComplete -and $state.heroLocal -and $state.heroVisible) ("Project hero is missing, remote, unloaded, or invisible: {0}." -f $slug)
   Assert-State ($state.overview -ge 2 -and ($state.frameworkPoints -ge 1 -or $state.expandedSections -ge 1)) ("Project overview/framework is incomplete: {0}." -f $slug)
   Assert-State ($state.navigation -eq 2) ("Project previous/next navigation is incomplete: {0}." -f $slug)
   Assert-State ((@($state.navHrefs) -join ',') -eq ("project.html?project={0},project.html?project={1}" -f $previousSlug, $nextSlug)) ("Project navigation order is invalid: {0}." -f $slug)
   Assert-State ($state.scrollWidth -le ($state.clientWidth + 1)) ("Project route has horizontal overflow: {0}." -f $slug)
   Assert-State ($state.loaderTitle -eq $state.dataLoaderTitle -and $state.loaderKicker -eq ("PROJECT FILE {0}" -f $number.Substring(1, 2))) ("Project loader title or number is not dynamic: {0}." -f $slug)
-  Assert-State ($state.loaderCaption -match [regex]::Escape([string]$state.dataLoaderTitle) -and ($state.loaderImage -eq $state.dataLoaderImage -or ($slug -eq 'khalda-residential-building' -and [string]::IsNullOrWhiteSpace([string]$state.loaderImage)))) ("Project loader image or caption does not match the selected project: {0}." -f $slug)
+  Assert-State ($state.loaderCaption -match [regex]::Escape([string]$state.dataLoaderTitle) -and $state.loaderImage -eq $state.dataLoaderImage) ("Project loader image or caption does not match the selected project: {0}." -f $slug)
 
   if ($slug -eq 'project-01') {
     Assert-State ($state.loaderProjectClass -and $state.loaderDarkClass -and $state.loaderBackgroundLight -ge 0 -and $state.loaderBackgroundLight -lt 20) 'The ManMaTIC project loader is not using the dedicated black opening system.'
@@ -1655,6 +1700,7 @@ try {
   Assert-MobileInteractions
   Assert-HomepageViewports
   Assert-No-PageErrors 'homepage interactions and responsive checks'
+  Capture-ManmaticEvidence
 
   Assert-ProjectRoutes
   Assert-VisualRoutes

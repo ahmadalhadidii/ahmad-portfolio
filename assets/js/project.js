@@ -42,6 +42,8 @@
 
   function projectFileNumber(project) {
     const value = String((project && project.number) || "").trim();
+    const branch = value.match(/^(\d+)\.([a-z])$/i);
+    if (branch) return `${branch[1].padStart(3, "0")}.${branch[2].toUpperCase()}`;
     const numeric = Number.parseInt(value, 10);
     return Number.isFinite(numeric) ? String(numeric).padStart(2, "0") : value;
   }
@@ -151,6 +153,9 @@
       ["YEAR", project.year],
       ["LOCATION", project.location],
       ["TYPE", project.type || project.category],
+      ["CONTEXT", project.context],
+      ["OFFICE", project.office],
+      ["RELATION", project.relation],
       ["ROLE", project.role]
     ].filter(function (item) {
       return hasText(item[1]);
@@ -194,6 +199,16 @@
       title.append(" ", subtitleVisual);
     }
     const definition = element("p", "project-header__definition", project.definition);
+    if (hasText(project.systemMarker)) {
+      const systemNav = element("div", "project-header__system-nav");
+      systemNav.appendChild(element("p", "", project.systemMarker));
+      if (hasText(project.systemBack)) {
+        const back = element("a", "", "BACK TO MANMATIC SYSTEM ←");
+        back.href = project.systemBack;
+        systemNav.appendChild(back);
+      }
+      header.appendChild(systemNav);
+    }
     header.append(eyebrow, title, definition);
     appendMetadata(header, project);
     if (hasText(project.status)) {
@@ -204,7 +219,7 @@
       );
       header.appendChild(status);
     }
-    if (projectTheme(project) === "manmatic") {
+    if (projectTheme(project) === "manmatic" && project.slug !== "protocol-port") {
       const fieldLink = element("a", "project-header__field-link", "MANMATIC FIELD ↗");
       fieldLink.href = "https://www.manmatic.institute/";
       fieldLink.target = "_blank";
@@ -300,6 +315,7 @@
     if (hasText(record.text)) body.appendChild(element("p", "", record.text));
     if (hasText(record.status)) {
       body.appendChild(element("p", "project-status__label", `STATUS / ${record.status}`));
+      if (hasText(record.statusNote)) body.appendChild(element("p", "project-status__note", record.statusNote));
     }
 
     function createRecordFigure(media, className) {
@@ -381,8 +397,10 @@
         if (!Array.isArray(entry) || entry.length < 2) return;
         const link = element("a", "", entry[0]);
         link.href = entry[1];
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
+        if (/^https?:\/\//i.test(entry[1])) {
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+        }
         links.appendChild(link);
       });
       body.appendChild(links);
