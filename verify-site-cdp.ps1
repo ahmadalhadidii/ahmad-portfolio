@@ -584,7 +584,7 @@ JSON.stringify((() => {
   const internalLinks = Array.from(document.querySelectorAll('a[href^="#"]'));
   const externalLinks = Array.from(document.querySelectorAll('a[target="_blank"]'));
   const restoredRecords = Array.from(document.querySelectorAll(
-    ".profile__layout, .profile__meta, .cv__identity, .cv-group, .support-group, .contact__intro, .contact__band"
+    ".profile__layout, .cv-group, .support-group, .contact__intro, .contact__band"
   ));
   return {
     home: document.body.classList.contains("home-page"),
@@ -617,7 +617,8 @@ JSON.stringify((() => {
       return Number(style.opacity) > 0.9 && style.visibility !== "hidden" &&
         !String(style.clipPath).includes("100%") && record.getBoundingClientRect().height > 0;
     }).length,
-    profileMetaCount: document.querySelectorAll(".profile__meta > div").length,
+    profileMetaCount: document.querySelectorAll(".profile__meta").length,
+    cvIdentityCount: document.querySelectorAll(".cv__identity").length,
     cvGroupCount: document.querySelectorAll(".cv-group, .support-group").length,
     contactLinkCount: document.querySelectorAll(".contact__links a").length
   };
@@ -638,7 +639,7 @@ JSON.stringify((() => {
   Assert-State ($state.sliderDataCount -ge 5) 'Visuals must contain at least five data entries.'
   Assert-State $state.loaderBinaryRemoved 'Loader binary elements were not removed after completion.'
   Assert-State ($state.restoredRecordCount -ge 10 -and $state.visibleRestoredRecords -eq $state.restoredRecordCount) 'Profile, CV, or Contact content is still visually clipped or hidden.'
-  Assert-State ($state.profileMetaCount -eq 6 -and $state.cvGroupCount -ge 8 -and $state.contactLinkCount -eq 6) 'Profile, CV, or Contact content is incomplete.'
+  Assert-State ($state.profileMetaCount -eq 0 -and $state.cvIdentityCount -eq 0 -and $state.cvGroupCount -ge 8 -and $state.contactLinkCount -eq 6) 'Profile, CV, or Contact content is incomplete or duplicated.'
 }
 
 function Assert-ProjectImages {

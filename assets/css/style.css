@@ -44,6 +44,18 @@
   --motion-slow: 1000ms;
 }
 
+.home-page {
+  --section-space: clamp(72px, 6vw, 88px);
+  --inner-space: clamp(48px, 4.5vw, 64px);
+}
+
+@media (max-width: 960px) {
+  .home-page {
+    --section-space: clamp(58px, 8vw, 72px);
+    --inner-space: clamp(36px, 6vw, 48px);
+  }
+}
+
 *,
 *::before,
 *::after {
@@ -278,8 +290,6 @@ samp {
 .site-header__inner > *,
 .opening__identity > *,
 .profile__layout > *,
-.profile__meta > *,
-.cv__identity > *,
 .cv__layout > *,
 .project-row__link > *,
 .contact__band > *,
@@ -1304,7 +1314,7 @@ html.loader-pending body {
 
 .reading-stage {
   position: relative;
-  min-height: clamp(480px, 72vh, 660px);
+  min-height: clamp(320px, 38vh, 380px);
 }
 
 .reading-stage__sticky {
@@ -1834,78 +1844,8 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
   text-wrap: pretty;
 }
 
-.profile__meta {
-  margin-top: clamp(48px, 5vw, 72px);
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
-.profile__meta div {
-  min-width: 0;
-  padding: 16px 14px 18px 0;
-  border-right: 1px solid var(--line-light);
-}
-
-.profile__meta div + div {
-  padding-left: 14px;
-}
-
-.profile__meta dt,
-.profile__meta dd {
-  font-family: var(--font-mono);
-}
-
-.profile__meta dt {
-  margin-bottom: 4px;
-  color: var(--text-secondary);
-  font-size: 0.68rem;
-}
-
-.profile__meta dd {
-  font-size: 0.8rem;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
-
 /* CV */
 
-.cv__identity {
-  padding-block: 22px;
-  display: grid;
-  grid-template-columns: 6fr 2fr 4fr;
-  gap: 24px;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  font: 400 0.74rem/1.5 var(--font-mono);
-}
-
-.cv__identity-name {
-  margin-bottom: 4px;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.cv__identity dl,
-.cv__identity address {
-  display: grid;
-  align-content: start;
-  gap: 6px;
-}
-
-.cv__identity dl div {
-  display: grid;
-  grid-template-columns: 70px 1fr;
-  gap: 10px;
-}
-
-.cv__identity dt {
-  color: var(--text-secondary);
-}
-
-.cv__identity a,
-.cv-contact a,
 .contact__links a {
   text-decoration: underline;
   text-decoration-color: var(--line);
@@ -1913,14 +1853,12 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
   transition: text-decoration-color var(--motion-fast) var(--ease);
 }
 
-.cv__identity a:hover,
-.cv-contact a:hover,
 .contact__links a:hover {
   text-decoration-color: var(--text-primary);
 }
 
 .cv__layout {
-  margin-top: clamp(50px, 5vw, 76px);
+  margin-top: 0;
   display: grid;
   grid-template-columns: minmax(0, 8fr) minmax(260px, 4fr);
   gap: clamp(38px, 5vw, 76px);
@@ -2118,14 +2056,6 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
   padding-block: 9px;
   border-bottom: 1px solid var(--line-light);
   font: 400 0.78rem/1.45 var(--font-mono);
-}
-
-.cv-contact address {
-  padding-top: 12px;
-  display: grid;
-  gap: 10px;
-  overflow-wrap: anywhere;
-  font: 400 0.74rem/1.45 var(--font-mono);
 }
 
 /* Work index */
@@ -3161,6 +3091,7 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
   min-width: 0;
   overflow: hidden;
   contain: inline-size layout paint;
+  transition: height 420ms var(--ease-editorial);
   touch-action: pan-y pinch-zoom;
   cursor: grab;
 }
@@ -3171,7 +3102,7 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
 
 .visual-slider__track {
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
   transform: translate3d(calc(var(--slider-offset) + var(--slider-drag)), 0, 0);
   transition: transform 640ms var(--ease-editorial);
   will-change: transform;
@@ -3836,10 +3767,6 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
     grid-column: 1 / 9;
   }
 
-  .profile__meta {
-    grid-column: 9 / 13;
-  }
-
   .project-row__copy {
     grid-column: 2 / 7;
   }
@@ -4069,20 +3996,6 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
     grid-column: 1 / 10;
   }
 
-  .profile__meta {
-    grid-column: 10 / 13;
-  }
-
-  .cv__identity {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .cv__identity address {
-    grid-column: 1 / 3;
-    padding-top: 16px;
-    border-top: 1px solid var(--line-light);
-  }
-
   .cv__layout {
     grid-template-columns: 1fr;
   }
@@ -4244,28 +4157,12 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
     margin-top: 6px;
   }
 
-  .profile__statement,
-  .profile__meta {
+  .profile__statement {
     grid-column: 1 / 13;
   }
 
   .profile__statement {
     font-size: clamp(1.55rem, 7.2vw, 2.25rem);
-  }
-
-  .profile__meta {
-    margin-top: 42px;
-  }
-
-  .cv__identity {
-    grid-template-columns: 1fr;
-  }
-
-  .cv__identity dl,
-  .cv__identity address {
-    grid-column: 1;
-    padding-top: 16px;
-    border-top: 1px solid var(--line-light);
   }
 
   .cv-entry__header,
@@ -4447,18 +4344,6 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
     font-size: clamp(1.5rem, 2.35vw, 2.35rem);
   }
 
-  .profile__meta {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .profile__meta div:nth-child(3n) {
-    border-right: 0;
-  }
-
-  .profile__meta div:nth-child(-n + 3) {
-    border-bottom: 1px solid var(--line-light);
-  }
-
   .project-row__action {
     grid-column: 2 / 7;
     grid-row: 2;
@@ -4549,24 +4434,6 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
 
   .profile__statement {
     margin-top: 34px;
-  }
-
-  .profile__meta {
-    grid-column: auto;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .profile__meta div,
-  .profile__meta div:nth-child(3n) {
-    border-right: 1px solid var(--line-light);
-  }
-
-  .profile__meta div:nth-child(2n) {
-    border-right: 0;
-  }
-
-  .profile__meta div:nth-child(-n + 4) {
-    border-bottom: 1px solid var(--line-light);
   }
 
   .project-row__media .image-frame__crop {
@@ -4729,27 +4596,6 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
 
   .profile-portrait {
     grid-column: 1 / 13;
-  }
-
-  .profile__meta {
-    grid-column: auto;
-    grid-template-columns: 1fr;
-  }
-
-  .profile__meta div,
-  .profile__meta div:nth-child(2n),
-  .profile__meta div:nth-child(3n) {
-    padding: 14px 0;
-    border-right: 0;
-    border-bottom: 1px solid var(--line-light);
-  }
-
-  .profile__meta div + div {
-    padding-left: 0;
-  }
-
-  .profile__meta div:last-child {
-    border-bottom: 0;
   }
 
   .project-row__media .image-frame__crop {
@@ -5110,7 +4956,7 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
   }
 
   .visual-slide__copy {
-    min-height: 390px;
+    min-height: 0;
     padding-bottom: 0;
   }
 
@@ -5151,10 +4997,6 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
 
   .loader__header dl div:last-child {
     grid-column: 2;
-  }
-
-  .visual-slide__copy {
-    min-height: 420px;
   }
 
   .visual-slider__controls button {

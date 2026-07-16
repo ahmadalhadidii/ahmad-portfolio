@@ -1288,8 +1288,6 @@
     const container = scope || document;
     const selectors = [
       ".profile__layout",
-      ".profile__meta",
-      ".cv__identity",
       ".cv-group",
       ".support-group",
       ".contact__intro",
@@ -1484,6 +1482,13 @@
       return slide;
     });
 
+    function syncViewportHeight() {
+      const activeSlide = slides[index];
+      if (!activeSlide) return;
+      const height = Math.ceil(activeSlide.getBoundingClientRect().height);
+      if (height > 0) viewport.style.height = `${height}px`;
+    }
+
     function normalizeIndex(value) {
       return (value + slides.length) % slides.length;
     }
@@ -1524,6 +1529,7 @@
         progress.style.transform = `scaleX(${((index + 1) / slides.length).toFixed(4)})`;
       }
       if (announce) slider.dataset.visualActive = String(index + 1).padStart(2, "0");
+      window.requestAnimationFrame(syncViewportHeight);
     }
 
     function resetGesture() {
@@ -1607,6 +1613,19 @@
         resizeTimer = 0;
       }, 120);
     });
+
+    if ("ResizeObserver" in window) {
+      const viewportObserver = new ResizeObserver(function (entries) {
+        if (entries.some(function (entry) { return entry.target === slides[index]; })) {
+          syncViewportHeight();
+        }
+      });
+      slides.forEach(function (slide) { viewportObserver.observe(slide); });
+    }
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(syncViewportHeight);
+    }
 
     setIndex(0, false);
     return {
@@ -1715,8 +1734,8 @@
       if (group.stage) {
         const stageBounds = group.stage.getBoundingClientRect();
         const scrollDistance = Math.max(
-          stageBounds.height - viewportHeight * 0.2,
-          viewportHeight * 0.75
+          stageBounds.height - viewportHeight * 0.35,
+          viewportHeight * 0.48
         );
         groupProgress = clamp(
           (viewportHeight * 0.58 - stageBounds.top) / scrollDistance,
