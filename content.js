@@ -91,6 +91,7 @@ const siteContent = {
       accent: "#8f241f",
       context: "Independent visual narrative / atmospheric study.",
       src: "assets/images/drawn-out-of-red.webp",
+      mobileSrc: "assets/images/drawn-out-of-red-mobile.webp",
       srcset:
         "assets/images/drawn-out-of-red-1400.webp 1400w, assets/images/drawn-out-of-red.webp 2400w",
       width: 2400,

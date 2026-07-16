@@ -1104,6 +1104,10 @@ html.loader-pending body {
   inset: 0;
 }
 
+.responsive-picture {
+  display: contents;
+}
+
 .showreel__slide {
   display: grid;
   opacity: 0;

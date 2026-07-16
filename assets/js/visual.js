@@ -168,7 +168,16 @@
     image.addEventListener("error", function () {
       figure.classList.add("is-media-missing");
     }, { once: true });
-    frame.appendChild(image);
+    if (hasText(visual.mobileSrc)) {
+      const picture = element("picture", "responsive-picture");
+      const mobileSource = element("source");
+      mobileSource.media = "(max-width: 767px)";
+      mobileSource.srcset = rootPath(visual.mobileSrc);
+      picture.append(mobileSource, image);
+      frame.appendChild(picture);
+    } else {
+      frame.appendChild(image);
+    }
     figure.append(frame, element("figcaption", "", visual.caption || `VISUAL ${visual.index}`));
     return figure;
   }

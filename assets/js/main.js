@@ -1465,7 +1465,16 @@
       );
       const scan = element("span", "visual-slide__scan");
       scan.setAttribute("aria-hidden", "true");
-      imageFrame.append(image, scan);
+      if (study.mobileSrc) {
+        const picture = element("picture", "responsive-picture");
+        const mobileSource = element("source");
+        mobileSource.media = "(max-width: 767px)";
+        mobileSource.srcset = study.mobileSrc;
+        picture.append(mobileSource, image);
+        imageFrame.append(picture, scan);
+      } else {
+        imageFrame.append(image, scan);
+      }
       figure.append(
         imageFrame,
         element("figcaption", "", study.caption || "LOCAL ARCHIVE VISUAL")
