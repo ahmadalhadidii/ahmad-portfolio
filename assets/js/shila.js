@@ -15,19 +15,14 @@
     const items = Array.from(document.querySelectorAll("[data-shila-reveal]"));
     if (!items.length) return;
 
-    const imageVariants = ["horizontal", "vertical", "split"];
-    let imageIndex = 0;
     document.body.classList.add("shila-motion");
 
-    items.forEach(function (item, index) {
-      const isImage = item.matches("figure, .shila-gallery");
+    items.forEach(function (item) {
+      const mode = item.dataset.shilaRevealMode || (item.matches("figure") ? "fade" : "text");
+      const delay = Number(item.dataset.shilaRevealDelay || 0);
       item.classList.add("shila-reveal-ready");
-      item.dataset.shilaRevealKind = isImage ? "image" : "text";
-      item.style.setProperty("--shila-reveal-delay", `${(index % 3) * 55}ms`);
-      if (isImage) {
-        item.dataset.shilaRevealVariant = imageVariants[imageIndex % imageVariants.length];
-        imageIndex += 1;
-      }
+      item.dataset.shilaRevealKind = mode;
+      item.style.setProperty("--shila-reveal-delay", `${Number.isFinite(delay) ? delay : 0}ms`);
     });
 
     if (reducedMotion || !("IntersectionObserver" in window)) {
@@ -116,6 +111,7 @@
     let animating = false;
     let queuedSteps = 0;
     let transitionTimer = 0;
+    let counterValue = counter ? counter.textContent : "";
 
     function preloadAdjacent() {
       [-1, 1].forEach(function (offset) {
@@ -132,7 +128,17 @@
         slide.setAttribute("aria-hidden", slideIndex === logicalIndex ? "false" : "true");
       });
       const active = originalSlides[logicalIndex];
-      if (counter) counter.textContent = `${pad(logicalIndex + 1)} / ${pad(slideCount)}`;
+      if (counter) {
+        const nextCounterValue = `${pad(logicalIndex + 1)} / ${pad(slideCount)}`;
+        if (nextCounterValue !== counterValue) {
+          if (window.PortfolioEnhance && typeof window.PortfolioEnhance.scrambleTo === "function") {
+            window.PortfolioEnhance.scrambleTo(counter, nextCounterValue, 320);
+          } else {
+            counter.textContent = nextCounterValue;
+          }
+          counterValue = nextCounterValue;
+        }
+      }
       if (title) title.textContent = active.dataset.title || "";
       if (description) description.textContent = active.dataset.description || "";
       if (progress) progress.style.transform = `scaleX(${(logicalIndex + 1) / slideCount})`;

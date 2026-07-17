@@ -292,13 +292,15 @@
 
   function resolveDynamicText(element, value, duration) {
     if (!element || typeof value !== "string") return;
-    if (runningHeaderValue === value && element.textContent === value) return;
+    const owner = element.closest(".running-header");
+    if (owner && runningHeaderValue === value && element.textContent === value) return;
 
     const token = {};
-    const owner = element.closest(".running-header");
     dynamicScrambles.set(element, token);
-    runningHeaderValue = value;
-    if (owner) owner.classList.add("is-updating");
+    if (owner) {
+      runningHeaderValue = value;
+      owner.classList.add("is-updating");
+    }
 
     if (reducedMotion.matches || !element.textContent) {
       element.textContent = value;
@@ -2533,6 +2535,7 @@
   window.PortfolioEnhance = {
     refresh: refreshEnhancements,
     scramble: scrambleElement,
+    scrambleTo: resolveDynamicText,
     setTheme: setSiteTheme,
     requestUpdate: requestScrollEffects
   };
