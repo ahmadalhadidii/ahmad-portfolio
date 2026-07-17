@@ -5860,6 +5860,29 @@ body[data-project="manmatic-field"] .project-hero img, body[data-project="manmat
   }
 }
 
+/* Shared body-copy composition */
+body .reading-text,
+body #monitor-description,
+body .project-row__copy > p:not(.project-row__file),
+body .visual-slide__copy > p:not(.visual-slide__index),
+body .project-header__definition,
+body .project-copy-section__body > p,
+body .visual-record__description,
+body .visual-record__context,
+body .contact__statement,
+body .cv-entry__header > div > p:last-child,
+body .cv-row div > p:last-child,
+body .award-primary div > p:last-child,
+body .cv-entry__note,
+body .manmatic-branch > p,
+body .computation-detail__statement {
+  text-align: justify;
+  text-align-last: left;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
 @page {
   size: A4;
   margin: 12mm;

@@ -825,13 +825,13 @@ body.shila-page,
   }
 
   .shila-opening__title p {
-    max-width: 42ch;
+    max-width: 68ch;
     line-height: 1.42;
     text-wrap: balance;
   }
 
   .shila-opening p.shila-opening__text {
-    max-width: 50ch;
+    max-width: 75ch;
     margin-top: clamp(14px, 1.8vw, 22px) !important;
   }
 
@@ -867,7 +867,7 @@ body.shila-page,
   .shila-existing__copy > p,
   .shila-descent__copy > p,
   .shila-development__left > p {
-    max-width: 50ch;
+    max-width: 75ch;
   }
 
   .shila-existing__copy {
@@ -883,7 +883,7 @@ body.shila-page,
   }
 
   .shila-unfolding > p {
-    max-width: 46ch;
+    max-width: 68ch;
     padding-block: clamp(12px, 1.6vw, 18px) clamp(28px, 3vw, 38px);
   }
 
@@ -906,7 +906,7 @@ body.shila-page,
 
   .shila-spatial__12-copy > p,
   .shila-spatial__middle > p {
-    max-width: 46ch;
+    max-width: 68ch;
   }
 
   .shila-gallery__controls,
@@ -996,6 +996,21 @@ body.shila-page,
   .shila-spatial__15 {
     margin-top: clamp(24px, 3.5vw, 38px) !important;
   }
+}
+
+.shila-board .shila-opening p.shila-opening__text,
+.shila-board .shila-quarry__copy > p,
+.shila-board .shila-existing__copy > p,
+.shila-board .shila-descent__copy > p,
+.shila-board .shila-unfolding > p,
+.shila-board .shila-development__left > p,
+.shila-board .shila-spatial__12-copy > p,
+.shila-board .shila-spatial__middle > p {
+  text-align: justify;
+  text-align-last: left;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 @media (prefers-reduced-motion: reduce) {
