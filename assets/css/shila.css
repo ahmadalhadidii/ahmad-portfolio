@@ -239,7 +239,7 @@ body.shila-page,
 }
 
 .shila-gallery {
-  --gallery-index: 0;
+  --gallery-position: 0;
   --gallery-drag: 0px;
   position: relative;
   min-width: 0;
@@ -269,12 +269,13 @@ body.shila-page,
   grid-auto-flow: column;
   grid-auto-columns: 100%;
   width: 100%;
-  transform: translate3d(calc(var(--gallery-index) * -100% + var(--gallery-drag)), 0, 0);
+  transform: translate3d(calc(var(--gallery-position) * -100% + var(--gallery-drag)), 0, 0);
   transition: transform 220ms cubic-bezier(0.22, 0.7, 0.25, 1);
   will-change: transform;
 }
 
-.shila-gallery.is-dragging .shila-gallery__track {
+.shila-gallery.is-dragging .shila-gallery__track,
+.shila-gallery.is-jump .shila-gallery__track {
   transition: none;
 }
 
@@ -288,6 +289,10 @@ body.shila-page,
 .shila-gallery__slide img {
   width: 100%;
   height: 100%;
+}
+
+.shila-gallery__slide[data-gallery-clone] {
+  pointer-events: none;
 }
 
 .shila-gallery__controls {
@@ -316,11 +321,6 @@ body.shila-page,
 .shila-gallery__controls button:focus-visible {
   border-color: var(--shila-ink);
   background: #ffffff;
-}
-
-.shila-gallery__controls button:disabled {
-  color: #aaa;
-  cursor: default;
 }
 
 .shila-gallery__controls > span {
@@ -386,9 +386,24 @@ body.shila-page,
   margin-top: 4.1%;
 }
 
+.shila-gallery--spatial,
+.shila-gallery--spatial .shila-gallery__viewport,
+.shila-gallery--spatial .shila-gallery__slide {
+  aspect-ratio: 1665 / 790;
+}
+
+.shila-gallery--spatial .shila-gallery__slide img {
+  object-fit: contain;
+}
+
 .shila-spatial__14-2 {
   width: 49.05%;
   margin-top: 1.35% !important;
+}
+
+.shila-spatial__14-reserved {
+  aspect-ratio: 1664 / 794;
+  pointer-events: none;
 }
 
 .shila-spatial__15 {
@@ -409,6 +424,38 @@ body.shila-page,
 .shila-page .project-navigation {
   background: #ffffff;
   border-color: var(--shila-line);
+}
+
+.motion-ready .shila-motion [data-shila-reveal].shila-reveal-ready {
+  opacity: 0;
+  clip-path: inset(0 0 100% 0);
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity 560ms var(--ease-editorial),
+    clip-path 760ms var(--ease-editorial),
+    transform 760ms var(--ease-editorial);
+  transition-delay: var(--shila-reveal-delay, 0ms);
+}
+
+.motion-ready .shila-motion [data-shila-reveal][data-shila-reveal-kind="image"][data-shila-reveal-variant="horizontal"] {
+  clip-path: inset(0 100% 0 0);
+  transform: translate3d(18px, 0, 0);
+}
+
+.motion-ready .shila-motion [data-shila-reveal][data-shila-reveal-kind="image"][data-shila-reveal-variant="vertical"] {
+  clip-path: inset(100% 0 0 0);
+  transform: translate3d(0, 14px, 0);
+}
+
+.motion-ready .shila-motion [data-shila-reveal][data-shila-reveal-kind="image"][data-shila-reveal-variant="split"] {
+  clip-path: inset(0 50% 0 50%);
+  transform: translate3d(0, 0, 0) scaleX(0.985);
+}
+
+.motion-ready .shila-motion [data-shila-reveal].shila-reveal-ready.is-visible {
+  opacity: 1;
+  clip-path: inset(0 0 0 0);
+  transform: translate3d(0, 0, 0) scaleX(1);
 }
 
 @media (max-width: 900px) {
@@ -533,13 +580,35 @@ body.shila-page,
     margin-top: 24px !important;
   }
 
+  .shila-gallery {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .shila-gallery--spatial {
+    aspect-ratio: auto;
+  }
+
+  .shila-gallery__controls {
+    position: static;
+    align-self: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 0;
+    background: transparent;
+  }
+
   .shila-gallery__controls button {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
   }
 
   .shila-gallery__controls > span {
-    min-width: 54px;
+    min-width: 58px;
+  }
+
+  .shila-gallery__progress {
+    display: none;
   }
 
   .shila-spatial__top,
@@ -573,6 +642,14 @@ body.shila-page,
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .motion-ready .shila-motion [data-shila-reveal].shila-reveal-ready,
+  .motion-ready .shila-motion [data-shila-reveal].shila-reveal-ready.is-visible {
+    opacity: 1;
+    clip-path: none;
+    transform: none;
+    transition: none;
+  }
+
   .shila-gallery__track,
   .shila-gallery__progress {
     transition: none;
