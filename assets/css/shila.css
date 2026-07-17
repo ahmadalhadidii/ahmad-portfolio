@@ -303,30 +303,54 @@ body.shila-page,
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 4px;
-  background: rgba(255, 255, 255, 0.92);
+  padding: 0;
+  background: transparent;
 }
 
 .shila-gallery__controls button {
+  appearance: none;
   display: grid;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   place-items: center;
-  border: 1px solid var(--shila-line);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   color: var(--shila-ink);
+  font: 400 0.96rem / 1 var(--font-mono);
+  text-shadow:
+    0 0 2px rgba(255, 255, 255, 0.98),
+    0 1px 2px rgba(255, 255, 255, 0.9);
   cursor: pointer;
 }
 
 .shila-gallery__controls button:hover,
+.shila-gallery__controls button:active {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #000000;
+}
+
 .shila-gallery__controls button:focus-visible {
-  border-color: var(--shila-ink);
-  background: #ffffff;
+  border: 0;
+  outline: 1px solid rgba(32, 32, 32, 0.5);
+  outline-offset: -5px;
+  background: transparent;
+  box-shadow: none;
 }
 
 .shila-gallery__controls > span {
   min-width: 48px;
+  padding: 0;
+  background: transparent;
   font-size: 0.62rem;
   text-align: center;
+  text-shadow:
+    0 0 2px rgba(255, 255, 255, 0.98),
+    0 1px 2px rgba(255, 255, 255, 0.9);
 }
 
 .shila-gallery__progress {
@@ -751,6 +775,227 @@ body.shila-page,
     margin-top: 20px !important;
   }
 
+}
+
+@media (min-width: 600px) and (max-width: 1180px) {
+  .shila-board__inner {
+    width: calc(100% - clamp(32px, 3vw, 48px));
+  }
+
+  .shila-board p,
+  .shila-opening__title p,
+  .shila-quarry__copy > p,
+  .shila-existing__copy > p,
+  .shila-descent__copy > p,
+  .shila-unfolding > p,
+  .shila-development__left > p,
+  .shila-spatial__12-copy > p,
+  .shila-spatial__middle > p {
+    font-size: clamp(0.9375rem, 1.35vw, 1rem);
+    line-height: 1.58;
+    text-align: left;
+    text-wrap: pretty;
+    word-spacing: normal;
+    hyphens: none;
+  }
+
+  .shila-opening,
+  .shila-quarry__copy,
+  .shila-existing__copy,
+  .shila-descent__copy,
+  .shila-unfolding > h3,
+  .shila-unfolding > p,
+  .shila-development__left > p,
+  .shila-spatial__12-copy > p,
+  .shila-spatial__middle > p {
+    width: auto;
+    margin-left: 0;
+  }
+
+  .shila-opening {
+    padding-block: clamp(24px, 3vw, 38px) clamp(32px, 4vw, 50px);
+  }
+
+  .shila-opening h1 {
+    font-size: clamp(3.8rem, 7.4vw, 5.45rem);
+    line-height: 0.84;
+    letter-spacing: 0.15em;
+    text-align: left;
+    text-wrap: balance;
+  }
+
+  .shila-opening__title p {
+    max-width: 42ch;
+    line-height: 1.42;
+    text-wrap: balance;
+  }
+
+  .shila-opening p.shila-opening__text {
+    max-width: 50ch;
+    margin-top: clamp(14px, 1.8vw, 22px) !important;
+  }
+
+  .shila-quarry h2 {
+    max-width: 34ch;
+    margin-bottom: 12px;
+    font-size: clamp(0.72rem, 1.05vw, 0.82rem);
+    line-height: 1.22;
+    letter-spacing: 0.065em;
+    text-align: left;
+    text-wrap: balance;
+  }
+
+  .shila-quarry h3,
+  .shila-existing__copy h3,
+  .shila-descent__copy h3,
+  .shila-unfolding h3 {
+    max-width: 32ch;
+    font-size: clamp(1.35rem, 2.35vw, 1.75rem);
+    line-height: 1.16;
+    letter-spacing: 0.01em;
+    text-align: left;
+    text-wrap: balance;
+  }
+
+  .shila-quarry h3,
+  .shila-existing__copy h3,
+  .shila-descent__copy h3 {
+    margin-bottom: 10px;
+  }
+
+  .shila-quarry__copy > p,
+  .shila-existing__copy > p,
+  .shila-descent__copy > p,
+  .shila-development__left > p {
+    max-width: 50ch;
+  }
+
+  .shila-existing__copy {
+    padding-top: clamp(12px, 1.7vw, 20px);
+  }
+
+  .shila-descent__copy {
+    padding-block: clamp(12px, 1.7vw, 20px) clamp(30px, 3.6vw, 44px);
+  }
+
+  .shila-unfolding h3 {
+    padding-bottom: clamp(14px, 2vw, 24px);
+  }
+
+  .shila-unfolding > p {
+    max-width: 46ch;
+    padding-block: clamp(12px, 1.6vw, 18px) clamp(28px, 3vw, 38px);
+  }
+
+  .shila-development__left > p {
+    margin-top: clamp(12px, 1.6vw, 18px);
+  }
+
+  .shila-development__main-elevation {
+    margin-top: clamp(20px, 3vw, 34px) !important;
+  }
+
+  .shila-development__main-elevation figcaption,
+  .shila-spatial__12-copy figcaption {
+    font-size: clamp(0.65rem, 0.95vw, 0.72rem);
+    line-height: 1.3;
+    letter-spacing: 0.025em;
+    text-align: left;
+    text-wrap: balance;
+  }
+
+  .shila-spatial__12-copy > p,
+  .shila-spatial__middle > p {
+    max-width: 46ch;
+  }
+
+  .shila-gallery__controls,
+  .shila-gallery__controls button,
+  .shila-gallery__controls > span,
+  .shila-gallery__controls button:hover,
+  .shila-gallery__controls button:active,
+  .shila-gallery__controls button:focus-visible {
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1024px) {
+  .shila-opening__title {
+    display: block;
+  }
+
+  .shila-opening__title p {
+    margin-top: 12px;
+  }
+
+  .shila-quarry,
+  .shila-development,
+  .shila-spatial__top,
+  .shila-spatial__middle {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .shila-quarry {
+    gap: clamp(22px, 3.5vw, 34px);
+    padding-bottom: clamp(32px, 4vw, 46px);
+  }
+
+  .shila-development {
+    gap: clamp(30px, 4.5vw, 48px);
+    padding-bottom: clamp(38px, 5vw, 54px);
+  }
+
+  .shila-gallery {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .shila-gallery--spatial {
+    aspect-ratio: auto;
+  }
+
+  .shila-gallery__controls {
+    position: static;
+    align-self: center;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .shila-gallery__controls > span {
+    min-width: 58px;
+    font-size: 0.68rem;
+    line-height: 1.2;
+    letter-spacing: 0.035em;
+  }
+
+  .shila-gallery__progress {
+    display: none;
+  }
+
+  .shila-spatial__top,
+  .shila-spatial__middle {
+    gap: clamp(24px, 3.5vw, 38px);
+  }
+
+  .shila-spatial__12-copy {
+    gap: 18px;
+    padding-top: 8px;
+  }
+
+  .shila-spatial__12-copy figcaption {
+    position: static;
+    margin-bottom: 8px;
+  }
+
+  .shila-spatial__middle {
+    align-items: start;
+    margin-top: clamp(34px, 5vw, 52px);
+  }
+
+  .shila-spatial__15 {
+    margin-top: clamp(24px, 3.5vw, 38px) !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
