@@ -452,8 +452,7 @@ const siteContent = {
       category: "1st Place — Environmental Legacy Makers Award",
       award: "1st Place — Environmental Legacy Makers Award",
       type: "Urban and Environmental Intervention",
-      context: "Award-Winning Team Project",
-      role: "Concept Development, Environmental Strategy, and Visual Communication",
+      context: "Award-Winning Group Project",
       organisations: "Greater Amman Municipality, UN-Habitat Jordan, and the Royal Society for the Conservation of Nature, with support from the Government of the Netherlands.",
       themes: ["Urban Stairs", "Environmental Design"],
       points: [

@@ -6484,6 +6484,31 @@ body .computation-detail__statement {
   overflow-wrap: break-word;
 }
 
+/* Homepage copy remains static; heading scramble is retained without pointer light. */
+.home-page .pointer-scan::after {
+  display: none !important;
+  content: none !important;
+}
+
+.home-page .manifesto__text,
+.home-page .profile__statement,
+.home-page .work__intro,
+.home-page .contact__statement,
+.home-page .project-row__copy > p:not(.project-row__file),
+.home-page .manifesto__text:hover,
+.home-page .profile__statement:hover,
+.home-page .work__intro:hover,
+.home-page .contact__statement:hover,
+.home-page .project-row__copy > p:not(.project-row__file):hover {
+  opacity: 1 !important;
+  filter: none !important;
+  text-shadow: none !important;
+  mix-blend-mode: normal !important;
+  background-image: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  transition: none !important;
+}
+
 @page {
   size: A4;
   margin: 12mm;

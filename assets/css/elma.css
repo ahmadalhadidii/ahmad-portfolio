@@ -55,27 +55,29 @@ body.elma-page,
 }
 
 .elma-board__hero {
-  width: min(92vw, 1280px);
-  margin-inline: auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   background: #e9e4da;
 }
 
 .elma-board__hero img {
-  aspect-ratio: 3657 / 2248;
+  width: 100%;
+  height: auto;
   object-fit: contain;
   object-position: center;
 }
 
 .elma-board__inner {
-  width: min(92vw, 1320px);
+  width: min(94vw, 1680px);
   margin-inline: auto;
-  padding: clamp(24px, 2.8vw, 42px) 0 clamp(38px, 4vw, 64px);
+  padding: clamp(22px, 2.3vw, 38px) 0 clamp(36px, 3.6vw, 58px);
 }
 
 .elma-opening {
   display: grid;
-  gap: clamp(8px, 0.75vw, 12px);
-  padding-bottom: clamp(34px, 3.7vw, 56px);
+  gap: clamp(7px, 0.65vw, 11px);
+  padding-bottom: clamp(36px, 3.4vw, 54px);
 }
 
 .elma-opening h1,
@@ -90,9 +92,9 @@ body.elma-page,
 }
 
 .elma-opening h1 {
-  max-width: 24ch;
-  font-size: clamp(1.65rem, 2.8vw, 3rem);
-  line-height: 1;
+  max-width: none;
+  font-size: clamp(1.55rem, 2.2vw, 2.55rem);
+  line-height: 1.02;
   letter-spacing: -0.035em;
 }
 
@@ -106,7 +108,8 @@ body.elma-page,
 }
 
 .elma-opening p {
-  max-width: 112ch;
+  width: 100%;
+  max-width: none;
 }
 
 .elma-section-title {
@@ -122,44 +125,64 @@ body.elma-page,
   letter-spacing: -0.012em;
 }
 
-.elma-project-body-text {
+.concrete-fatigue-page .elma-project-body-text {
   color: var(--elma-muted) !important;
   opacity: 1 !important;
   background: none !important;
-  -webkit-text-fill-color: var(--elma-muted) !important;
+  background-image: none !important;
+  -webkit-text-fill-color: currentColor !important;
   filter: none !important;
+  mix-blend-mode: normal !important;
   text-align: justify;
   text-align-last: left;
   text-decoration: none;
   text-shadow: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
   -webkit-hyphens: auto;
   hyphens: auto;
   overflow-wrap: break-word;
+  animation: none !important;
+  transform: none !important;
   transition: none !important;
 }
 
-.elma-project-body-text:hover,
-.elma-project-body-text:focus,
-.elma-project-body-text:focus-within,
-.elma-project-body-text.is-pointer-active,
-.elma-project-body-text.is-pointer-tapped,
-.elma-project-body-text.is-reading-active {
-  color: var(--elma-muted) !important;
+.concrete-fatigue-page .elma-project-body-text *,
+.concrete-fatigue-page .elma-project-body-text:hover,
+.concrete-fatigue-page .elma-project-body-text:focus,
+.concrete-fatigue-page .elma-project-body-text:focus-within,
+.concrete-fatigue-page .elma-project-body-text.is-pointer-active,
+.concrete-fatigue-page .elma-project-body-text.is-pointer-tapped,
+.concrete-fatigue-page .elma-project-body-text.is-reading-active {
+  color: inherit !important;
   opacity: 1 !important;
   background: none !important;
-  -webkit-text-fill-color: var(--elma-muted) !important;
+  background-image: none !important;
+  -webkit-text-fill-color: currentColor !important;
   filter: none !important;
+  mix-blend-mode: normal !important;
   text-shadow: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
 }
 
-.elma-project-body-text::before,
-.elma-project-body-text::after {
+.concrete-fatigue-page .elma-project-body-text::before,
+.concrete-fatigue-page .elma-project-body-text::after,
+.concrete-fatigue-page .elma-project-body-text *::before,
+.concrete-fatigue-page .elma-project-body-text *::after {
   display: none !important;
   content: none !important;
 }
 
-.elma-project-body-text .reading-visual,
-.elma-project-body-text .reading-word {
+.concrete-fatigue-page .elma-project-body-text .reading-visual,
+.concrete-fatigue-page .elma-project-body-text .reading-word {
   color: inherit !important;
   opacity: 1 !important;
   filter: none !important;
@@ -172,34 +195,49 @@ body.elma-page,
 }
 
 .elma-challenge {
+  display: grid;
+  grid-template-areas:
+    "copy rain"
+    "analysis rain";
+  grid-template-columns: minmax(0, 1.06fr) minmax(320px, 0.94fr);
+  column-gap: clamp(14px, 1.4vw, 24px);
+  row-gap: clamp(10px, 0.9vw, 15px);
+  align-items: start;
   padding-bottom: clamp(32px, 3.6vw, 54px);
 }
 
 .elma-challenge__copy {
-  width: min(100%, 760px);
+  grid-area: copy;
+  width: 100%;
+}
+
+.elma-challenge__heading {
   display: grid;
   gap: 6px;
-  margin-bottom: clamp(14px, 1.5vw, 22px);
 }
 
-.elma-challenge__images {
-  display: grid;
-  grid-template-columns: 1.06fr 0.94fr;
-  gap: clamp(12px, 1.45vw, 22px);
-  align-items: end;
+.elma-challenge__copy > .elma-project-body-text {
+  margin-top: clamp(10px, 0.9vw, 15px);
 }
 
-.elma-challenge__images figure {
+.elma-challenge__analysis {
+  grid-area: analysis;
+}
+
+.elma-challenge__rain {
+  grid-area: rain;
+}
+
+.elma-challenge__analysis,
+.elma-challenge__rain {
   min-width: 0;
 }
 
-.elma-challenge__images img {
+.elma-challenge__analysis img,
+.elma-challenge__rain img {
   width: 100%;
+  height: auto;
   object-fit: contain;
-}
-
-.elma-challenge__images figure:last-child img {
-  aspect-ratio: 1605 / 1297;
 }
 
 .elma-reality {
@@ -230,12 +268,22 @@ body.elma-page,
   padding-bottom: clamp(34px, 3.8vw, 58px);
 }
 
+.elma-response__intro {
+  display: grid;
+  gap: 4px;
+  margin-bottom: clamp(12px, 1.2vw, 18px);
+}
+
 .elma-response__heading {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: baseline;
-  gap: 0.12em 0.45em;
-  margin-top: 4px;
+  gap: 0.55em;
+}
+
+.elma-response__heading .elma-section-title {
+  font-size: clamp(1.05rem, 1.45vw, 1.55rem);
+  white-space: nowrap;
 }
 
 .elma-response__prototype {
@@ -245,7 +293,7 @@ body.elma-page,
 }
 
 .elma-response__copy {
-  margin: 5px 0 clamp(12px, 1.2vw, 18px);
+  margin: 0;
 }
 
 .elma-transformation {
@@ -258,14 +306,19 @@ body.elma-page,
 
 .elma-transformation__grid {
   display: grid;
-  grid-template-columns: minmax(230px, 0.72fr) minmax(0, 1.28fr);
-  gap: clamp(22px, 2.8vw, 42px);
+  grid-template-columns: minmax(240px, 0.62fr) minmax(0, 1.38fr);
+  gap: clamp(26px, 3.2vw, 52px);
   align-items: start;
 }
 
 .elma-transformation__grid figure {
-  width: min(100%, 410px);
+  width: min(100%, 430px);
   justify-self: start;
+}
+
+.elma-transformation__grid > .elma-feature-copy {
+  width: 100%;
+  margin-top: clamp(54px, 5.5vw, 96px);
 }
 
 .elma-feature-copy {
@@ -274,8 +327,8 @@ body.elma-page,
 }
 
 .elma-feature-copy h3 {
-  max-width: 27ch;
-  font-size: clamp(1.05rem, 1.5vw, 1.6rem);
+  max-width: none;
+  font-size: clamp(1.05rem, 1.4vw, 1.55rem);
 }
 
 .elma-site-plan {
@@ -457,21 +510,24 @@ body.elma-page,
   transition: transform 180ms ease;
 }
 
-.elma-video {
-  width: 100%;
-  background: #e7e4dd;
+.elma-board .elma-video {
+  width: min(92vw, 1180px, 120.89vh);
+  max-width: calc(100% - 28px);
+  margin: clamp(28px, 4vw, 56px) auto 0;
+  background: #fff;
 }
 
 .elma-video video {
   width: 100%;
   height: auto;
+  max-height: 68vh;
   aspect-ratio: 16 / 9;
   object-fit: contain;
-  background: #e7e4dd;
+  background: #fff;
 }
 
 .elma-video figcaption {
-  width: min(92vw, 1320px);
+  width: 100%;
   margin: 0 auto;
   padding: 7px 0 12px;
   color: var(--elma-muted);
@@ -508,26 +564,34 @@ body.elma-page,
     width: min(92vw, 880px);
   }
 
-  .elma-challenge__images,
   .elma-transformation__grid,
   .elma-pair {
     grid-template-columns: 1fr;
   }
 
-  .elma-challenge__images {
-    gap: 16px;
-  }
-
-  .elma-challenge__images figure:first-child {
-    order: 1;
-  }
-
-  .elma-challenge__images figure:last-child {
-    order: 2;
+  .elma-challenge {
+    grid-template-areas:
+      "copy"
+      "analysis"
+      "rain";
+    grid-template-columns: 1fr;
+    row-gap: 16px;
   }
 
   .elma-transformation__grid {
     align-items: start;
+  }
+
+  .elma-transformation__grid > .elma-feature-copy {
+    margin-top: 0;
+  }
+
+  .elma-response__heading {
+    flex-wrap: wrap;
+  }
+
+  .elma-response__heading .elma-section-title {
+    white-space: normal;
   }
 
   .elma-transformation__grid figure {
@@ -558,6 +622,10 @@ body.elma-page,
     gap: 7px;
   }
 
+  .elma-response__heading .elma-section-title {
+    white-space: normal;
+  }
+
   .elma-transformation__grid figure {
     width: 100%;
   }
@@ -579,8 +647,9 @@ body.elma-page,
     bottom: 57px;
   }
 
-  .elma-video figcaption {
+  .elma-board .elma-video {
     width: calc(100% - 28px);
+    max-width: none;
   }
 }
 

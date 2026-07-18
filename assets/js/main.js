@@ -1274,6 +1274,7 @@
   }
 
   function initPointerScanning(scope) {
+    if (document.body && document.body.classList.contains("home-page")) return;
     const elements = elementsWithin(scope || document, "[data-pointer-scan]");
     elements.forEach(function (element) {
       if (element.dataset.pointerPrepared === "true") return;
@@ -1807,9 +1808,7 @@
   }
 
   function initReadingProgress(scope) {
-    prepareReadingText(scope || document);
-    ensureReadingObserver();
-    updateReadingProgress();
+    readingGroups = [];
   }
 
   function ensureImageObserver() {
