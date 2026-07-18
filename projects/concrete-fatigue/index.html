@@ -50,9 +50,10 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
   <link rel="preload" href="/assets/images/elma/1.webp" as="image" type="image/webp" fetchpriority="high">
   <link rel="stylesheet" href="/assets/css/style.css?v=20260718-elma-correction-14">
-  <link rel="stylesheet" href="/assets/css/elma.css?v=20260718-elma-board-04">
+  <link rel="stylesheet" href="/assets/css/elma.css?v=20260718-elma-challenge-06">
   <script src="/assets/js/main.js?v=20260718-elma-correction-07" defer></script>
   <script src="/assets/js/shila.js?v=20260717-shila-ending-removed-08" defer></script>
+  <script src="/assets/js/elma.js?v=20260718-elma-player-01" defer></script>
 </head>
 <body class="project-page elma-page concrete-fatigue-page" data-project="concrete-fatigue">
   <div class="loader loader--project loader--project-light" id="loader" role="status" aria-label="Opening ELMA project">
@@ -134,7 +135,7 @@
             <div class="elma-transformation__grid">
               <figure data-shila-reveal data-shila-reveal-mode="fade"><img src="/assets/images/elma/6.webp" width="1378" height="1563" alt="Illustrated Tree Unit prototype with a branching canopy and cascading planting." loading="lazy" decoding="async"></figure>
               <div class="elma-feature-copy">
-                <h3 aria-label="Granting Identity: Transforming Concrete Stair into a Vertical Garden"><span data-scramble>GRANTING IDENTITY: TRANSFORMING CONCRETE STAIR INTO A </span><span class="elma-accent" data-scramble>VERTICAL GARDEN</span></h3>
+                <h3 aria-label="Grafting Identity: Transforming Concrete Stair into a Vertical Garden"><span class="elma-transformation__title-prefix" data-scramble>GRAFTING IDENTITY:</span> <span data-scramble>TRANSFORMING CONCRETE STAIR INTO A </span><span class="elma-accent" data-scramble>VERTICAL GARDEN</span></h3>
                 <p class="elma-project-body-text">This project redefines the 7-minute climb, transforming it from a physical burden into a narrated urban journey. We didn’t just design an infrastructure solution for flood management; we reclaimed human time. By 'Seeding Identity' through the Tree Unit, the staircase ceases to be a passive concrete 'White Elephant' and becomes a storytelling sequence of social and biophilic experiences. It is a design that turns a functional transition into a narrative, where every step tells a story of the neighborhood’s rebirth.</p>
               </div>
             </div>
@@ -144,9 +145,9 @@
             <figure data-shila-reveal data-shila-reveal-mode="fade"><img src="/assets/images/elma/7.webp" width="3450" height="1282" alt="Enlarged overhead site plan showing Tree Units, planting beds, and stair circulation along the intervention." loading="lazy" decoding="async"><figcaption class="elma-caption" data-scramble>ENLARGED SITE PLAN — TREE UNIT INTERVENTION</figcaption></figure>
           </section>
 
-          <section class="elma-pair" aria-label="Social Bloom and Tree Unit plan">
+          <section class="elma-pair elma-pair--social" aria-label="Social Bloom and Tree Unit plan">
             <div class="elma-feature">
-              <figure data-shila-reveal data-shila-reveal-mode="fade"><img src="/assets/images/elma/8.webp" width="1652" height="800" alt="A shaded social pause beneath planted Tree Units on the staircase." loading="lazy" decoding="async"></figure>
+              <figure data-shila-reveal data-shila-reveal-mode="fade"><img src="/assets/images/elma/8.webp" width="1652" height="800" alt="A shaded social pause beneath planted Tree Units on the staircase." loading="eager" decoding="async"></figure>
               <div class="elma-feature-copy"><h3 data-scramble aria-label="The Social Bloom">THE SOCIAL BLOOM</h3><p class="elma-project-body-text">Redefines the staircase as a vibrant Social Unit, replacing its monotonous concrete identity with a green, restorative environment. More than adding plants, the intervention seeds a new identity, supports well-being, and transforms the difficult seven-minute climb into a calmer journey that reconnects the community with nature.</p></div>
             </div>
 
@@ -187,8 +188,21 @@
           </section>
         </div>
 
-        <figure class="elma-video" data-shila-reveal data-shila-reveal-mode="fade">
-          <video src="/assets/media/elma/video.mp4" poster="/assets/images/elma/1.webp" width="1920" height="1080" controls playsinline preload="metadata" aria-label="ELMA Tree Unit project film with original audio"></video>
+        <figure class="elma-video" data-elma-video data-shila-reveal data-shila-reveal-mode="fade">
+          <div class="elma-video__player" data-elma-player>
+            <div class="elma-video__stage">
+              <video id="elma-project-film" src="/assets/media/elma/video.mp4" poster="/assets/images/elma/1.webp" width="1920" height="1080" playsinline preload="metadata" tabindex="0" aria-label="ELMA Tree Unit project film with original audio"></video>
+              <button class="elma-video__poster-play" type="button" data-elma-play-overlay aria-controls="elma-project-film" aria-label="Play ELMA project film">PLAY FILM</button>
+            </div>
+            <div class="elma-video__controls" role="group" aria-label="ELMA project film controls">
+              <button type="button" data-elma-play aria-controls="elma-project-film" aria-label="Play ELMA project film" aria-pressed="false">PLAY</button>
+              <output class="elma-video__time" data-elma-time for="elma-video-seek">00:00 / 01:14</output>
+              <input class="elma-video__seek" id="elma-video-seek" data-elma-seek type="range" min="0" max="74" step="0.01" value="0" aria-label="Seek through ELMA project film">
+              <button type="button" data-elma-mute aria-controls="elma-project-film" aria-label="Mute ELMA project film" aria-pressed="false">SOUND ON</button>
+              <label class="elma-video__volume"><span class="visually-hidden">ELMA project film volume</span><input data-elma-volume type="range" min="0" max="1" step="0.05" value="1" aria-label="ELMA project film volume"></label>
+              <button type="button" data-elma-fullscreen aria-controls="elma-project-film" aria-label="Show ELMA project film fullscreen">FULLSCREEN</button>
+            </div>
+          </div>
           <figcaption>ELMA / TREE UNIT / PROJECT FILM</figcaption>
         </figure>
 
