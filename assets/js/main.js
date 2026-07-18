@@ -49,6 +49,8 @@
   let pointerStates = [];
   let visualSliderController = null;
   let computationVideoController = null;
+  let protectedMediaListenersBound = false;
+  let protectedMediaObserver = null;
   const documentScrollLocks = new Set();
   let savedRootOverflow = "";
   let savedBodyOverflow = "";
@@ -91,20 +93,54 @@
   }
 
   function initProtectedMedia(scope) {
-    const selector = [
-      ".project-row__media img",
-      ".project-hero__media img",
-      ".visual-slide__media img",
-      ".visual-record__media img",
-      ".showreel img"
-    ].join(",");
-    elementsWithin(scope || document, selector).forEach(function (image) {
-      image.draggable = false;
-      if (image.dataset.protectedMedia === "true") return;
-      image.dataset.protectedMedia = "true";
-      image.addEventListener("dragstart", function (event) { event.preventDefault(); });
-      image.addEventListener("contextmenu", function (event) { event.preventDefault(); });
+    const container = scope || document;
+
+    elementsWithin(container, "img, video").forEach(function (media) {
+      media.draggable = false;
+      media.setAttribute("draggable", "false");
+      media.dataset.protectedMedia = "true";
+      media.removeAttribute("download");
+      if (media.tagName === "VIDEO") {
+        media.setAttribute("controlslist", "nodownload");
+      }
     });
+
+    elementsWithin(container, "a[download]").forEach(function (link) {
+      link.removeAttribute("download");
+    });
+
+    elementsWithin(container, "a[href]").forEach(function (link) {
+      if (!link.querySelector("img, video")) return;
+      const target = new URL(link.href, window.location.href);
+      if (/\.(?:avif|gif|jpe?g|png|svg|webp|mp4|webm)$/i.test(target.pathname)) {
+        link.removeAttribute("href");
+      }
+    });
+
+    if (!protectedMediaListenersBound) {
+      protectedMediaListenersBound = true;
+
+      function preventProtectedMediaAction(event) {
+        if (!(event.target instanceof Element)) return;
+        if (event.target.closest('[data-protected-media="true"]')) {
+          event.preventDefault();
+        }
+      }
+
+      document.addEventListener("dragstart", preventProtectedMediaAction, true);
+      document.addEventListener("contextmenu", preventProtectedMediaAction, true);
+    }
+
+    if (!protectedMediaObserver && document.documentElement) {
+      protectedMediaObserver = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          mutation.addedNodes.forEach(function (node) {
+            if (node.nodeType === Node.ELEMENT_NODE) initProtectedMedia(node);
+          });
+        });
+      });
+      protectedMediaObserver.observe(document.documentElement, { childList: true, subtree: true });
+    }
   }
 
   function setDocumentScrollLock(owner, locked) {
@@ -1570,9 +1606,6 @@
         setIndex(index + 1, true);
       }
     });
-    viewport.addEventListener("dragstart", function (event) {
-      if (event.target.closest("img")) event.preventDefault();
-    });
     viewport.addEventListener("pointerdown", function (event) {
       if (event.button !== undefined && event.button !== 0) return;
       if (event.target.closest("a, button, input, select, textarea")) return;
@@ -2479,9 +2512,6 @@
 
       rail.addEventListener("pointerup", finishPointer);
       rail.addEventListener("pointercancel", finishPointer);
-      rail.addEventListener("dragstart", function (event) {
-        if (event.target.closest("img, video")) event.preventDefault();
-      });
     });
   }
 

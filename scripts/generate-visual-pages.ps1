@@ -5,7 +5,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $Root = [System.IO.Path]::GetFullPath($Root)
 $CanonicalBase = 'https://www.ahmadalhadidii.manmatic.institute'
-$Build = '20260715-visual-routing-01'
+$Build = '20260718-responsive-media-protection-06'
 
 function ConvertTo-HtmlEncoded([object]$Value) {
   return [System.Net.WebUtility]::HtmlEncode([string]$Value)

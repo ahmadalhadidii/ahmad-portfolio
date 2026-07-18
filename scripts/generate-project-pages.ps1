@@ -2,7 +2,7 @@
 
 $Root = Split-Path -Parent $PSScriptRoot
 $CanonicalBase = 'https://www.ahmadalhadidii.manmatic.institute'
-$Build = '20260715-seo-static-01'
+$Build = '20260718-responsive-media-protection-06'
 
 function ConvertTo-HtmlEscaped([object]$Value) {
   if ($null -eq $Value) { return '' }
