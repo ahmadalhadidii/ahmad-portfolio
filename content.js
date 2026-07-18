@@ -438,11 +438,11 @@ const siteContent = {
       id: "project-02",
       slug: "concrete-fatigue",
       route: "projects/concrete-fatigue/",
-      seoTitle: "From Concrete Fatigue to Green Asset | Ahmad Alhadidii",
-      metaDescription: "First-place Environmental Legacy Makers Award team project transforming Jabal Al-Zuhour’s concrete stairs into green civic infrastructure.",
+      seoTitle: "ELMA — Environmental Legacy Makers Award | Ahmad Alhadidii",
+      metaDescription: "ELMA award project transforming the Jabal Al-Zuhour staircase into modular flood-response, social, and ecological infrastructure.",
       number: "004",
-      navigationTitle: "From Concrete Fatigue to Green Asset",
-      title: "From Concrete Fatigue to Green Asset",
+      navigationTitle: "ELMA — Environmental Legacy Makers Award",
+      title: "ELMA — Environmental Legacy Makers Award",
       definition:
         "A staircase transformation proposal turning daily urban infrastructure into environmental and social value.",
       overview:
@@ -464,17 +464,15 @@ const siteContent = {
       featured: true,
       displayOrder: 4,
       hero: {
-        src: "assets/images/green-asset-1920.jpg",
-        srcset:
-          "assets/images/green-asset-1200.jpg 1200w, assets/images/green-asset-1920.jpg 1920w",
-        width: 1920,
-        height: 1080,
+        src: "assets/images/elma/1.webp",
+        width: 3657,
+        height: 2248,
         orientation: "wide",
         fit: "contain",
         mediaClass: "media--wide media--drawing",
-        caption: "FROM CONCRETE FATIGUE TO GREEN ASSET / TREE UNIT IDENTITY STUDY / 2026",
+        caption: "ELMA / TREE UNIT / JABAL AL-ZUHOUR / 2026",
         alt:
-          "Environmental design board mapping the transformation of a concrete stair into a vertical garden through infrastructure, social, and natural units."
+          "Tree Unit canopies, planting, and stepped seating integrated into the Jabal Al-Zuhour staircase."
       }
     },
     {
