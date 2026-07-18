@@ -104,10 +104,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="preload" href="assets/images/architecture-of-elsewhere-1400.jpg" as="image" imagesrcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" imagesizes="(max-width: 960px) 100vw, min(1360px, 86vw)">
-  <link rel="stylesheet" href="assets/css/style.css?v=20260718-lemniscate-03">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260718-lemniscate-04">
 
   <script src="content.js?v=20260715-seo-static-01" defer></script>
-  <script src="assets/js/main.js?v=20260718-lemniscate-03" defer></script>
+  <script src="assets/js/main.js?v=20260718-equation-video-speed-05" defer></script>
 </head>
 <body class="home-page">
   <div class="loader" id="loader" role="status" aria-label="Initializing Ahmad Alhadidii portfolio field">
@@ -574,9 +574,8 @@
 
         <article class="computational-case" aria-labelledby="lemniscate-title">
           <div class="computational-rail__status" aria-hidden="true">
-            <span>DRAG / TRACKPAD / SWIPE</span>
-            <span class="computational-rail__progress"><i data-computational-progress></i></span>
-            <span>SCROLL RIGHT →</span>
+            <span>DRAG / HORIZONTAL GESTURE / SWIPE</span>
+            <span>SCROLL PAGE ↓</span>
           </div>
 
           <div class="computational-rail" data-computational-rail role="region" aria-label="Lemniscate of Bernoulli process sequence" tabindex="0">
@@ -595,7 +594,7 @@
                         <span>X(t)</span><span>=</span><span class="computational-fraction"><span>a · cos(t)</span><span>1 + sin<sup>2</sup>(t)</span></span>
                       </div>
                       <div class="computational-equation__line">
-                        <span>Y(t)</span><span>=</span><span class="computational-fraction"><span>a · sin(t) · cos(t)</span><span>1 + sin<sup>2</sup>(t)</span></span>
+                        <span>y(t)</span><span>=</span><span class="computational-fraction"><span>a · sin(t) · cos(t)</span><span>1 + sin<sup>2</sup>(t)</span></span>
                       </div>
                     </div>
                     <p>t ∈ [0, 2π)</p>
@@ -616,20 +615,21 @@
                 </div>
               </section>
 
-              <figure class="computational-panel computational-panel--script">
-                <figcaption class="computational-panel__label">GRASSHOPPER SCRIPT</figcaption>
-                <div class="computational-panel__media computational-panel__media--script">
-                  <img src="assets/images/computation/lemniscate/grasshopper-definition-full.webp" width="14375" height="2819" alt="Complete annotated Grasshopper script showing the parameter range, equation definition, axis assignment, XYZ point generation, 3D curve construction, and geometry." loading="lazy" decoding="async" draggable="false">
-                </div>
-              </figure>
-
-              <figure class="computational-panel computational-panel--video">
-                <div class="computational-panel__media computational-panel__media--video">
-                  <video data-computation-video muted loop playsinline preload="metadata" disablepictureinpicture aria-label="Animated Lemniscate geometry study" draggable="false">
-                    <source src="assets/media/lemniscate-of-bernoulli.mp4" type="video/mp4">
-                  </video>
-                </div>
-              </figure>
+              <section class="computational-panel computational-panel--process" aria-label="Grasshopper script and supporting video">
+                <figure class="computational-process__script">
+                  <figcaption class="computational-panel__label">GRASSHOPPER SCRIPT</figcaption>
+                  <div class="computational-panel__media computational-panel__media--script">
+                    <img src="assets/images/computation/lemniscate/grasshopper-definition-full.webp" width="14375" height="2819" alt="Complete annotated Grasshopper script showing the parameter range, equation definition, axis assignment, XYZ point generation, 3D curve construction, and geometry." loading="lazy" decoding="async" draggable="false">
+                  </div>
+                </figure>
+                <figure class="computational-process__video">
+                  <div class="computational-panel__media computational-panel__media--video">
+                    <video data-computation-video data-equation-video muted loop playsinline preload="metadata" disablepictureinpicture aria-label="Animated Lemniscate geometry study" draggable="false">
+                      <source src="assets/media/lemniscate-of-bernoulli.mp4" type="video/mp4">
+                    </video>
+                  </div>
+                </figure>
+              </section>
             </div>
           </div>
         </article>

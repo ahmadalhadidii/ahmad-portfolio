@@ -4,7 +4,7 @@ $chrome = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
 $repoRoot = (Resolve-Path '.').Path
 $outDir = Join-Path $env:TEMP 'ahmad-portfolio-contract-check'
 $runId = Get-Date -Format 'yyyyMMdd-HHmmssfff'
-$profile = Join-Path $outDir ("profile-$runId")
+$BrowserProfilePath = Join-Path $outDir ("profile-$runId")
 $homeUrl = ([System.Uri]::new((Resolve-Path '.\index.html').Path)).AbsoluteUri
 $projectBaseUrl = ([System.Uri]::new((Resolve-Path '.\project.html').Path)).AbsoluteUri
 $visualBaseUrl = ([System.Uri]::new((Resolve-Path '.\visual.html').Path)).AbsoluteUri
@@ -202,7 +202,7 @@ function Invoke-Cdp([string]$method, $params = $null) {
   }
 }
 
-function Evaluate([string]$expression) {
+function Get-BrowserValue([string]$expression) {
   $result = Invoke-Cdp 'Runtime.evaluate' @{
     expression = $expression
     returnByValue = $true
@@ -218,8 +218,8 @@ function Evaluate([string]$expression) {
   return $result.result.value
 }
 
-function Evaluate-Json([string]$expression) {
-  $value = Evaluate $expression
+function Get-BrowserJson([string]$expression) {
+  $value = Get-BrowserValue $expression
   if ($null -eq $value -or $value -eq '') { return $null }
   if ($value -is [string]) { return $value | ConvertFrom-Json }
   return $value
@@ -230,20 +230,20 @@ function Navigate([string]$url) {
   $null = Invoke-Cdp 'Page.navigate' @{ url = $url }
   for ($i = 0; $i -lt 160; $i++) {
     try {
-      if ([bool](Evaluate "location.href === $urlLiteral && document.readyState !== 'loading'")) { return }
+      if ([bool](Get-BrowserValue "location.href === $urlLiteral && document.readyState !== 'loading'")) { return }
     } catch {}
     Start-Sleep -Milliseconds 100
   }
   throw "Page did not finish parsing: $url"
 }
 
-function Reload-Page {
-  $previousTimeOrigin = Evaluate 'performance.timeOrigin'
+function Restart-BrowserPage {
+  $previousTimeOrigin = Get-BrowserValue 'performance.timeOrigin'
   $timeOriginLiteral = ConvertTo-Json -InputObject $previousTimeOrigin -Compress
   $null = Invoke-Cdp 'Page.reload' @{ ignoreCache = $true }
   for ($i = 0; $i -lt 160; $i++) {
     try {
-      if ([bool](Evaluate "performance.timeOrigin !== $timeOriginLiteral && document.readyState !== 'loading'")) { return }
+      if ([bool](Get-BrowserValue "performance.timeOrigin !== $timeOriginLiteral && document.readyState !== 'loading'")) { return }
     } catch {}
     Start-Sleep -Milliseconds 100
   }
@@ -253,64 +253,64 @@ function Reload-Page {
 function Wait-For([string]$expression, [string]$message, [int]$attempts = 160) {
   for ($i = 0; $i -lt $attempts; $i++) {
     try {
-      if ([bool](Evaluate $expression)) { return }
+      if ([bool](Get-BrowserValue $expression)) { return }
     } catch {}
     Start-Sleep -Milliseconds 100
   }
   throw $message
 }
 
-function Capture-Viewport([string]$name) {
+function Save-ViewportCapture([string]$name) {
   $capture = Invoke-Cdp 'Page.captureScreenshot' @{ format = 'png'; fromSurface = $true }
   $path = Join-Path $outDir ("evidence-{0}.png" -f $name)
   [System.IO.File]::WriteAllBytes($path, [Convert]::FromBase64String([string]$capture.data))
 }
 
-function Capture-ManmaticEvidence {
+function Save-ManmaticEvidence {
   Set-Viewport $desktopViewport
   Navigate $homeUrl
   Wait-For-AppReady 'ManMaTIC screenshot pass'
-  $null = Evaluate 'document.documentElement.style.scrollBehavior = "auto"; true'
-  $null = Evaluate 'window.scrollTo(0, 0); true'
+  $null = Get-BrowserValue 'document.documentElement.style.scrollBehavior = "auto"; true'
+  $null = Get-BrowserValue 'window.scrollTo(0, 0); true'
   Start-Sleep -Milliseconds 500
   foreach ($frame in 2..6) {
     $frameCode = $frame.ToString('00')
-    $null = Evaluate "(() => { const slides = [...document.querySelectorAll('[data-showreel-slide]')]; slides.forEach(slide => { const active = slide.dataset.frame === '$frameCode'; slide.classList.toggle('is-active', active); slide.setAttribute('aria-hidden', active ? 'false' : 'true'); }); return true; })()"
+    $null = Get-BrowserValue "(() => { const slides = [...document.querySelectorAll('[data-showreel-slide]')]; slides.forEach(slide => { const active = slide.dataset.frame === '$frameCode'; slide.classList.toggle('is-active', active); slide.setAttribute('aria-hidden', active ? 'false' : 'true'); }); return true; })()"
     Start-Sleep -Milliseconds 180
-    Capture-Viewport ("showreel-{0}-desktop" -f $frameCode)
+    Save-ViewportCapture ("showreel-{0}-desktop" -f $frameCode)
   }
   Set-Viewport @{ Name = 'mobile-showreel-evidence'; Width = 390; Height = 844; Mobile = $true; Touch = $true }
   foreach ($frameCode in @('03', '05', '06')) {
-    $null = Evaluate "(() => { const slides = [...document.querySelectorAll('[data-showreel-slide]')]; slides.forEach(slide => { const active = slide.dataset.frame === '$frameCode'; slide.classList.toggle('is-active', active); slide.setAttribute('aria-hidden', active ? 'false' : 'true'); }); return true; })()"
+    $null = Get-BrowserValue "(() => { const slides = [...document.querySelectorAll('[data-showreel-slide]')]; slides.forEach(slide => { const active = slide.dataset.frame === '$frameCode'; slide.classList.toggle('is-active', active); slide.setAttribute('aria-hidden', active ? 'false' : 'true'); }); return true; })()"
     Start-Sleep -Milliseconds 180
-    Capture-Viewport ("showreel-{0}-mobile" -f $frameCode)
+    Save-ViewportCapture ("showreel-{0}-mobile" -f $frameCode)
   }
   Set-Viewport $desktopViewport
-  $null = Evaluate '(() => { const target = document.querySelector("[data-manmatic-system]"); window.scrollTo(0, scrollY + target.getBoundingClientRect().top - innerHeight - 40); return true; })()'
+  $null = Get-BrowserValue '(() => { const target = document.querySelector("[data-manmatic-system]"); window.scrollTo(0, scrollY + target.getBoundingClientRect().top - innerHeight - 40); return true; })()'
   Start-Sleep -Milliseconds 500
-  Capture-Viewport '01-before-glitch-desktop'
-  $null = Evaluate 'window.scrollBy(0, 180); true'
+  Save-ViewportCapture '01-before-glitch-desktop'
+  $null = Get-BrowserValue 'window.scrollBy(0, 180); true'
   Start-Sleep -Milliseconds 100
-  Capture-Viewport '02-white-flash-desktop'
+  Save-ViewportCapture '02-white-flash-desktop'
   Start-Sleep -Milliseconds 1450
-  Capture-Viewport '03-symbol-desktop'
-  Center-Element '.project-row--manmatic > .project-row__link'
+  Save-ViewportCapture '03-symbol-desktop'
+  Set-ElementCenter '.project-row--manmatic > .project-row__link'
   Start-Sleep -Milliseconds 850
-  Capture-Viewport '04-introduction-desktop'
-  Center-Element '.manmatic-category__record:first-child'
+  Save-ViewportCapture '04-introduction-desktop'
+  Set-ElementCenter '.manmatic-category__record:first-child'
   Start-Sleep -Milliseconds 900
-  Capture-Viewport '05-field-live-window-desktop'
-  Center-Element '.manmatic-category__record:nth-child(2)'
-  Capture-Viewport '06-protocol-port-desktop'
-  Center-Element '.project-row[data-project-id="dabouq-residential-building"]'
-  Capture-Viewport '07-next-project-desktop'
+  Save-ViewportCapture '05-field-live-window-desktop'
+  Set-ElementCenter '.manmatic-category__record:nth-child(2)'
+  Save-ViewportCapture '06-protocol-port-desktop'
+  Set-ElementCenter '.project-row[data-project-id="dabouq-residential-building"]'
+  Save-ViewportCapture '07-next-project-desktop'
   Set-Viewport @{ Name = 'mobile-evidence'; Width = 390; Height = 844; Mobile = $true; Touch = $true }
-  Center-Element '.manmatic-threshold'
+  Set-ElementCenter '.manmatic-threshold'
   Start-Sleep -Milliseconds 1500
-  Capture-Viewport '08-symbol-mobile'
-  Center-Element '.manmatic-category__record:first-child'
+  Save-ViewportCapture '08-symbol-mobile'
+  Set-ElementCenter '.manmatic-category__record:first-child'
   Start-Sleep -Milliseconds 900
-  Capture-Viewport '09-field-live-window-mobile'
+  Save-ViewportCapture '09-field-live-window-mobile'
 }
 
 function Set-Viewport($viewport) {
@@ -332,10 +332,10 @@ function Clear-CdpEvents {
   $script:cdpEvents.Clear()
 }
 
-function Flush-CdpEvents {
-  $null = Evaluate 'true'
+function Receive-CdpEvents {
+  $null = Get-BrowserValue 'true'
   Start-Sleep -Milliseconds 40
-  $null = Evaluate 'true'
+  $null = Get-BrowserValue 'true'
 }
 
 function Test-LocalPageUrl([string]$url) {
@@ -349,50 +349,50 @@ function Test-LocalPageUrl([string]$url) {
 }
 
 function Assert-No-PageErrors([string]$label) {
-  Flush-CdpEvents
+  Receive-CdpEvents
   $requestUrls = @{}
   $problems = [System.Collections.Generic.List[string]]::new()
-  foreach ($event in @($script:cdpEvents)) {
-    switch ($event.method) {
+  foreach ($CdpEvent in @($script:cdpEvents)) {
+    switch ($CdpEvent.method) {
       'Network.requestWillBeSent' {
-        $requestUrls[[string]$event.params.requestId] = [string]$event.params.request.url
+        $requestUrls[[string]$CdpEvent.params.requestId] = [string]$CdpEvent.params.request.url
       }
       'Runtime.exceptionThrown' {
-        $details = [string]$event.params.exceptionDetails.text
-        if ($event.params.exceptionDetails.exception.description) {
-          $details = [string]$event.params.exceptionDetails.exception.description
+        $details = [string]$CdpEvent.params.exceptionDetails.text
+        if ($CdpEvent.params.exceptionDetails.exception.description) {
+          $details = [string]$CdpEvent.params.exceptionDetails.exception.description
         }
         $problems.Add("runtime exception: $details")
       }
       'Runtime.consoleAPICalled' {
-        if ([string]$event.params.type -eq 'error') {
-          $parts = @($event.params.args | ForEach-Object {
+        if ([string]$CdpEvent.params.type -eq 'error') {
+          $parts = @($CdpEvent.params.args | ForEach-Object {
             if ($null -ne $_.value) { [string]$_.value } elseif ($_.description) { [string]$_.description } else { [string]$_.type }
           })
           $problems.Add("console.error: $($parts -join ' ')")
         }
       }
       'Log.entryAdded' {
-        if ([string]$event.params.entry.level -eq 'error') {
-          $entryUrl = [string]$event.params.entry.url
-          $entrySource = [string]$event.params.entry.source
+        if ([string]$CdpEvent.params.entry.level -eq 'error') {
+          $entryUrl = [string]$CdpEvent.params.entry.url
+          $entrySource = [string]$CdpEvent.params.entry.source
           if ($entrySource -ne 'network' -or (Test-LocalPageUrl $entryUrl)) {
-            $problems.Add("browser log: $([string]$event.params.entry.text)")
+            $problems.Add("browser log: $([string]$CdpEvent.params.entry.text)")
           }
         }
       }
       'Network.loadingFailed' {
-        if (-not [bool]$event.params.canceled -and [string]$event.params.errorText -ne 'net::ERR_ABORTED') {
-          $url = $requestUrls[[string]$event.params.requestId]
+        if (-not [bool]$CdpEvent.params.canceled -and [string]$CdpEvent.params.errorText -ne 'net::ERR_ABORTED') {
+          $url = $requestUrls[[string]$CdpEvent.params.requestId]
           if (Test-LocalPageUrl $url) {
-            $problems.Add("resource failed: $url ($([string]$event.params.errorText))")
+            $problems.Add("resource failed: $url ($([string]$CdpEvent.params.errorText))")
           }
         }
       }
       'Network.responseReceived' {
-        $status = [double]$event.params.response.status
-        if ($status -ge 400 -and (Test-LocalPageUrl ([string]$event.params.response.url))) {
-          $problems.Add("HTTP ${status}: $([string]$event.params.response.url)")
+        $status = [double]$CdpEvent.params.response.status
+        if ($status -ge 400 -and (Test-LocalPageUrl ([string]$CdpEvent.params.response.url))) {
+          $problems.Add("HTTP ${status}: $([string]$CdpEvent.params.response.url)")
         }
       }
     }
@@ -481,7 +481,7 @@ function Wait-For-AppReady([string]$label) {
 function Assert-LoaderCycle([string]$label, [int]$minimumDistinctSamples = 5) {
   Wait-For 'window.__portfolioContractProbe && window.__portfolioContractProbe.loader.length > 0' ("{0} did not expose loader samples." -f $label) 40
   Wait-For-AppReady $label
-  $probe = Evaluate-Json 'JSON.stringify(window.__portfolioContractProbe)'
+  $probe = Get-BrowserJson 'JSON.stringify(window.__portfolioContractProbe)'
   $samples = @($probe.loader)
   Assert-State ($samples.Count -ge $minimumDistinctSamples) ("{0} produced too few loader samples ({1})." -f $label, $samples.Count)
   Assert-State ([string]$samples[0].value -eq '000') ("{0} did not begin at 000; first sample was {1}." -f $label, $samples[0].value)
@@ -503,7 +503,7 @@ function Assert-LoaderCycle([string]$label, [int]$minimumDistinctSamples = 5) {
   Assert-State (@($samples | Where-Object { [string]$_.value -eq '100' -and [string]$_.bar -match 'scaleX\(1(?:\.0+)?\)' }).Count -gt 0) ("{0} progress line did not reach 100%." -f $label)
   Assert-State (@($probe.windowErrors).Count -eq 0 -and @($probe.unhandledRejections).Count -eq 0) ("{0} recorded an uncaught window error or rejection." -f $label)
 
-  $finalState = Evaluate-Json @'
+  $finalState = Get-BrowserJson @'
 JSON.stringify({
   progress: document.getElementById("loader-progress").textContent.trim(),
   secondary: document.getElementById("loader-progress-secondary").textContent.trim(),
@@ -520,7 +520,7 @@ JSON.stringify({
   return $probe
 }
 
-function Center-Element([string]$selector) {
+function Set-ElementCenter([string]$selector) {
   $selectorLiteral = ConvertTo-Json -InputObject $selector -Compress
   $scrollExpression = @"
 (() => {
@@ -531,7 +531,7 @@ function Center-Element([string]$selector) {
   return true;
 })()
 "@
-  $found = [bool](Evaluate $scrollExpression)
+  $found = [bool](Get-BrowserValue $scrollExpression)
   Assert-State $found ("Could not find scroll target: {0}." -f $selector)
   $centeredExpression = @"
 (() => {
@@ -544,7 +544,7 @@ function Center-Element([string]$selector) {
   Wait-For $centeredExpression ("Could not center scroll target: {0}." -f $selector) 40
 }
 
-function Place-Element([string]$selector, [double]$viewportFraction) {
+function Set-ElementPosition([string]$selector, [double]$viewportFraction) {
   $selectorLiteral = ConvertTo-Json -InputObject $selector -Compress
   $fractionLiteral = $viewportFraction.ToString([System.Globalization.CultureInfo]::InvariantCulture)
   $scrollExpression = @"
@@ -557,7 +557,7 @@ function Place-Element([string]$selector, [double]$viewportFraction) {
   return true;
 })()
 "@
-  $found = [bool](Evaluate $scrollExpression)
+  $found = [bool](Get-BrowserValue $scrollExpression)
   Assert-State $found ("Could not find positioned scroll target: {0}." -f $selector)
   $positionedExpression = @"
 (() => {
@@ -624,7 +624,7 @@ JSON.stringify((() => {
   };
 })())
 '@
-  $state = Evaluate-Json $expression
+  $state = Get-BrowserJson $expression
   Assert-State $state.home 'The homepage body contract is missing.'
   Assert-State ($state.h1Count -eq 1) 'The homepage must have one main h1.'
   Assert-State ((@($state.rowIds) -join ',') -eq ($expectedRowIds -join ',')) 'Homepage project IDs are out of archive order.'
@@ -645,7 +645,7 @@ JSON.stringify((() => {
 function Assert-ProjectImages {
   foreach ($slug in $expectedSlugs) {
     $selector = ".project-row[data-project-id='$slug']"
-    Center-Element $selector
+    Set-ElementCenter $selector
     if ($slug -eq 'project-01') { continue }
     $selectorLiteral = ConvertTo-Json -InputObject $selector -Compress
     $readyExpression = @"
@@ -664,7 +664,7 @@ function Assert-ProjectImages {
 })()
 "@
     Wait-For $readyExpression ("Project cover did not become visibly available: {0}." -f $slug) 120
-    $imageState = Evaluate-Json @"
+    $imageState = Get-BrowserJson @"
 JSON.stringify((() => {
   const row = document.querySelector($selectorLiteral);
   const figure = row.querySelector(".project-row__media");
@@ -685,9 +685,9 @@ JSON.stringify((() => {
 }
 
 function Assert-ShowreelChanges {
-  Center-Element '[data-broadcast-monitor]'
+  Set-ElementCenter '[data-broadcast-monitor]'
   Wait-For 'document.querySelector("[data-showreel-fallback]")?.dataset.showreelInitialized === "true"' 'The showreel did not initialize.' 60
-  $initialFrame = [string](Evaluate 'document.querySelector("[data-showreel-fallback]").dataset.activeFrame || document.getElementById("showreel-frame").textContent.trim()')
+  $initialFrame = [string](Get-BrowserValue 'document.querySelector("[data-showreel-fallback]").dataset.activeFrame || document.getElementById("showreel-frame").textContent.trim()')
   $initialFrameLiteral = ConvertTo-Json -InputObject $initialFrame -Compress
   $changeExpression = @"
 (() => {
@@ -697,7 +697,7 @@ function Assert-ShowreelChanges {
 })()
 "@
   Wait-For $changeExpression 'The opening showreel remained on one frame.' 70
-  $changedState = Evaluate-Json @'
+  $changedState = Get-BrowserJson @'
 JSON.stringify((() => {
   const reel = document.querySelector("[data-showreel-fallback]");
   const slides = Array.from(reel.querySelectorAll("[data-showreel-slide]"));
@@ -716,16 +716,16 @@ JSON.stringify((() => {
   Assert-State ($changedState.active -eq 1 -and $changedState.ariaVisible -eq 1) 'The showreel does not expose exactly one active frame.'
   Assert-State ($changedState.status -match '^PLAYING' -and $changedState.togglePressed -eq 'false') 'Showreel playing controls are inconsistent.'
 
-  $null = Evaluate 'document.getElementById("showreel-toggle").click(); true'
+  $null = Get-BrowserValue 'document.getElementById("showreel-toggle").click(); true'
   Wait-For 'document.querySelector("[data-showreel-fallback]").dataset.playing === "false" && document.getElementById("showreel-toggle").getAttribute("aria-pressed") === "true"' 'The showreel pause control failed.' 30
-  $null = Evaluate 'document.getElementById("showreel-toggle").click(); true'
+  $null = Get-BrowserValue 'document.getElementById("showreel-toggle").click(); true'
   Wait-For 'document.querySelector("[data-showreel-fallback]").dataset.playing === "true" && document.getElementById("showreel-toggle").getAttribute("aria-pressed") === "false"' 'The showreel play control failed.' 30
 }
 
 function Assert-VisualSlider {
-  Center-Element '[data-visual-slider]'
+  Set-ElementCenter '[data-visual-slider]'
   Wait-For 'document.querySelector("[data-visual-slider]")?.dataset.visualInitialized === "true"' 'The Visuals slider did not initialize.' 60
-  $state = Evaluate-Json @'
+  $state = Get-BrowserJson @'
 JSON.stringify((() => {
   const slider = document.querySelector("[data-visual-slider]");
   const slides = Array.from(slider.querySelectorAll(".visual-slide"));
@@ -768,15 +768,15 @@ JSON.stringify((() => {
   Assert-State ($state.previous.width -ge 44 -and $state.previous.height -ge 44 -and $state.next.width -ge 44 -and $state.next.height -ge 44) 'Visuals controls are smaller than 44 by 44 pixels.'
   Assert-State ($state.tabindex -eq '0') 'Visuals is not keyboard focusable.'
 
-  $null = Evaluate 'document.querySelector("[data-visual-next]").click(); true'
+  $null = Get-BrowserValue 'document.querySelector("[data-visual-next]").click(); true'
   Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "02"' 'Visuals next control failed.' 30
-  $null = Evaluate 'document.querySelector("[data-visual-prev]").click(); true'
+  $null = Get-BrowserValue 'document.querySelector("[data-visual-prev]").click(); true'
   Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'Visuals previous control failed.' 30
   $lastValue = ([int]$state.dataCount).ToString('00')
   $lastValueLiteral = ConvertTo-Json -InputObject $lastValue -Compress
-  $null = Evaluate 'document.querySelector("[data-visual-slider]").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true, cancelable: true })); true'
+  $null = Get-BrowserValue 'document.querySelector("[data-visual-slider]").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true, cancelable: true })); true'
   Wait-For "document.querySelector('[data-visual-current]').textContent.trim() === $lastValueLiteral" 'Visuals ArrowLeft wrapping failed.' 30
-  $null = Evaluate 'document.querySelector("[data-visual-slider]").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true })); true'
+  $null = Get-BrowserValue 'document.querySelector("[data-visual-slider]").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true })); true'
   Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'Visuals ArrowRight wrapping failed.' 30
 }
 
@@ -785,7 +785,7 @@ function Assert-VisualRoute([string]$slug, [string]$previousSlug, [string]$nextS
   Wait-For-AppReady ("visual route {0}" -f $slug)
   Wait-For 'document.querySelector(".visual-record__media img")?.complete && document.querySelector(".visual-record__media img").naturalWidth > 0' ("Visual image did not load: {0}." -f $slug) 100
 
-  $state = Evaluate-Json @'
+  $state = Get-BrowserJson @'
 JSON.stringify((() => {
   const slug = document.body.dataset.visualSlug || "";
   const visual = window.siteContent.visuals.find(item => item.slug === slug);
@@ -866,7 +866,7 @@ JSON.stringify((() => {
 
   Set-Viewport $phoneViewport
   Wait-For 'innerWidth === 390 && innerHeight === 844' ("Visual mobile viewport did not settle: {0}." -f $slug) 40
-  $mobile = Evaluate-Json @'
+  $mobile = Get-BrowserJson @'
 JSON.stringify((() => {
   const record = document.querySelector(".visual-record");
   const nodes = [
@@ -912,7 +912,7 @@ function Assert-VisualRoutes {
   Navigate ($visualBaseUrl + '?visual=missing')
   Wait-For 'document.querySelectorAll(".visual-detail__error").length === 1' 'The invalid visual route did not render its error state.' 80
   Wait-For-AppReady 'invalid visual route'
-  $invalid = Evaluate-Json 'JSON.stringify({ heading: document.querySelector(".visual-detail__error h1")?.textContent.trim() || "", returnHref: document.querySelector(".visual-detail__error a")?.getAttribute("href") || "", h1Count: document.querySelectorAll("main h1").length, darkLoader: document.getElementById("loader")?.classList.contains("loader--project-dark") })'
+  $invalid = Get-BrowserJson 'JSON.stringify({ heading: document.querySelector(".visual-detail__error h1")?.textContent.trim() || "", returnHref: document.querySelector(".visual-detail__error a")?.getAttribute("href") || "", h1Count: document.querySelectorAll("main h1").length, darkLoader: document.getElementById("loader")?.classList.contains("loader--project-dark") })'
   Assert-State ($invalid.heading -eq 'VISUAL NOT FOUND' -and $invalid.returnHref -eq '/#visual-studies' -and $invalid.h1Count -eq 1 -and -not $invalid.darkLoader) 'The invalid visual route is not a complete light accessible fallback.'
   Assert-No-PageErrors 'invalid visual route'
 }
@@ -956,7 +956,7 @@ JSON.stringify((() => {
   };
 })())
 "@
-  return Evaluate-Json $expression
+  return Get-BrowserJson $expression
 }
 
 function Set-ReadingProgress([double]$progress) {
@@ -977,7 +977,7 @@ function Set-ReadingProgress([double]$progress) {
   return true;
 })()
 "@
-  Assert-State ([bool](Evaluate $expression)) 'The manifesto reading stage is missing.'
+  Assert-State ([bool](Get-BrowserValue $expression)) 'The manifesto reading stage is missing.'
   $waitExpression = "Math.abs(parseFloat(document.querySelector('.manifesto__text').style.getPropertyValue('--reading-section-progress')) - $progressLiteral) < 0.04"
   Wait-For $waitExpression 'The manifesto reading progress did not settle at the requested position.' 50
   Start-Sleep -Milliseconds 80
@@ -986,7 +986,7 @@ function Set-ReadingProgress([double]$progress) {
 function Assert-ReadingProgression {
   $selector = '.manifesto__text[data-reading-text]'
   Wait-For 'document.querySelectorAll(".manifesto__text .reading-word").length >= 20' 'The manifesto was not prepared into word-level reading spans.' 50
-  $structure = Evaluate-Json @'
+  $structure = Get-BrowserJson @'
 JSON.stringify((() => {
   const text = document.querySelector(".manifesto__text");
   const stage = document.querySelector("[data-reading-stage]");
@@ -1036,10 +1036,10 @@ JSON.stringify((() => {
 }
 
 function Assert-ManmaticThemeInversion {
-  Center-Element '.project-row[data-manmatic-system]'
+  Set-ElementCenter '.project-row[data-manmatic-system]'
   Wait-For 'document.documentElement.dataset.siteTheme === "manmatic" && document.querySelector("meta[name=theme-color]").content.toLowerCase() === "#0a0a0a"' 'The global ManMaTIC state did not activate.' 50
   Start-Sleep -Milliseconds 1050
-  $dark = Evaluate-Json @'
+  $dark = Get-BrowserJson @'
 JSON.stringify((() => {
   const bodyStyle = getComputedStyle(document.body);
   const htmlStyle = getComputedStyle(document.documentElement);
@@ -1088,14 +1088,14 @@ JSON.stringify((() => {
   Assert-State ($dark.rowBackgroundLight -ge 0 -and $dark.rowBackgroundLight -lt 30 -and $dark.themeColor.ToLower() -eq '#0a0a0a') 'The ManMaTIC field or browser theme color is not dark.'
   Assert-State ($dark.readingLight -gt 150) 'Completed reading text did not adapt to the globally inverted theme.'
 
-  $null = Evaluate 'window.scrollBy(0, 24); true'
+  $null = Get-BrowserValue 'window.scrollBy(0, 24); true'
   Start-Sleep -Milliseconds 180
-  Assert-State ([bool](Evaluate 'document.documentElement.dataset.siteTheme === "manmatic"')) 'The ManMaTIC state flickered inside its active range.'
+  Assert-State ([bool](Get-BrowserValue 'document.documentElement.dataset.siteTheme === "manmatic"')) 'The ManMaTIC state flickered inside its active range.'
 
-  Center-Element '.project-row[data-project-index="03"]'
+  Set-ElementCenter '.project-row[data-project-index="03"]'
   Wait-For 'document.documentElement.dataset.siteTheme !== "manmatic" && document.querySelector("meta[name=theme-color]").content.toLowerCase() === "#ffffff"' 'The page did not leave the ManMaTIC state.' 50
   Start-Sleep -Milliseconds 1050
-  $light = Evaluate-Json @'
+  $light = Get-BrowserJson @'
 JSON.stringify((() => {
   const bodyStyle = getComputedStyle(document.body);
   const htmlStyle = getComputedStyle(document.documentElement);
@@ -1116,7 +1116,7 @@ JSON.stringify((() => {
 }
 
 function Assert-HeadingComplete([string]$selector, [string]$label) {
-  Center-Element $selector
+  Set-ElementCenter $selector
   $selectorLiteral = ConvertTo-Json -InputObject $selector -Compress
   $completeExpression = @"
 (() => {
@@ -1133,7 +1133,7 @@ function Assert-HeadingComplete([string]$selector, [string]$label) {
 })()
 "@
   Wait-For $completeExpression ("Heading did not settle: {0}." -f $label) 80
-  $state = Evaluate-Json @"
+  $state = Get-BrowserJson @"
 JSON.stringify((() => {
   const container = document.querySelector($selectorLiteral);
   const texts = Array.from(container.querySelectorAll(".heading-motion__text"));
@@ -1159,7 +1159,7 @@ JSON.stringify((() => {
 })())
 "@
   Assert-State ($state.texts -gt 0 -and -not $state.textOverflow -and -not $state.scanning) ("Heading is clipped, overflowing, or still scanning: {0}. texts={1} overflow={2} scanning={3} sizes={4}" -f $label, $state.texts, $state.textOverflow, $state.scanning, ($state.textSizes | ConvertTo-Json -Compress))
-  Assert-State ($state.left -ge -1 -and $state.right -le (([int](Evaluate 'innerWidth')) + 1)) ("Heading leaves the viewport: {0}." -f $label)
+  Assert-State ($state.left -ge -1 -and $state.right -le (([int](Get-BrowserValue 'innerWidth')) + 1)) ("Heading leaves the viewport: {0}." -f $label)
   Assert-State ($state.codeVisible -and $state.noteVisible) ("Heading code or technical note is not visible: {0}." -f $label)
   if ($selector -match 'section-heading|contact__marker') {
     Assert-State ($state.ruleWidth -gt 12 -and $state.ruleTransform -notmatch 'matrix\(0') ("Heading rule did not finish expanding: {0}." -f $label)
@@ -1190,10 +1190,10 @@ function Assert-ResponsiveLayout($viewport, [string]$label) {
   $width = [int]$viewport.Width
   $height = [int]$viewport.Height
   Start-Sleep -Milliseconds 180
-  $null = Evaluate 'document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, 0); true'
-  $null = Evaluate "document.documentElement.dataset.auditWidth = '$width'; true"
+  $null = Get-BrowserValue 'document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, 0); true'
+  $null = Get-BrowserValue "document.documentElement.dataset.auditWidth = '$width'; true"
   Start-Sleep -Milliseconds 180
-  $state = Evaluate-Json @'
+  $state = Get-BrowserJson @'
 JSON.stringify((() => {
   const home = document.body.classList.contains("home-page");
   const width = innerWidth;
@@ -1273,7 +1273,7 @@ JSON.stringify((() => {
   Assert-State ($state.bodyScrollHeight -gt $height -and $state.loaderHidden -and -not $state.menuOpen) ("The page is clipped, loading, or menu-locked for {0} at {1}." -f $label, $viewport.Name)
   Assert-State (@($state.badProjectImages).Count -eq 0) ("A project image has no layout box for {0} at {1}: {2}." -f $label, $viewport.Name, (($state.badProjectImages | ConvertTo-Json -Compress) -join ''))
 
-  if ((Evaluate 'document.body.classList.contains("home-page")')) {
+  if ((Get-BrowserValue 'document.body.classList.contains("home-page")')) {
     Assert-State ($state.monitorWidth -gt 0 -and $state.monitorLeft -ge -1 -and $state.monitorRight -le ($width + 1)) ("Opening monitor overflows at {0}." -f $viewport.Name)
     foreach ($target in @($state.sliderTargets)) {
       Assert-State ($target.width -ge 44 -and $target.height -ge 44) ("Slider touch target is too small at {0}." -f $viewport.Name)
@@ -1298,11 +1298,11 @@ function Assert-MobileMenuAtViewport($viewport) {
   $width = [int]$viewport.Width
   $height = [int]$viewport.Height
   Wait-For "innerWidth === $width && innerHeight === $height" ("Mobile menu viewport did not settle: {0}." -f $viewport.Name) 40
-  $null = Evaluate 'window.scrollTo(0, Math.min(160, document.documentElement.scrollHeight - innerHeight)); true'
+  $null = Get-BrowserValue 'window.scrollTo(0, Math.min(160, document.documentElement.scrollHeight - innerHeight)); true'
   Start-Sleep -Milliseconds 80
-  $before = Evaluate-Json 'JSON.stringify({ rootOverflow: document.documentElement.style.overflow, rootOverscroll: document.documentElement.style.overscrollBehavior, bodyOverflow: document.body.style.overflow })'
+  $before = Get-BrowserJson 'JSON.stringify({ rootOverflow: document.documentElement.style.overflow, rootOverscroll: document.documentElement.style.overscrollBehavior, bodyOverflow: document.body.style.overflow })'
 
-  $null = Evaluate @'
+  $null = Get-BrowserValue @'
 (() => {
   const toggle = document.getElementById("nav-toggle");
   toggle.dispatchEvent(new PointerEvent("pointerup", {
@@ -1318,7 +1318,7 @@ function Assert-MobileMenuAtViewport($viewport) {
 '@
   Wait-For 'document.getElementById("nav-toggle").getAttribute("aria-expanded") === "true" && document.body.classList.contains("menu-open") && document.getElementById("primary-navigation").getAttribute("aria-hidden") === "false"' ("The mobile menu did not open through touch input: {0}." -f $viewport.Name) 30
   Start-Sleep -Milliseconds 380
-  $open = Evaluate-Json @'
+  $open = Get-BrowserJson @'
 JSON.stringify((() => {
   const nav = document.getElementById("primary-navigation");
   const toggle = document.getElementById("nav-toggle");
@@ -1360,12 +1360,12 @@ JSON.stringify((() => {
   Assert-State ($open.toggleLarge -and $open.closeVisible -and $open.closeLabel -match 'Close') ("The mobile close control is hidden, too small, or lacks an accessible label: {0}." -f $viewport.Name)
   Assert-State ($open.rootLocked -and $open.bodyLocked -and $open.scrollWidth -le ($open.clientWidth + 1)) ("The open mobile menu is not scroll-locked or introduces horizontal overflow: {0}." -f $viewport.Name)
 
-  $null = Evaluate 'document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })); true'
+  $null = Get-BrowserValue 'document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })); true'
   Wait-For 'document.getElementById("nav-toggle").getAttribute("aria-expanded") === "false" && !document.body.classList.contains("menu-open") && document.getElementById("primary-navigation").getAttribute("aria-hidden") === "true"' ("The mobile menu did not close on Escape: {0}." -f $viewport.Name) 30
-  $closed = Evaluate-Json 'JSON.stringify({ rootOverflow: document.documentElement.style.overflow, rootOverscroll: document.documentElement.style.overscrollBehavior, bodyOverflow: document.body.style.overflow, openLabel: document.getElementById("nav-toggle").getAttribute("aria-label") || "" })'
+  $closed = Get-BrowserJson 'JSON.stringify({ rootOverflow: document.documentElement.style.overflow, rootOverscroll: document.documentElement.style.overscrollBehavior, bodyOverflow: document.body.style.overflow, openLabel: document.getElementById("nav-toggle").getAttribute("aria-label") || "" })'
   Assert-State ($closed.rootOverflow -eq $before.rootOverflow -and $closed.rootOverscroll -eq $before.rootOverscroll -and $closed.bodyOverflow -eq $before.bodyOverflow -and $closed.openLabel -match 'Open') ("Escape left the document locked or the toggle mislabeled: {0}." -f $viewport.Name)
 
-  $null = Evaluate @'
+  $null = Get-BrowserValue @'
 (() => {
   const toggle = document.getElementById("nav-toggle");
   const touch = () => toggle.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, cancelable: true, pointerId: 72, pointerType: "touch", isPrimary: true, button: 0 }));
@@ -1375,7 +1375,7 @@ JSON.stringify((() => {
 })()
 '@
   Wait-For 'document.getElementById("nav-toggle").getAttribute("aria-expanded") === "false" && !document.body.classList.contains("menu-open")' ("The mobile close control did not respond to touch: {0}." -f $viewport.Name) 30
-  $touchClosed = Evaluate-Json 'JSON.stringify({ rootOverflow: document.documentElement.style.overflow, rootOverscroll: document.documentElement.style.overscrollBehavior, bodyOverflow: document.body.style.overflow })'
+  $touchClosed = Get-BrowserJson 'JSON.stringify({ rootOverflow: document.documentElement.style.overflow, rootOverscroll: document.documentElement.style.overscrollBehavior, bodyOverflow: document.body.style.overflow })'
   Assert-State ($touchClosed.rootOverflow -eq $before.rootOverflow -and $touchClosed.rootOverscroll -eq $before.rootOverscroll -and $touchClosed.bodyOverflow -eq $before.bodyOverflow) ("Touch-close did not restore document scrolling: {0}." -f $viewport.Name)
 }
 
@@ -1383,7 +1383,7 @@ function Assert-MobileInteractions {
   Set-Viewport $phoneViewport
   Wait-For 'innerWidth === 390 && innerHeight === 844' 'Mobile interaction viewport did not settle.' 40
   Assert-ReadingProgression
-  $null = Evaluate 'document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, 0); true'
+  $null = Get-BrowserValue 'document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, 0); true'
   Start-Sleep -Milliseconds 100
 
   foreach ($name in @('320x568', '375x812', '390x844', '430x932', '768x1024')) {
@@ -1394,9 +1394,9 @@ function Assert-MobileInteractions {
   Set-Viewport $phoneViewport
   Wait-For 'innerWidth === 390 && innerHeight === 844' 'Mobile interaction viewport did not reset.' 40
 
-  Center-Element '[data-visual-slider]'
-  $null = Evaluate 'document.querySelector("[data-visual-slider]").dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true })); document.querySelector("[data-visual-prev]").click(); document.querySelector("[data-visual-next]").click(); true'
-  $null = Evaluate @'
+  Set-ElementCenter '[data-visual-slider]'
+  $null = Get-BrowserValue 'document.querySelector("[data-visual-slider]").dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true })); document.querySelector("[data-visual-prev]").click(); document.querySelector("[data-visual-next]").click(); true'
+  $null = Get-BrowserValue @'
 (() => {
   const slider = document.querySelector("[data-visual-slider]");
   const viewport = slider.querySelector("[data-visual-viewport]");
@@ -1408,7 +1408,7 @@ function Assert-MobileInteractions {
 })()
 '@
   Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "02"' 'The Visuals touch swipe did not advance.' 30
-  $null = Evaluate 'document.querySelector("[data-visual-prev]").click(); true'
+  $null = Get-BrowserValue 'document.querySelector("[data-visual-prev]").click(); true'
   Wait-For 'document.querySelector("[data-visual-current]").textContent.trim() === "01"' 'The Visuals slider did not reset after touch testing.' 30
 }
 
@@ -1418,7 +1418,7 @@ function Assert-ProjectRoute([string]$slug, [string]$number, [string]$previousSl
   Assert-HeadingComplete '.project-header' ("project page heading {0}" -f $slug)
   Wait-For 'document.querySelector(".project-hero img")?.complete && document.querySelector(".project-hero img").naturalWidth > 0' ("Project hero did not load: {0}." -f $slug) 100
 
-  $state = Evaluate-Json @'
+  $state = Get-BrowserJson @'
 JSON.stringify((() => {
   const project = window.siteContent.projects.find(item => (item.slug || item.id) === document.body.dataset.project);
   const header = document.querySelector(".project-header");
@@ -1516,7 +1516,7 @@ function Assert-ProjectRoutes {
   Navigate ($projectBaseUrl + '?project=missing')
   Wait-For 'document.querySelectorAll(".project-detail__error").length === 1' 'The invalid project route did not render its error state.' 80
   Wait-For-AppReady 'invalid project route'
-  $invalid = Evaluate-Json @'
+  $invalid = Get-BrowserJson @'
 JSON.stringify({
   heading: document.querySelector(".project-detail__error h1")?.textContent.trim() || "",
   returnHref: document.querySelector(".project-detail__error a")?.getAttribute("href") || "",
@@ -1539,9 +1539,9 @@ function Assert-ReducedMotion {
   Clear-CdpEvents
   Navigate $homeUrl
   $null = Assert-LoaderCycle 'reduced-motion homepage loader' 3
-  $reducedProbe = Evaluate-Json 'JSON.stringify(window.__portfolioContractProbe)'
+  $reducedProbe = Get-BrowserJson 'JSON.stringify(window.__portfolioContractProbe)'
   Assert-State ([int]$reducedProbe.blackFlashCount -eq 0) 'Reduced motion retained a black loader flash.'
-  $state = Evaluate-Json @'
+  $state = Get-BrowserJson @'
 JSON.stringify((() => {
   const headings = Array.from(document.querySelectorAll(".heading-motion"));
   const scrambles = Array.from(document.querySelectorAll("[data-scramble]"));
@@ -1615,7 +1615,7 @@ try {
   Assert-State (Test-Path -LiteralPath $chrome -PathType Leaf) 'Google Chrome was not found at the configured path.'
 
   New-Item -ItemType Directory -Force -Path $outDir | Out-Null
-  New-Item -ItemType Directory -Force -Path $profile | Out-Null
+  New-Item -ItemType Directory -Force -Path $BrowserProfilePath | Out-Null
   $profileCreated = $true
 
   $process = Start-Process -FilePath $chrome -ArgumentList @(
@@ -1631,11 +1631,11 @@ try {
     '--allow-file-access-from-files',
     '--remote-debugging-port=0',
     '--remote-allow-origins=*',
-    "--user-data-dir=$profile",
+    "--user-data-dir=$BrowserProfilePath",
     'about:blank'
   ) -PassThru -WindowStyle Hidden
 
-  $portFile = Join-Path $profile 'DevToolsActivePort'
+  $portFile = Join-Path $BrowserProfilePath 'DevToolsActivePort'
   $deadline = (Get-Date).AddSeconds(15)
   while (-not (Test-Path -LiteralPath $portFile) -and (Get-Date) -lt $deadline) {
     if ($process.HasExited) { throw 'Chrome exited before its DevTools endpoint started.' }
@@ -1684,7 +1684,7 @@ try {
   Assert-No-PageErrors 'initial homepage load'
 
   Clear-CdpEvents
-  Reload-Page
+  Restart-BrowserPage
   $refreshProbe = Assert-LoaderCycle 'refreshed homepage loader'
   Assert-State ([int]$refreshProbe.blackFlashCount -eq 2) 'The refreshed homepage loader did not replay both intentional black glitch flashes.'
   Assert-State ([double]$refreshProbe.timeOrigin -ne [double]$firstProbe.timeOrigin) 'The refresh did not create a new document loader cycle.'
@@ -1701,7 +1701,7 @@ try {
   Assert-MobileInteractions
   Assert-HomepageViewports
   Assert-No-PageErrors 'homepage interactions and responsive checks'
-  Capture-ManmaticEvidence
+  Save-ManmaticEvidence
 
   Assert-ProjectRoutes
   Assert-VisualRoutes
@@ -1737,7 +1737,7 @@ finally {
 
     if ($profileCreated) {
       try {
-        $profileFull = [System.IO.Path]::GetFullPath($profile).TrimEnd('\')
+        $profileFull = [System.IO.Path]::GetFullPath($BrowserProfilePath).TrimEnd('\')
         $outFull = [System.IO.Path]::GetFullPath($outDir).TrimEnd('\')
         $expectedPrefix = $outFull + [System.IO.Path]::DirectorySeparatorChar
         $safeProfile = $profileFull.StartsWith($expectedPrefix, [System.StringComparison]::OrdinalIgnoreCase) -and

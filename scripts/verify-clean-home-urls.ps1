@@ -13,7 +13,7 @@ $Events = [System.Collections.ArrayList]::new()
 $Ws = $null
 $ChromeProcess = $null
 $ServerProcess = $null
-$Profile = Join-Path $env:TEMP ("ahmad-clean-home-urls-" + (Get-Date -Format 'yyyyMMdd-HHmmssfff'))
+$BrowserProfilePath = Join-Path $env:TEMP ("ahmad-clean-home-urls-" + (Get-Date -Format 'yyyyMMdd-HHmmssfff'))
 
 function Assert-State([bool]$Condition, [string]$Message) {
   if (-not $Condition) { throw $Message }
@@ -59,7 +59,7 @@ function Invoke-Cdp([string]$Method, $Params = $null) {
   }
 }
 
-function Evaluate([string]$Expression) {
+function Get-BrowserValue([string]$Expression) {
   $result = Invoke-Cdp 'Runtime.evaluate' @{
     expression = $Expression
     returnByValue = $true
@@ -73,8 +73,8 @@ function Evaluate([string]$Expression) {
   return $result.result.value
 }
 
-function Evaluate-Json([string]$Expression) {
-  $value = Evaluate $Expression
+function Get-BrowserJson([string]$Expression) {
+  $value = Get-BrowserValue $Expression
   if ($null -eq $value -or $value -eq '') { return $null }
   return ([string]$value) | ConvertFrom-Json
 }
@@ -82,7 +82,7 @@ function Evaluate-Json([string]$Expression) {
 function Wait-For([string]$Expression, [string]$Message, [int]$Attempts = 160) {
   for ($attempt = 0; $attempt -lt $Attempts; $attempt++) {
     try {
-      if ([bool](Evaluate $Expression)) { return }
+      if ([bool](Get-BrowserValue $Expression)) { return }
     } catch {}
     Start-Sleep -Milliseconds 100
   }
@@ -108,8 +108,8 @@ function Wait-For-Home([string]$Hash = '', [string]$Search = '') {
 
 function Click([string]$Selector, [string]$Message) {
   $selectorLiteral = ConvertTo-Json -InputObject $Selector -Compress
-  Assert-State ([int](Evaluate "document.querySelectorAll($selectorLiteral).length") -eq 1) $Message
-  $null = Evaluate "document.querySelector($selectorLiteral).click(); true"
+  Assert-State ([int](Get-BrowserValue "document.querySelectorAll($selectorLiteral).length") -eq 1) $Message
+  $null = Get-BrowserValue "document.querySelector($selectorLiteral).click(); true"
 }
 
 function Assert-Clean-Home([string]$RequestedPath) {
@@ -117,10 +117,10 @@ function Assert-Clean-Home([string]$RequestedPath) {
   $hash = '#work'
   Navigate "$BaseUrl$RequestedPath$search$hash"
   Wait-For-Home $hash $search
-  $timeOrigin = [double](Evaluate 'performance.timeOrigin')
+  $timeOrigin = [double](Get-BrowserValue 'performance.timeOrigin')
   Start-Sleep -Milliseconds 350
-  Assert-State ([double](Evaluate 'performance.timeOrigin') -eq $timeOrigin) "Legacy homepage normalization looped for $RequestedPath."
-  $state = Evaluate-Json @'
+  Assert-State ([double](Get-BrowserValue 'performance.timeOrigin') -eq $timeOrigin) "Legacy homepage normalization looped for $RequestedPath."
+  $state = Get-BrowserJson @'
 JSON.stringify({
   pathname: location.pathname,
   search: location.search,
@@ -134,15 +134,15 @@ JSON.stringify({
 }
 
 function Assert-NoBrowserErrors {
-  $null = Evaluate 'true'
+  $null = Get-BrowserValue 'true'
   $problems = [System.Collections.Generic.List[string]]::new()
-  foreach ($event in @($Events)) {
-    if ($event.method -eq 'Runtime.exceptionThrown') {
-      $detail = [string]$event.params.exceptionDetails.text
-      if ($event.params.exceptionDetails.exception.description) { $detail = [string]$event.params.exceptionDetails.exception.description }
+  foreach ($CdpEvent in @($Events)) {
+    if ($CdpEvent.method -eq 'Runtime.exceptionThrown') {
+      $detail = [string]$CdpEvent.params.exceptionDetails.text
+      if ($CdpEvent.params.exceptionDetails.exception.description) { $detail = [string]$CdpEvent.params.exceptionDetails.exception.description }
       $problems.Add("runtime exception: $detail")
     }
-    if ($event.method -eq 'Runtime.consoleAPICalled' -and [string]$event.params.type -eq 'error') {
+    if ($CdpEvent.method -eq 'Runtime.consoleAPICalled' -and [string]$CdpEvent.params.type -eq 'error') {
       $problems.Add('console.error was emitted')
     }
   }
@@ -152,7 +152,7 @@ function Assert-NoBrowserErrors {
 $failure = $null
 try {
   Assert-State (Test-Path -LiteralPath $Chrome -PathType Leaf) 'Google Chrome is unavailable for clean-home URL validation.'
-  New-Item -ItemType Directory -Force -Path $Profile | Out-Null
+  New-Item -ItemType Directory -Force -Path $BrowserProfilePath | Out-Null
 
   $serverScript = Join-Path $Root 'scripts\serve-static.ps1'
   $serverArguments = '-NoProfile -ExecutionPolicy Bypass -File "{0}" -Root "{1}" -Port {2}' -f $serverScript, $Root, $Port
@@ -166,9 +166,9 @@ try {
 
   $ChromeProcess = Start-Process -FilePath $Chrome -ArgumentList @(
     '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
-    '--remote-debugging-port=0', '--remote-allow-origins=*', "--user-data-dir=$Profile", 'about:blank'
+    '--remote-debugging-port=0', '--remote-allow-origins=*', "--user-data-dir=$BrowserProfilePath", 'about:blank'
   ) -PassThru -WindowStyle Hidden
-  $portFile = Join-Path $Profile 'DevToolsActivePort'
+  $portFile = Join-Path $BrowserProfilePath 'DevToolsActivePort'
   $deadline = (Get-Date).AddSeconds(15)
   while (-not (Test-Path -LiteralPath $portFile) -and (Get-Date) -lt $deadline) { Start-Sleep -Milliseconds 100 }
   Assert-State (Test-Path -LiteralPath $portFile -PathType Leaf) 'Chrome did not expose its browser-test endpoint.'
@@ -183,7 +183,7 @@ try {
 
   Navigate "$BaseUrl/"
   Wait-For-Home
-  $homeOrigin = [double](Evaluate 'performance.timeOrigin')
+  $homeOrigin = [double](Get-BrowserValue 'performance.timeOrigin')
   $null = Invoke-Cdp 'Page.reload' @{ ignoreCache = $true }
   Wait-For "performance.timeOrigin !== $homeOrigin" 'Refreshing the homepage did not create a new document.'
   Wait-For-Home
@@ -194,21 +194,21 @@ try {
   Wait-For-Home '#work'
   Click '.project-row__link[href="/projects/manmatic/"]' 'The homepage ManMaTIC project link is missing or duplicated.'
   Wait-For-Location '/projects/manmatic/'
-  $null = Evaluate 'history.back(); true'
+  $null = Get-BrowserValue 'history.back(); true'
   Wait-For-Home '#work'
 
   Navigate "$BaseUrl/#visual-studies"
   Wait-For-Home '#visual-studies'
   Click '.visual-slide__open[href="/visuals/architecture-of-elsewhere/"]' 'The homepage Visual link is missing or duplicated.'
   Wait-For-Location '/visuals/architecture-of-elsewhere/'
-  $null = Evaluate 'history.back(); true'
+  $null = Get-BrowserValue 'history.back(); true'
   Wait-For-Home '#visual-studies'
 
   Navigate "$BaseUrl/projects/protocol-port/"
   Wait-For-Location '/projects/protocol-port/'
   Click '.project-header__system-nav a[href="/projects/manmatic/"]' 'The Protocol Port return-to-ManMaTIC link is missing or duplicated.'
   Wait-For-Location '/projects/manmatic/'
-  $null = Evaluate 'history.back(); true'
+  $null = Get-BrowserValue 'history.back(); true'
   Wait-For-Location '/projects/protocol-port/'
 
   Navigate "$BaseUrl/visuals/architecture-of-elsewhere/"
@@ -238,13 +238,13 @@ try {
   foreach ($projectPath in @('/projects/shila/', '/projects/manmatic/', '/projects/protocol-port/', '/projects/dabouq/', '/projects/concrete-fatigue/')) {
     Navigate "$BaseUrl$projectPath"
     Wait-For-Location $projectPath
-    $projectState = Evaluate-Json 'JSON.stringify({ path: location.pathname, canonical: document.querySelector("link[rel=canonical]")?.href || "" })'
+    $projectState = Get-BrowserJson 'JSON.stringify({ path: location.pathname, canonical: document.querySelector("link[rel=canonical]")?.href || "" })'
     Assert-State ($projectState.path -eq $projectPath -and $projectState.canonical -eq "https://www.ahmadalhadidii.manmatic.institute$projectPath") "Direct Project loading exposed an incorrect URL or canonical for $projectPath."
   }
 
   Navigate "$BaseUrl/visuals/architecture-of-elsewhere/"
   Wait-For-Location '/visuals/architecture-of-elsewhere/'
-  $visualState = Evaluate-Json 'JSON.stringify({ path: location.pathname, canonical: document.querySelector("link[rel=canonical]")?.href || "" })'
+  $visualState = Get-BrowserJson 'JSON.stringify({ path: location.pathname, canonical: document.querySelector("link[rel=canonical]")?.href || "" })'
   Assert-State ($visualState.path -eq '/visuals/architecture-of-elsewhere/' -and $visualState.canonical -eq 'https://www.ahmadalhadidii.manmatic.institute/visuals/architecture-of-elsewhere/') 'Direct Visual loading exposed an incorrect URL or canonical.'
 
   Assert-NoBrowserErrors
@@ -260,9 +260,9 @@ finally {
       try { if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force } } catch {}
     }
   }
-  if (Test-Path -LiteralPath $Profile) {
+  if (Test-Path -LiteralPath $BrowserProfilePath) {
     try {
-      $profileFull = [System.IO.Path]::GetFullPath($Profile).TrimEnd('\')
+      $profileFull = [System.IO.Path]::GetFullPath($BrowserProfilePath).TrimEnd('\')
       $tempFull = [System.IO.Path]::GetFullPath($env:TEMP).TrimEnd('\')
       $safePrefix = $tempFull + [System.IO.Path]::DirectorySeparatorChar
       $safeProfile = $profileFull.StartsWith($safePrefix, [System.StringComparison]::OrdinalIgnoreCase) -and [System.IO.Path]::GetFileName($profileFull).StartsWith('ahmad-clean-home-urls-', [System.StringComparison]::OrdinalIgnoreCase)

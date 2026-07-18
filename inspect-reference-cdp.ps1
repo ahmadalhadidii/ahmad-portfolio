@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
 $chrome = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
 $outDir = Join-Path $env:TEMP 'ahmad-reference-inspection'
 $runId = Get-Date -Format 'yyyyMMdd-HHmmssfff'
-$profile = Join-Path $outDir ("cdp-profile-$runId")
+$BrowserProfilePath = Join-Path $outDir ("cdp-profile-$runId")
 $url = 'https://frank-reservation-697225-6f928b65c.framer.app/'
 $topShot = Join-Path $outDir ("$runId-cdp-top.png")
 $fullShot = Join-Path $outDir ("$runId-cdp-full.png")
@@ -21,11 +21,11 @@ $process = Start-Process -FilePath $chrome -ArgumentList @(
   '--no-first-run',
   '--remote-debugging-port=0',
   '--remote-allow-origins=*',
-  "--user-data-dir=$profile",
+  "--user-data-dir=$BrowserProfilePath",
   'about:blank'
 ) -PassThru -WindowStyle Hidden
 
-$portFile = Join-Path $profile 'DevToolsActivePort'
+$portFile = Join-Path $BrowserProfilePath 'DevToolsActivePort'
 $deadline = (Get-Date).AddSeconds(15)
 while (-not (Test-Path -LiteralPath $portFile) -and (Get-Date) -lt $deadline) {
   Start-Sleep -Milliseconds 100

@@ -2439,41 +2439,10 @@
   function initComputationalRails(scope) {
     const rails = elementsWithin(scope || document, "[data-computational-rail]");
     rails.forEach(function (rail) {
-      const caseStudy = rail.closest(".computational-case");
-      const progress = caseStudy && caseStudy.querySelector("[data-computational-progress]");
       let pointerActive = false;
       let pointerMoved = false;
       let pointerStartX = 0;
       let scrollStart = 0;
-      let progressFrame = 0;
-
-      function updateProgress() {
-        progressFrame = 0;
-        if (!progress) return;
-        const maximum = Math.max(rail.scrollWidth - rail.clientWidth, 1);
-        progress.style.transform = `scaleX(${clamp(rail.scrollLeft / maximum, 0, 1).toFixed(4)})`;
-      }
-
-      function requestProgress() {
-        if (!progressFrame) progressFrame = window.requestAnimationFrame(updateProgress);
-      }
-
-      rail.addEventListener("scroll", requestProgress, { passive: true });
-      window.addEventListener("resize", requestProgress);
-
-      rail.addEventListener(
-        "wheel",
-        function (event) {
-          if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-          const maximum = rail.scrollWidth - rail.clientWidth;
-          const delta = event.deltaY;
-          const canMove = (delta > 0 && rail.scrollLeft < maximum - 1) || (delta < 0 && rail.scrollLeft > 1);
-          if (!canMove) return;
-          event.preventDefault();
-          rail.scrollLeft += delta;
-        },
-        { passive: false }
-      );
 
       rail.addEventListener("pointerdown", function (event) {
         if (event.button !== 0 || event.pointerType === "touch") return;
@@ -2510,14 +2479,28 @@
 
       rail.addEventListener("pointerup", finishPointer);
       rail.addEventListener("pointercancel", finishPointer);
-
-      updateProgress();
+      rail.addEventListener("dragstart", function (event) {
+        if (event.target.closest("img, video")) event.preventDefault();
+      });
     });
   }
 
   function initComputationVideos(scope) {
     const videos = elementsWithin(scope || document, "[data-computation-video]");
     if (!videos.length) return null;
+
+    const equationVideo = document.querySelector("[data-equation-video]");
+
+    if (equationVideo) {
+      const setSpeed = function () {
+        equationVideo.defaultPlaybackRate = 1.5;
+        equationVideo.playbackRate = 1.5;
+      };
+
+      equationVideo.addEventListener("loadedmetadata", setSpeed);
+      equationVideo.addEventListener("play", setSpeed);
+      setSpeed();
+    }
 
     const visibility = new WeakMap();
 

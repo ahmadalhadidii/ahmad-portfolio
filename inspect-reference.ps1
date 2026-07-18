@@ -14,14 +14,14 @@ $captures = @(
 )
 
 foreach ($capture in $captures) {
-  $profile = Join-Path $outDir ("profile-$runId-$($capture.Name)")
+  $BrowserProfilePath = Join-Path $outDir ("profile-$runId-$($capture.Name)")
   $shot = Join-Path $outDir ("$runId-$($capture.Name).png")
   $process = Start-Process -FilePath $chrome -ArgumentList @(
     '--headless=new',
     '--disable-gpu',
     '--hide-scrollbars',
     '--no-first-run',
-    "--user-data-dir=$profile",
+    "--user-data-dir=$BrowserProfilePath",
     "--window-size=$($capture.Width),$($capture.Height)",
     '--virtual-time-budget=5000',
     "--screenshot=$shot",

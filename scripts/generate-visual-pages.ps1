@@ -7,7 +7,7 @@ $Root = [System.IO.Path]::GetFullPath($Root)
 $CanonicalBase = 'https://www.ahmadalhadidii.manmatic.institute'
 $Build = '20260715-visual-routing-01'
 
-function Encode-Html([object]$Value) {
+function ConvertTo-HtmlEncoded([object]$Value) {
   return [System.Net.WebUtility]::HtmlEncode([string]$Value)
 }
 
@@ -36,12 +36,12 @@ function Get-MetaDescription([string]$Description) {
 }
 
 function Get-EmphasizedHtml([string]$Text, [string]$Emphasis) {
-  if ([string]::IsNullOrWhiteSpace($Emphasis)) { return Encode-Html $Text }
+  if ([string]::IsNullOrWhiteSpace($Emphasis)) { return ConvertTo-HtmlEncoded $Text }
   $index = $Text.IndexOf($Emphasis, [System.StringComparison]::Ordinal)
-  if ($index -lt 0) { return Encode-Html $Text }
-  $before = Encode-Html $Text.Substring(0, $index)
-  $strong = Encode-Html $Emphasis
-  $after = Encode-Html $Text.Substring($index + $Emphasis.Length)
+  if ($index -lt 0) { return ConvertTo-HtmlEncoded $Text }
+  $before = ConvertTo-HtmlEncoded $Text.Substring(0, $index)
+  $strong = ConvertTo-HtmlEncoded $Emphasis
+  $after = ConvertTo-HtmlEncoded $Text.Substring($index + $Emphasis.Length)
   return "$before<strong>$strong</strong>$after"
 }
 
@@ -74,16 +74,16 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
   $recordCount = $visuals.Count.ToString('00')
   $descriptionHtml = Get-EmphasizedHtml $visual.description $visual.emphasis
   $contextHtml = if ([string]::IsNullOrWhiteSpace($visual.context)) { '' } else {
-    "`n            <p class=`"visual-record__context`">$(Encode-Html $visual.context)</p>"
+    "`n            <p class=`"visual-record__context`">$(ConvertTo-HtmlEncoded $visual.context)</p>"
   }
   $finalProcessHtml = if ([string]::IsNullOrWhiteSpace($visual.finalProcess)) { '' } else {
-    "`n                <div><dt>FINAL PROCESS</dt><dd>$(Encode-Html $visual.finalProcess)</dd></div>"
+    "`n                <div><dt>FINAL PROCESS</dt><dd>$(ConvertTo-HtmlEncoded $visual.finalProcess)</dd></div>"
   }
   $style = if ([string]::IsNullOrWhiteSpace($visual.accent)) { '' } else {
-    " style=`"--visual-accent: $(Encode-Html $visual.accent)`""
+    " style=`"--visual-accent: $(ConvertTo-HtmlEncoded $visual.accent)`""
   }
   $srcsetAttribute = if ([string]::IsNullOrWhiteSpace($srcset)) { '' } else {
-    " srcset=`"$(Encode-Html $srcset)`""
+    " srcset=`"$(ConvertTo-HtmlEncoded $srcset)`""
   }
 
   $structuredData = [ordered]@{
@@ -132,24 +132,24 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="portfolio-build" content="$Build">
-  <meta name="description" content="$(Encode-Html $metaDescription)">
+  <meta name="description" content="$(ConvertTo-HtmlEncoded $metaDescription)">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#ffffff">
 
   <meta property="og:type" content="article">
-  <meta property="og:title" content="$(Encode-Html $title)">
-  <meta property="og:description" content="$(Encode-Html $metaDescription)">
-  <meta property="og:url" content="$(Encode-Html $canonical)">
-  <meta property="og:image" content="$(Encode-Html $imageUrl)">
-  <meta property="og:image:alt" content="$(Encode-Html $visual.alt)">
+  <meta property="og:title" content="$(ConvertTo-HtmlEncoded $title)">
+  <meta property="og:description" content="$(ConvertTo-HtmlEncoded $metaDescription)">
+  <meta property="og:url" content="$(ConvertTo-HtmlEncoded $canonical)">
+  <meta property="og:image" content="$(ConvertTo-HtmlEncoded $imageUrl)">
+  <meta property="og:image:alt" content="$(ConvertTo-HtmlEncoded $visual.alt)">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="$(Encode-Html $title)">
-  <meta name="twitter:description" content="$(Encode-Html $metaDescription)">
-  <meta name="twitter:image" content="$(Encode-Html $imageUrl)">
-  <meta name="twitter:image:alt" content="$(Encode-Html $visual.alt)">
+  <meta name="twitter:title" content="$(ConvertTo-HtmlEncoded $title)">
+  <meta name="twitter:description" content="$(ConvertTo-HtmlEncoded $metaDescription)">
+  <meta name="twitter:image" content="$(ConvertTo-HtmlEncoded $imageUrl)">
+  <meta name="twitter:image:alt" content="$(ConvertTo-HtmlEncoded $visual.alt)">
 
-  <title>$(Encode-Html $title)</title>
-  <link rel="canonical" href="$(Encode-Html $canonical)">
+  <title>$(ConvertTo-HtmlEncoded $title)</title>
+  <link rel="canonical" href="$(ConvertTo-HtmlEncoded $canonical)">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/ad-mark-v1-16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/ad-mark-v1-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/ad-mark-v1-180.png">
@@ -187,23 +187,23 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
   <script src="/assets/js/main.js?v=$Build" defer></script>
   <script src="/assets/js/visual.js?v=$Build" defer></script>
 </head>
-<body class="visual-page" data-visual-slug="$(Encode-Html $visual.slug)">
-  <div class="loader loader--project loader--visual" id="loader" role="status" aria-label="Opening $(Encode-Html $visual.title)">
-    <p class="visually-hidden" id="loader-announcement" aria-live="polite">$(Encode-Html $visual.title) is opening.</p>
+<body class="visual-page" data-visual-slug="$(ConvertTo-HtmlEncoded $visual.slug)">
+  <div class="loader loader--project loader--visual" id="loader" role="status" aria-label="Opening $(ConvertTo-HtmlEncoded $visual.title)">
+    <p class="visually-hidden" id="loader-announcement" aria-live="polite">$(ConvertTo-HtmlEncoded $visual.title) is opening.</p>
     <div class="project-loader" aria-hidden="true">
       <header class="project-loader__identity">
         <p class="project-loader__file" data-project-loader-kicker>VISUAL $($visual.index) / $recordCount</p>
-        <h1 class="project-loader__title" id="loader-name">$(Encode-Html $visual.title.ToUpperInvariant())</h1>
-        <p class="project-loader__subtitle" data-project-loader-subtitle>$(Encode-Html $visual.category.ToUpperInvariant())</p>
+        <h1 class="project-loader__title" id="loader-name">$(ConvertTo-HtmlEncoded $visual.title.ToUpperInvariant())</h1>
+        <p class="project-loader__subtitle" data-project-loader-subtitle>$(ConvertTo-HtmlEncoded $visual.category.ToUpperInvariant())</p>
         <dl>
-          <div><dt>YEAR</dt><dd data-project-loader-year>$(Encode-Html $visual.year)</dd></div>
+          <div><dt>YEAR</dt><dd data-project-loader-year>$(ConvertTo-HtmlEncoded $visual.year)</dd></div>
           <div><dt>TYPE</dt><dd data-project-loader-type>VISUAL NARRATIVE</dd></div>
           <div><dt>STATE</dt><dd id="loader-state">FILE INDEXING</dd></div>
         </dl>
       </header>
       <figure class="project-loader__visual">
         <div class="project-loader__image loader__preview-image">
-          <img data-loader-preview src="$(Encode-Html $imagePath)"$srcsetAttribute width="$($visual.width)" height="$($visual.height)" alt="">
+          <img data-loader-preview src="$(ConvertTo-HtmlEncoded $imagePath)"$srcsetAttribute width="$($visual.width)" height="$($visual.height)" alt="">
           <span class="project-loader__scan"></span>
           <span class="project-loader__slice project-loader__slice--one"></span>
           <span class="project-loader__slice project-loader__slice--two"></span>
@@ -228,7 +228,7 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
     <header class="site-header" id="site-header">
       <div class="site-header__inner page-width">
         <a class="site-header__name" href="/" aria-label="Ahmad Alhadidii, return to portfolio index">AHMAD ALHADIDII</a>
-        <p class="running-header" aria-hidden="true"><span id="running-header-text">VISUAL $($visual.index) / $(Encode-Html $visual.title.ToUpperInvariant()) / $(Encode-Html $visual.year)</span></p>
+        <p class="running-header" aria-hidden="true"><span id="running-header-text">VISUAL $($visual.index) / $(ConvertTo-HtmlEncoded $visual.title.ToUpperInvariant()) / $(ConvertTo-HtmlEncoded $visual.year)</span></p>
         <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Open navigation"><span class="nav-toggle__open">MENU</span><span class="nav-toggle__close">CLOSE</span></button>
         <button class="nav-backdrop" type="button" data-nav-dismiss tabindex="-1" aria-label="Close navigation"></button>
         <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation">
@@ -246,34 +246,34 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
 
     <main id="main-content" tabindex="-1">
       <article class="visual-detail" id="visual-detail">
-        <section class="visual-record page-width orientation--$orientation" data-visual-id="$(Encode-Html $visual.id)"$style>
+        <section class="visual-record page-width orientation--$orientation" data-visual-id="$(ConvertTo-HtmlEncoded $visual.id)"$style>
           <header class="visual-record__header">
             <dl class="visual-record__meta">
               <div><dt>RECORD</dt><dd>VISUAL $($visual.index) / $recordCount</dd></div>
-              <div><dt>CATEGORY</dt><dd>$(Encode-Html $visual.category)</dd></div>
-              <div><dt>YEAR</dt><dd>$(Encode-Html $visual.year)</dd></div>
+              <div><dt>CATEGORY</dt><dd>$(ConvertTo-HtmlEncoded $visual.category)</dd></div>
+              <div><dt>YEAR</dt><dd>$(ConvertTo-HtmlEncoded $visual.year)</dd></div>
             </dl>
-            <h1>$(Encode-Html $visual.title)</h1>
+            <h1>$(ConvertTo-HtmlEncoded $visual.title)</h1>
           </header>
           <figure class="visual-record__media orientation--$orientation media--$fit" data-orientation="$orientation" data-media-fit="$fit" style="--media-ratio: $($visual.width) / $($visual.height)">
-            <div class="visual-record__image-frame"><img src="$(Encode-Html $imagePath)"$srcsetAttribute sizes="(max-width: 700px) calc(100vw - 36px), (max-width: 1100px) 58vw, min(980px, 62vw)" width="$($visual.width)" height="$($visual.height)" alt="$(Encode-Html $visual.alt)" loading="eager" decoding="async" fetchpriority="high" draggable="false"></div>
-            <figcaption>$(Encode-Html $visual.caption)</figcaption>
+            <div class="visual-record__image-frame"><img src="$(ConvertTo-HtmlEncoded $imagePath)"$srcsetAttribute sizes="(max-width: 700px) calc(100vw - 36px), (max-width: 1100px) 58vw, min(980px, 62vw)" width="$($visual.width)" height="$($visual.height)" alt="$(ConvertTo-HtmlEncoded $visual.alt)" loading="eager" decoding="async" fetchpriority="high" draggable="false"></div>
+            <figcaption>$(ConvertTo-HtmlEncoded $visual.caption)</figcaption>
           </figure>
           <div class="visual-record__narrative">
             <p class="visual-record__description">$descriptionHtml</p>$contextHtml
             <section class="visual-record__process">
               <h2>PROCESS RECORD</h2>
               <dl class="visual-record__process-meta">
-                <div><dt>AUTHORSHIP</dt><dd>$(Encode-Html $visual.authorship)</dd></div>
-                <div><dt>PROCESS</dt><dd>$(Encode-Html $visual.process)</dd></div>
-                <div><dt>TOOLS</dt><dd>$(Encode-Html $visual.tools)</dd></div>
-                <div><dt>AI ROLE</dt><dd>$(Encode-Html $visual.aiRole)</dd></div>$finalProcessHtml
+                <div><dt>AUTHORSHIP</dt><dd>$(ConvertTo-HtmlEncoded $visual.authorship)</dd></div>
+                <div><dt>PROCESS</dt><dd>$(ConvertTo-HtmlEncoded $visual.process)</dd></div>
+                <div><dt>TOOLS</dt><dd>$(ConvertTo-HtmlEncoded $visual.tools)</dd></div>
+                <div><dt>AI ROLE</dt><dd>$(ConvertTo-HtmlEncoded $visual.aiRole)</dd></div>$finalProcessHtml
               </dl>
             </section>
           </div>
           <nav class="visual-record__navigation" aria-label="Visual narrative navigation">
-            <a class="visual-record__previous" href="/visuals/$(Encode-Html $previous.slug)/" rel="prev" aria-label="Previous visual: $(Encode-Html $previous.title)"><span>PREVIOUS VISUAL</span><strong>$(Encode-Html $previous.title)</strong></a>
-            <a class="visual-record__next" href="/visuals/$(Encode-Html $next.slug)/" rel="next" aria-label="Next visual: $(Encode-Html $next.title)"><span>NEXT VISUAL</span><strong>$(Encode-Html $next.title)</strong></a>
+            <a class="visual-record__previous" href="/visuals/$(ConvertTo-HtmlEncoded $previous.slug)/" rel="prev" aria-label="Previous visual: $(ConvertTo-HtmlEncoded $previous.title)"><span>PREVIOUS VISUAL</span><strong>$(ConvertTo-HtmlEncoded $previous.title)</strong></a>
+            <a class="visual-record__next" href="/visuals/$(ConvertTo-HtmlEncoded $next.slug)/" rel="next" aria-label="Next visual: $(ConvertTo-HtmlEncoded $next.title)"><span>NEXT VISUAL</span><strong>$(ConvertTo-HtmlEncoded $next.title)</strong></a>
             <a class="visual-record__all" href="/#visual-studies">ALL VISUALS ↗</a>
           </nav>
         </section>

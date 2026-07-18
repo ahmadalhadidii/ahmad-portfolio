@@ -12,7 +12,7 @@ function Assert-State([bool]$Condition, [string]$Message) {
   $script:Assertions++
 }
 
-function Encode-Html([object]$Value) {
+function ConvertTo-HtmlEncoded([object]$Value) {
   return [System.Net.WebUtility]::HtmlEncode([string]$Value)
 }
 
@@ -44,17 +44,17 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
 
   Assert-State ($homepage -match [regex]::Escape("href=`"$route`"")) ("Homepage archive link is missing for {0}." -f $visual.slug)
   Assert-State ($sitemap -match [regex]::Escape("<loc>$canonical</loc>")) ("Sitemap route is missing for {0}." -f $visual.slug)
-  Assert-State ($html -match [regex]::Escape("<title>$(Encode-Html $title)</title>")) ("Page title is incorrect for {0}." -f $visual.slug)
-  Assert-State ($html -match [regex]::Escape("<h1>$(Encode-Html $visual.title)</h1>")) ("Visible heading is incorrect for {0}." -f $visual.slug)
+  Assert-State ($html -match [regex]::Escape("<title>$(ConvertTo-HtmlEncoded $title)</title>")) ("Page title is incorrect for {0}." -f $visual.slug)
+  Assert-State ($html -match [regex]::Escape("<h1>$(ConvertTo-HtmlEncoded $visual.title)</h1>")) ("Visible heading is incorrect for {0}." -f $visual.slug)
   Assert-State ($html -match [regex]::Escape("<link rel=`"canonical`" href=`"$canonical`">")) ("Canonical URL is incorrect for {0}." -f $visual.slug)
-  Assert-State ($html -match [regex]::Escape("<meta property=`"og:title`" content=`"$(Encode-Html $title)`">")) ("Open Graph title is incorrect for {0}." -f $visual.slug)
+  Assert-State ($html -match [regex]::Escape("<meta property=`"og:title`" content=`"$(ConvertTo-HtmlEncoded $title)`">")) ("Open Graph title is incorrect for {0}." -f $visual.slug)
   Assert-State ($html -match '<meta property="og:description" content="[^\"]+">' -and $html -match '<meta property="og:image" content="https://[^\"]+">') ("Open Graph description or image is missing for {0}." -f $visual.slug)
-  Assert-State ($html -match [regex]::Escape("<meta name=`"twitter:title`" content=`"$(Encode-Html $title)`">")) ("Twitter title is incorrect for {0}." -f $visual.slug)
+  Assert-State ($html -match [regex]::Escape("<meta name=`"twitter:title`" content=`"$(ConvertTo-HtmlEncoded $title)`">")) ("Twitter title is incorrect for {0}." -f $visual.slug)
   Assert-State ($html -match '<meta name="twitter:description" content="[^\"]+">' -and $html -match '<meta name="twitter:image" content="https://[^\"]+">') ("Twitter description or image is missing for {0}." -f $visual.slug)
   Assert-State ($html -match '<script type="application/ld\+json">' -and $html -match [regex]::Escape('"name":"' + $visual.title + '"')) ("Structured data is missing or mismatched for {0}." -f $visual.slug)
   Assert-State ($html -match [regex]::Escape("data-visual-slug=`"$($visual.slug)`"")) ("Embedded Visual slug is missing for {0}." -f $visual.slug)
-  Assert-State ($html -match [regex]::Escape("src=`"/$(Encode-Html $visual.src)`"")) ("Primary image does not match the Visual record for {0}." -f $visual.slug)
-  Assert-State ($html -match [regex]::Escape((Encode-Html $visual.description.Substring(0, [Math]::Min(80, $visual.description.Length))))) ("Description does not match the Visual record for {0}." -f $visual.slug)
+  Assert-State ($html -match [regex]::Escape("src=`"/$(ConvertTo-HtmlEncoded $visual.src)`"")) ("Primary image does not match the Visual record for {0}." -f $visual.slug)
+  Assert-State ($html -match [regex]::Escape((ConvertTo-HtmlEncoded $visual.description.Substring(0, [Math]::Min(80, $visual.description.Length))))) ("Description does not match the Visual record for {0}." -f $visual.slug)
   Assert-State ($html -match [regex]::Escape("href=`"/visuals/$($previous.slug)/`" rel=`"prev`"")) ("Previous route is incorrect for {0}." -f $visual.slug)
   Assert-State ($html -match [regex]::Escape("href=`"/visuals/$($next.slug)/`" rel=`"next`"")) ("Next route is incorrect for {0}." -f $visual.slug)
   Assert-State ($html -notmatch '(?i)(<title>[^<]*(?:selected visual|visual detail|file index|index\.html)[^<]*</title>|<h1>[^<]*(?:selected visual|visual detail|file index|index\.html)[^<]*</h1>)') ("Generic or filename-based Visual identity remains in {0}." -f $visual.slug)

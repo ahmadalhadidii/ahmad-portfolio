@@ -27,7 +27,7 @@ $Events = [System.Collections.ArrayList]::new()
 $Ws = $null
 $ChromeProcess = $null
 $ServerProcess = $null
-$Profile = Join-Path $env:TEMP ("ahmad-visual-runtime-" + (Get-Date -Format 'yyyyMMdd-HHmmssfff'))
+$BrowserProfilePath = Join-Path $env:TEMP ("ahmad-visual-runtime-" + (Get-Date -Format 'yyyyMMdd-HHmmssfff'))
 
 function Assert-State([bool]$Condition, [string]$Message) {
   if (-not $Condition) { throw $Message }
@@ -73,7 +73,7 @@ function Invoke-Cdp([string]$Method, $Params = $null) {
   }
 }
 
-function Evaluate([string]$Expression) {
+function Get-BrowserValue([string]$Expression) {
   $result = Invoke-Cdp 'Runtime.evaluate' @{
     expression = $Expression
     returnByValue = $true
@@ -87,8 +87,8 @@ function Evaluate([string]$Expression) {
   return $result.result.value
 }
 
-function Evaluate-Json([string]$Expression) {
-  $value = Evaluate $Expression
+function Get-BrowserJson([string]$Expression) {
+  $value = Get-BrowserValue $Expression
   if ($null -eq $value -or $value -eq '') { return $null }
   return ([string]$value) | ConvertFrom-Json
 }
@@ -96,7 +96,7 @@ function Evaluate-Json([string]$Expression) {
 function Wait-For([string]$Expression, [string]$Message, [int]$Attempts = 160) {
   for ($attempt = 0; $attempt -lt $Attempts; $attempt++) {
     try {
-      if ([bool](Evaluate $Expression)) { return }
+      if ([bool](Get-BrowserValue $Expression)) { return }
     } catch {}
     Start-Sleep -Milliseconds 100
   }
@@ -109,8 +109,8 @@ function Navigate([string]$Url) {
   Wait-For "location.href === $literal && document.readyState !== 'loading'" "Page did not load: $Url"
 }
 
-function Reload-Page {
-  $origin = Evaluate 'performance.timeOrigin'
+function Restart-BrowserPage {
+  $origin = Get-BrowserValue 'performance.timeOrigin'
   $literal = ConvertTo-Json -InputObject $origin -Compress
   $null = Invoke-Cdp 'Page.reload' @{ ignoreCache = $true }
   Wait-For "performance.timeOrigin !== $literal && document.readyState !== 'loading'" 'The Visual did not reload.'
@@ -133,33 +133,33 @@ function Clear-Events {
 }
 
 function Assert-NoBrowserErrors([string]$Label) {
-  $null = Evaluate 'true'
+  $null = Get-BrowserValue 'true'
   Start-Sleep -Milliseconds 60
-  $null = Evaluate 'true'
+  $null = Get-BrowserValue 'true'
   $requests = @{}
   $problems = [System.Collections.Generic.List[string]]::new()
-  foreach ($event in @($Events)) {
-    switch ($event.method) {
+  foreach ($CdpEvent in @($Events)) {
+    switch ($CdpEvent.method) {
       'Network.requestWillBeSent' {
-        $requests[[string]$event.params.requestId] = [string]$event.params.request.url
+        $requests[[string]$CdpEvent.params.requestId] = [string]$CdpEvent.params.request.url
       }
       'Runtime.exceptionThrown' {
-        $detail = [string]$event.params.exceptionDetails.text
-        if ($event.params.exceptionDetails.exception.description) { $detail = [string]$event.params.exceptionDetails.exception.description }
+        $detail = [string]$CdpEvent.params.exceptionDetails.text
+        if ($CdpEvent.params.exceptionDetails.exception.description) { $detail = [string]$CdpEvent.params.exceptionDetails.exception.description }
         $problems.Add("runtime exception: $detail")
       }
       'Runtime.consoleAPICalled' {
-        if ([string]$event.params.type -eq 'error') { $problems.Add('console.error was emitted') }
+        if ([string]$CdpEvent.params.type -eq 'error') { $problems.Add('console.error was emitted') }
       }
       'Network.responseReceived' {
-        $url = [string]$event.params.response.url
-        $status = [double]$event.params.response.status
+        $url = [string]$CdpEvent.params.response.url
+        $status = [double]$CdpEvent.params.response.status
         if ($url.StartsWith($BaseUrl) -and $status -ge 400) { $problems.Add("HTTP $status $url") }
       }
       'Network.loadingFailed' {
-        $url = $requests[[string]$event.params.requestId]
-        $error = [string]$event.params.errorText
-        if ($url -and $url.StartsWith($BaseUrl) -and -not [bool]$event.params.canceled -and $error -ne 'net::ERR_ABORTED') {
+        $url = $requests[[string]$CdpEvent.params.requestId]
+        $error = [string]$CdpEvent.params.errorText
+        if ($url -and $url.StartsWith($BaseUrl) -and -not [bool]$CdpEvent.params.canceled -and $error -ne 'net::ERR_ABORTED') {
           $problems.Add("resource failed: $url ($error)")
         }
       }
@@ -176,7 +176,7 @@ function Assert-VisualPage([int]$Index, [string]$Context) {
   $expectedPath = "/visuals/$slug/"
   $expectedTitle = "$title | Ahmad Alhadidii"
   Wait-For "document.body.dataset.visualSlug === '$slug' && document.querySelector('.visual-record__media img')?.complete && document.querySelector('.visual-record__media img')?.naturalWidth > 0" "$Context did not retain and load $title."
-  $state = Evaluate-Json @'
+  $state = Get-BrowserJson @'
 JSON.stringify((() => {
   const slug = document.body.dataset.visualSlug || "";
   const visual = window.siteContent.visuals.find(item => item.slug === slug);
@@ -229,7 +229,7 @@ JSON.stringify((() => {
 $failure = $null
 try {
   Assert-State (Test-Path -LiteralPath $Chrome -PathType Leaf) 'Google Chrome is unavailable for Visual runtime validation.'
-  New-Item -ItemType Directory -Force -Path $Profile | Out-Null
+  New-Item -ItemType Directory -Force -Path $BrowserProfilePath | Out-Null
   $serverScript = Join-Path $Root 'scripts\serve-static.ps1'
   $serverArguments = '-NoProfile -ExecutionPolicy Bypass -File "{0}" -Root "{1}" -Port {2}' -f $serverScript, $Root, $Port
   $ServerProcess = Start-Process -FilePath 'powershell.exe' -ArgumentList $serverArguments -PassThru -WindowStyle Hidden
@@ -242,9 +242,9 @@ try {
 
   $ChromeProcess = Start-Process -FilePath $Chrome -ArgumentList @(
     '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
-    '--remote-debugging-port=0', '--remote-allow-origins=*', "--user-data-dir=$Profile", 'about:blank'
+    '--remote-debugging-port=0', '--remote-allow-origins=*', "--user-data-dir=$BrowserProfilePath", 'about:blank'
   ) -PassThru -WindowStyle Hidden
-  $portFile = Join-Path $Profile 'DevToolsActivePort'
+  $portFile = Join-Path $BrowserProfilePath 'DevToolsActivePort'
   $deadline = (Get-Date).AddSeconds(15)
   while (-not (Test-Path -LiteralPath $portFile) -and (Get-Date) -lt $deadline) { Start-Sleep -Milliseconds 100 }
   Assert-State (Test-Path -LiteralPath $portFile -PathType Leaf) 'Chrome did not expose its browser-test endpoint.'
@@ -262,10 +262,10 @@ try {
     Clear-Events
     Navigate "$BaseUrl/#visual-studies"
     Wait-For 'document.querySelector("[data-visual-slider]")?.dataset.visualInitialized === "true"' 'The Visual slider did not initialize.'
-    for ($step = 0; $step -lt $index; $step++) { $null = Evaluate 'document.querySelector("[data-visual-next]").click(); true' }
+    for ($step = 0; $step -lt $index; $step++) { $null = Get-BrowserValue 'document.querySelector("[data-visual-next]").click(); true' }
     $number = ($index + 1).ToString('00')
     Wait-For "document.querySelector('[data-visual-current]').textContent.trim() === '$number'" "Visual card $number did not become active."
-    $card = Evaluate-Json @'
+    $card = Get-BrowserJson @'
 JSON.stringify((() => {
   const slide = document.querySelector(".visual-slide.is-active");
   const visual = window.siteContent.visuals[Number(document.querySelector("[data-visual-current]").textContent) - 1];
@@ -284,33 +284,33 @@ JSON.stringify((() => {
     Assert-State ($card.title -eq $card.dataTitle -and $card.title -eq $Titles[$index]) "Visual card $number has the wrong title."
     Assert-State ($card.href -eq "/visuals/$($Slugs[$index])/" -and $card.isAnchor) "Visual card $number does not have its own clean anchor URL."
     Assert-State ($card.image -eq $card.dataImage) "Visual card $number has the wrong image."
-    $null = Evaluate 'document.querySelector(".visual-slide.is-active .visual-slide__open").click(); true'
+    $null = Get-BrowserValue 'document.querySelector(".visual-slide.is-active .visual-slide__open").click(); true'
     Wait-For "location.pathname === '/visuals/$($Slugs[$index])/'" "Visual card $number opened the wrong Visual."
     Assert-VisualPage $index "Visual card $number"
     Assert-NoBrowserErrors "Visual card $number"
 
     Clear-Events
-    Reload-Page
+    Restart-BrowserPage
     Assert-VisualPage $index "Refresh of Visual $number"
     Assert-NoBrowserErrors "Refresh of Visual $number"
 
-    $null = Evaluate 'document.querySelector(".visual-record__next").click(); true'
+    $null = Get-BrowserValue 'document.querySelector(".visual-record__next").click(); true'
     $nextIndex = ($index + 1) % $Slugs.Count
     Wait-For "location.pathname === '/visuals/$($Slugs[$nextIndex])/'" "Next Visual from $number opened the wrong record."
     Assert-VisualPage $nextIndex "Next navigation from Visual $number"
-    $null = Evaluate 'history.back(); true'
+    $null = Get-BrowserValue 'history.back(); true'
     Wait-For "location.pathname === '/visuals/$($Slugs[$index])/' && document.body.dataset.visualSlug === '$($Slugs[$index])' && document.querySelector('.visual-record__all')" "Browser Back did not restore Visual $number after next navigation."
 
-    $null = Evaluate 'document.querySelector(".visual-record__previous").click(); true'
+    $null = Get-BrowserValue 'document.querySelector(".visual-record__previous").click(); true'
     $previousIndex = ($index - 1 + $Slugs.Count) % $Slugs.Count
     Wait-For "location.pathname === '/visuals/$($Slugs[$previousIndex])/'" "Previous Visual from $number opened the wrong record."
     Assert-VisualPage $previousIndex "Previous navigation from Visual $number"
-    $null = Evaluate 'history.back(); true'
+    $null = Get-BrowserValue 'history.back(); true'
     Wait-For "location.pathname === '/visuals/$($Slugs[$index])/' && document.body.dataset.visualSlug === '$($Slugs[$index])' && document.querySelector('.visual-record__all')" "Browser Back did not restore Visual $number after previous navigation."
 
-    $null = Evaluate 'document.querySelector(".visual-record__all").click(); true'
+    $null = Get-BrowserValue 'document.querySelector(".visual-record__all").click(); true'
     Wait-For 'location.pathname === "/" && location.hash === "#visual-studies"' "Back to Visuals from $number did not return to the archive."
-    $null = Evaluate 'history.back(); true'
+    $null = Get-BrowserValue 'history.back(); true'
     Wait-For "location.pathname === '/visuals/$($Slugs[$index])/' && document.body.dataset.visualSlug === '$($Slugs[$index])'" "Browser Back did not return from the archive to Visual $number."
   }
 
@@ -326,7 +326,7 @@ finally {
       try { if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force } } catch {}
     }
   }
-  if (Test-Path -LiteralPath $Profile) { try { Remove-Item -LiteralPath $Profile -Recurse -Force } catch {} }
+  if (Test-Path -LiteralPath $BrowserProfilePath) { try { Remove-Item -LiteralPath $BrowserProfilePath -Recurse -Force } catch {} }
 }
 
 if ($null -ne $failure) { throw $failure }
