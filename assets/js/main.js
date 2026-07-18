@@ -48,6 +48,7 @@
   let pointerFrame = 0;
   let pointerStates = [];
   let visualSliderController = null;
+  let computationVideoController = null;
   const documentScrollLocks = new Set();
   let savedRootOverflow = "";
   let savedBodyOverflow = "";
@@ -2435,6 +2436,132 @@
     requestScrollEffects();
   }
 
+  function initComputationalRails(scope) {
+    const rails = elementsWithin(scope || document, "[data-computational-rail]");
+    rails.forEach(function (rail) {
+      const caseStudy = rail.closest(".computational-case");
+      const progress = caseStudy && caseStudy.querySelector("[data-computational-progress]");
+      let pointerActive = false;
+      let pointerMoved = false;
+      let pointerStartX = 0;
+      let scrollStart = 0;
+      let progressFrame = 0;
+
+      function updateProgress() {
+        progressFrame = 0;
+        if (!progress) return;
+        const maximum = Math.max(rail.scrollWidth - rail.clientWidth, 1);
+        progress.style.transform = `scaleX(${clamp(rail.scrollLeft / maximum, 0, 1).toFixed(4)})`;
+      }
+
+      function requestProgress() {
+        if (!progressFrame) progressFrame = window.requestAnimationFrame(updateProgress);
+      }
+
+      rail.addEventListener("scroll", requestProgress, { passive: true });
+      window.addEventListener("resize", requestProgress);
+
+      rail.addEventListener(
+        "wheel",
+        function (event) {
+          if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+          const maximum = rail.scrollWidth - rail.clientWidth;
+          const delta = event.deltaY;
+          const canMove = (delta > 0 && rail.scrollLeft < maximum - 1) || (delta < 0 && rail.scrollLeft > 1);
+          if (!canMove) return;
+          event.preventDefault();
+          rail.scrollLeft += delta;
+        },
+        { passive: false }
+      );
+
+      rail.addEventListener("pointerdown", function (event) {
+        if (event.button !== 0 || event.pointerType === "touch") return;
+        if (event.target.closest("a, button, video, input, select, textarea")) return;
+        pointerActive = true;
+        pointerMoved = false;
+        pointerStartX = event.clientX;
+        scrollStart = rail.scrollLeft;
+        rail.setPointerCapture(event.pointerId);
+      });
+
+      rail.addEventListener(
+        "pointermove",
+        function (event) {
+          if (!pointerActive) return;
+          const distance = event.clientX - pointerStartX;
+          if (Math.abs(distance) > 4) {
+            pointerMoved = true;
+            rail.classList.add("is-dragging");
+          }
+          if (!pointerMoved) return;
+          event.preventDefault();
+          rail.scrollLeft = scrollStart - distance;
+        },
+        { passive: false }
+      );
+
+      function finishPointer(event) {
+        if (!pointerActive) return;
+        pointerActive = false;
+        if (rail.hasPointerCapture(event.pointerId)) rail.releasePointerCapture(event.pointerId);
+        window.requestAnimationFrame(function () { rail.classList.remove("is-dragging"); });
+      }
+
+      rail.addEventListener("pointerup", finishPointer);
+      rail.addEventListener("pointercancel", finishPointer);
+
+      updateProgress();
+    });
+  }
+
+  function initComputationVideos(scope) {
+    const videos = elementsWithin(scope || document, "[data-computation-video]");
+    if (!videos.length) return null;
+
+    const visibility = new WeakMap();
+
+    function syncVideo(video) {
+      const isVisible = visibility.get(video) === true;
+      const shouldPlay = isVisible && !document.hidden && !reducedMotion.matches;
+      video.controls = reducedMotion.matches;
+      if (!shouldPlay) {
+        video.pause();
+        return;
+      }
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(function () {});
+      }
+    }
+
+    function syncAll() {
+      videos.forEach(syncVideo);
+    }
+
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            visibility.set(entry.target, entry.isIntersecting && entry.intersectionRatio >= 0.2);
+            syncVideo(entry.target);
+          });
+        },
+        { threshold: [0, 0.2, 0.55], rootMargin: "8% 0px 8% 0px" }
+      );
+      videos.forEach(function (video) {
+        visibility.set(video, false);
+        observer.observe(video);
+      });
+    } else {
+      videos.forEach(function (video) { visibility.set(video, true); });
+      syncAll();
+    }
+
+    document.addEventListener("visibilitychange", syncAll);
+    return { handleMotionChange: syncAll };
+  }
+
   function applyMotionPreference() {
     root.classList.toggle("reduced-motion", reducedMotion.matches);
 
@@ -2467,6 +2594,7 @@
     }
 
     if (showreelController) showreelController.handleMotionChange();
+    if (computationVideoController) computationVideoController.handleMotionChange();
     updateReadingProgress();
     updateParallax();
     requestScrollEffects();
@@ -2512,6 +2640,8 @@
     hydrateContentMedia();
     initRunningHeader();
     visualSliderController = initVisuals();
+    initComputationalRails(document);
+    computationVideoController = initComputationVideos(document);
     initProtectedMedia(document);
     initReadingProgress(document);
     initSectionObserver();

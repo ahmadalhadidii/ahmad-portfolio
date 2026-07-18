@@ -5694,6 +5694,491 @@ html:not([data-initial-theme="manmatic"]) .loader--project.is-ready .project-loa
   }
 }
 
+/* Compact horizontal computational process strip */
+
+.computational-case {
+  min-width: 0;
+}
+
+.computation .section-heading {
+  margin-bottom: clamp(28px, 3vw, 44px);
+}
+
+.computational-rail__status {
+  padding-block: 10px;
+  display: grid;
+  grid-template-columns: auto minmax(70px, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  color: var(--text-secondary);
+  font: 500 0.62rem/1.35 var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.computational-rail__progress {
+  position: relative;
+  height: 1px;
+  overflow: hidden;
+  background: var(--line);
+}
+
+.computational-rail__progress i {
+  position: absolute;
+  inset: 0;
+  background: var(--text-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  will-change: transform;
+}
+
+.computational-rail {
+  --rail-peek: clamp(42px, 6vw, 88px);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  cursor: grab;
+  touch-action: pan-x pan-y pinch-zoom;
+  -webkit-overflow-scrolling: touch;
+}
+
+.computational-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.computational-rail.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.computational-rail__track {
+  width: max-content;
+  display: flex;
+  gap: clamp(14px, 1.5vw, 24px);
+  padding: 0 var(--rail-peek) 8px 0;
+}
+
+.computational-panel {
+  height: clamp(460px, 36vw, 500px);
+  min-width: 0;
+  padding-block: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  border-block: 1px solid var(--line);
+  background: transparent;
+}
+
+.computational-panel--opening {
+  width: calc(var(--page-width) - var(--rail-peek));
+  padding-right: clamp(18px, 2.5vw, 38px);
+}
+
+.computational-panel--definition {
+  width: clamp(900px, 78vw, 1160px);
+}
+
+.computational-panel--coordinates {
+  width: clamp(860px, 76vw, 1120px);
+}
+
+.computational-panel--curve {
+  width: clamp(700px, 67vw, 980px);
+}
+
+.computational-panel--architecture {
+  width: clamp(700px, 72vw, 1040px);
+}
+
+.computational-panel--video {
+  width: clamp(480px, 48vw, 680px);
+}
+
+.computational-panel__index,
+.computational-panel__heading,
+.computational-panel figcaption,
+.computational-opening__equation > p,
+.computational-opening__media figcaption,
+.computational-logic {
+  color: var(--text-secondary);
+  font: 500 0.62rem/1.4 var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.computational-panel__heading,
+.computational-panel > figcaption {
+  min-height: 19px;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.computational-panel > figcaption {
+  padding-top: 8px;
+}
+
+.computational-panel > figcaption a {
+  color: var(--text-primary);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.computational-panel__media {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+}
+
+.computational-panel img,
+.computational-panel video {
+  display: block;
+  max-width: 100%;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.computational-panel video {
+  cursor: default;
+}
+
+.computational-panel__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.computational-opening__header {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(28px, 4vw, 70px);
+  align-items: end;
+}
+
+.computational-opening__header h3 {
+  max-width: 20ch;
+  margin-top: 8px;
+  font: 500 clamp(1.6rem, 3.1vw, 3.7rem)/0.94 var(--font-sans);
+  letter-spacing: -0.052em;
+}
+
+.computational-opening__subtitle {
+  margin-top: 9px;
+  font: 500 clamp(0.78rem, 1vw, 0.94rem)/1.3 var(--font-mono);
+}
+
+.computational-opening__description {
+  max-width: 76ch;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-light);
+  font: 400 clamp(0.78rem, 0.95vw, 0.94rem)/1.48 var(--font-sans);
+}
+
+.computational-opening__flow {
+  flex: 1;
+  min-height: 0;
+  margin-top: clamp(18px, 2vw, 28px);
+  display: grid;
+  grid-template-columns: minmax(270px, 5fr) 20px minmax(190px, 3fr) 20px minmax(260px, 4fr);
+  gap: clamp(10px, 1.2vw, 18px);
+  align-items: stretch;
+}
+
+.computational-opening__equation,
+.computational-opening__media {
+  min-width: 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.computational-opening__equation {
+  display: flex;
+  flex-direction: column;
+}
+
+.computational-equation {
+  margin-block: auto;
+}
+
+.computational-equation__line {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  gap: clamp(7px, 0.9vw, 13px);
+  align-items: center;
+  font: 400 clamp(0.95rem, 1.6vw, 1.65rem)/1.08 var(--font-sans);
+  letter-spacing: -0.035em;
+}
+
+.computational-equation__line + .computational-equation__line {
+  margin-top: clamp(8px, 1vw, 13px);
+}
+
+.computational-equation sup {
+  font-size: 0.58em;
+  line-height: 0;
+}
+
+.computational-fraction {
+  width: max-content;
+  max-width: 100%;
+  display: inline-grid;
+  grid-template-rows: auto auto;
+  text-align: center;
+  line-height: 1.14;
+}
+
+.computational-fraction > span:first-child {
+  padding: 0 0.28em 0.16em;
+  border-bottom: 1px solid currentColor;
+}
+
+.computational-fraction > span:last-child {
+  padding: 0.16em 0.28em 0;
+}
+
+.computational-equation > p {
+  margin-top: clamp(10px, 1.2vw, 16px);
+  color: var(--text-secondary);
+  font: 400 clamp(0.67rem, 0.78vw, 0.76rem)/1.35 var(--font-mono);
+}
+
+.computational-opening__arrow {
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  font: 400 0.82rem/1 var(--font-mono);
+}
+
+.computational-opening__media {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 7px;
+}
+
+.computational-opening__media > div {
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.computational-opening__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.computational-coordinate__media,
+.computational-curve__media {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  gap: clamp(12px, 1.4vw, 22px);
+}
+
+.computational-coordinate__media {
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 1fr);
+}
+
+.computational-curve__media {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+}
+
+.computational-coordinate__media figure,
+.computational-curve__media figure {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.computational-coordinate__media figure > div,
+.computational-curve__media figure > div {
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+}
+
+.computational-coordinate__media img,
+.computational-curve__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.computational-coordinate__media figcaption,
+.computational-curve__media figcaption {
+  padding-top: 7px;
+}
+
+.computational-logic {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  list-style: none;
+  border-block: 1px solid var(--line-light);
+}
+
+.computational-logic--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.computational-logic li {
+  position: relative;
+  min-width: 0;
+  padding: 7px 18px 7px 0;
+}
+
+.computational-logic li:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  color: var(--text-primary);
+}
+
+.computational-panel__media--video {
+  flex: 0 1 auto;
+  width: 100%;
+  aspect-ratio: 53 / 30;
+  margin-block: auto;
+  overflow: hidden;
+}
+
+.computational-panel__media--video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 700px) {
+  .computation .section-heading__note {
+    max-width: 24ch;
+  }
+
+  .computational-rail__status {
+    grid-template-columns: minmax(60px, 1fr) auto;
+  }
+
+  .computational-rail__status > span:first-child {
+    display: none;
+  }
+
+  .computational-rail {
+    --rail-peek: 42px;
+  }
+
+  .computational-panel {
+    height: 500px;
+  }
+
+  .computational-panel--opening {
+    width: calc(var(--page-width) - var(--rail-peek));
+    padding-right: 6px;
+  }
+
+  .computational-panel--definition {
+    width: 160vw;
+    max-width: 720px;
+  }
+
+  .computational-panel--coordinates {
+    width: 145vw;
+    max-width: 680px;
+  }
+
+  .computational-panel--curve {
+    width: 120vw;
+    max-width: 560px;
+  }
+
+  .computational-panel--architecture {
+    width: 118vw;
+    max-width: 600px;
+  }
+
+  .computational-panel--video {
+    width: 86vw;
+    max-width: 480px;
+  }
+
+  .computational-opening__header {
+    display: block;
+  }
+
+  .computational-opening__header h3 {
+    max-width: 16ch;
+    font-size: clamp(1.45rem, 7.4vw, 2rem);
+  }
+
+  .computational-opening__subtitle {
+    margin-top: 5px;
+    font-size: 0.68rem;
+  }
+
+  .computational-opening__description {
+    margin-top: 12px;
+    padding-top: 8px;
+    font-size: 0.64rem;
+    line-height: 1.4;
+  }
+
+  .computational-opening__flow {
+    margin-top: 12px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(145px, 1fr) minmax(90px, 0.72fr);
+    gap: 10px;
+  }
+
+  .computational-opening__equation {
+    grid-column: 1 / -1;
+  }
+
+  .computational-opening__arrow {
+    display: none;
+  }
+
+  .computational-equation__line {
+    font-size: clamp(0.73rem, 3.5vw, 0.9rem);
+  }
+
+  .computational-opening__media {
+    padding-top: 6px;
+  }
+
+  .computational-opening__media figcaption,
+  .computational-panel__heading,
+  .computational-panel figcaption,
+  .computational-logic {
+    font-size: 0.54rem;
+  }
+
+  .computational-coordinate__media {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .computational-curve__media {
+    gap: 8px;
+  }
+
+  .computational-logic li {
+    padding-right: 12px;
+  }
+
+  .computational-logic li:not(:last-child)::after {
+    right: 4px;
+  }
+}
+
 .computation-record {
   display: grid;
   grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
