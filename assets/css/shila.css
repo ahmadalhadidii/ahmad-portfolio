@@ -998,6 +998,45 @@ body.shila-page,
   }
 }
 
+@media (max-width: 599px) {
+  .shila-development {
+    row-gap: 0;
+  }
+
+  .shila-development__left,
+  .shila-spatial__12-copy {
+    display: contents;
+  }
+
+  .shila-development > .shila-gallery[data-gallery-group="11"] {
+    order: 1;
+    margin-top: 22px;
+  }
+
+  .shila-development__main-elevation {
+    order: 2;
+    margin-top: 24px !important;
+  }
+
+  .shila-spatial__top {
+    row-gap: 0;
+  }
+
+  .shila-spatial__12-copy > figure {
+    order: -2;
+    margin-top: 8px;
+  }
+
+  .shila-spatial__13 {
+    order: -1;
+    margin-top: 22px !important;
+  }
+
+  .shila-spatial__12-copy > p {
+    margin-top: 16px;
+  }
+}
+
 .shila-board .shila-opening p.shila-opening__text,
 .shila-board .shila-quarry__copy > p,
 .shila-board .shila-existing__copy > p,

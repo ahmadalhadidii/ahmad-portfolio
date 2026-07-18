@@ -122,14 +122,21 @@ JSON.stringify((() => {
   const first = panels[0]?.getBoundingClientRect();
   return {
     panelCount: panels.length,
-    labels: panels.map(panel => panel.querySelector(".computational-panel__index, .computational-panel__heading span")?.textContent.trim() || ""),
+    labels: panels.map(panel => panel.querySelector(".computational-panel__index, .computational-panel__label")?.textContent.trim() || ""),
     railWidth: rail?.clientWidth || 0,
     railScrollWidth: rail?.scrollWidth || 0,
+    railCursor: rail ? getComputedStyle(rail).cursor : "",
     peek: rail && first ? rail.clientWidth - first.width : 0,
     pageOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
     writingImageCount: document.querySelectorAll('[src*="equation-source"], [src*="writing"]').length,
     equationText: document.querySelector(".computational-equation")?.textContent.replace(/\s+/g, " ").trim() || "",
+    descriptionCount: Array.from(document.querySelectorAll(".computational-opening__description")).filter(element => element.textContent.includes("The equation is evaluated across a defined parameter range")).length,
     openingMediaCount: panels[0]?.querySelectorAll("img").length || 0,
+    graphCount: document.querySelectorAll('img[src$="graph.webp"]').length,
+    architectureCount: document.querySelectorAll('img[src$="architectural-output-1600.webp"]').length,
+    scriptCount: document.querySelectorAll('img[src$="grasshopper-definition-full.webp"]').length,
+    redundantMediaCount: document.querySelectorAll('img[src*="parameter-definition"], img[src*="coordinate-generation"], img[src*="generated-curve"], img[src*="grasshopper-definition-3600"], img[src*="architectural-output-2600"]').length,
+    scriptHeight: document.querySelector(".computational-panel__media--script img")?.getBoundingClientRect().height || 0,
     videoMuted: document.querySelector("[data-computation-video]")?.muted || false,
     videoLoop: document.querySelector("[data-computation-video]")?.loop || false,
     videoInline: document.querySelector("[data-computation-video]")?.playsInline || false,
@@ -139,16 +146,25 @@ JSON.stringify((() => {
   };
 })())
 '@
-  Assert-State ($state.panelCount -eq 6) "$Name does not expose the six-stage sequence."
-  Assert-State (($state.labels -join '|') -match 'COMPUTATIONAL DESIGN.*COMPUTATIONAL DEFINITION.*PARAMETER \+ COORDINATE GENERATION.*CURVE DEVELOPMENT.*ARCHITECTURAL TRANSLATION.*VIDEO') "$Name sequence is out of order."
+  Assert-State ($state.panelCount -eq 3) "$Name does not use the concise three-panel source sequence."
+  Assert-State (($state.labels -join '|') -match '^COMPUTATIONAL DESIGN\|GRASSHOPPER SCRIPT\|$') "$Name sequence or direct labels are incorrect."
   Assert-State ($state.railScrollWidth -gt $state.railWidth -and $state.peek -ge 30) "$Name does not expose a scrollable rail with a next-panel peek."
+  Assert-State ($state.railCursor -eq 'grab') "$Name rail does not expose the intended grab cursor."
   Assert-State ([Math]::Abs([double]$state.pageOverflow) -le 1) "$Name introduces page-level horizontal overflow."
-  Assert-State ($state.writingImageCount -eq 0 -and $state.equationText -match 'X\(t\).*y\(t\).*2') ("{0} does not keep the equation as real text (writing images: {1}; equation: {2})." -f $Name, $state.writingImageCount, $state.equationText)
+  Assert-State ($state.writingImageCount -eq 0 -and $state.equationText -match 'X\(t\).*Y\(t\).*2') ("{0} does not keep the equation as real text (writing images: {1}; equation: {2})." -f $Name, $state.writingImageCount, $state.equationText)
+  Assert-State ($state.descriptionCount -eq 1) "$Name does not contain exactly one operational explanation."
   Assert-State ($state.openingMediaCount -eq 2) "$Name opening does not establish Equation to Graph to Architecture immediately."
+  Assert-State ($state.graphCount -eq 1 -and $state.architectureCount -eq 1 -and $state.scriptCount -eq 1 -and $state.redundantMediaCount -eq 0) "$Name repeats supplied media or still references redundant derivative crops."
+  Assert-State ($state.scriptHeight -ge $(if ($Mobile) { 340 } else { 430 })) ("{0} Grasshopper script is not large enough to inspect ({1}px high)." -f $Name, [Math]::Round([double]$state.scriptHeight))
   Assert-State ($state.videoMuted -and $state.videoLoop -and $state.videoInline -and $state.videoIsLast) "$Name video attributes or final-stage placement are incomplete."
   Assert-State ($state.draggableMediaCount -eq 0) "$Name contains natively draggable process media."
-  Assert-State ($state.panelHeight -le 520) "$Name rail is taller than the compact layout contract."
+  Assert-State ($state.panelHeight -le 550) "$Name rail is taller than the compact layout contract."
+  $null = Evaluate 'document.querySelector("#computation").scrollIntoView({ block: "start" }); true'
+  Start-Sleep -Milliseconds 250
   Save-Screenshot (Join-Path $Output "$Name.png")
+  $null = Evaluate '(async () => { const rail = document.querySelector("[data-computational-rail]"); const script = document.querySelector(".computational-panel--script"); rail.scrollLeft += script.getBoundingClientRect().left - rail.getBoundingClientRect().left; await new Promise(resolve => setTimeout(resolve, 250)); return true; })()'
+  Save-Screenshot (Join-Path $Output "$Name-script.png")
+  $null = Evaluate 'document.querySelector("[data-computational-rail]").scrollLeft = 0; true'
 
   $null = Evaluate 'document.querySelector("[data-computational-rail]").scrollIntoView({ block: "center" }); true'
   Start-Sleep -Milliseconds 100
@@ -160,6 +176,18 @@ JSON.stringify((() => {
     $null = Invoke-Cdp 'Input.dispatchMouseEvent' @{ type = 'mouseReleased'; x = [Math]::Round($railRect.left + 120); y = $dragY; button = 'left'; buttons = 0; clickCount = 1 }
     Start-Sleep -Milliseconds 350
     Assert-State ([double](Evaluate 'document.querySelector("[data-computational-rail]").scrollLeft') -gt 20) "$Name mouse drag did not move the rail."
+    Assert-State (-not [bool](Evaluate 'document.querySelector("[data-computational-rail]").classList.contains("is-dragging")')) "$Name retained its active drag state after release."
+
+    $wheelStart = Evaluate-Json 'JSON.stringify((() => { const rail = document.querySelector("[data-computational-rail]"); rail.scrollLeft = 0; rail.scrollIntoView({ block: "center" }); return { pageY: scrollY, railX: rail.scrollLeft }; })())'
+    $null = Invoke-Cdp 'Input.dispatchMouseEvent' @{ type = 'mouseWheel'; x = [Math]::Round(($railRect.left + $railRect.right) / 2); y = $dragY; deltaX = 0; deltaY = 180 }
+    Start-Sleep -Milliseconds 250
+    $wheelInside = Evaluate-Json 'JSON.stringify({ pageY: scrollY, railX: document.querySelector("[data-computational-rail]").scrollLeft })'
+    Assert-State ($wheelInside.railX -gt 40 -and [Math]::Abs([double]$wheelInside.pageY - [double]$wheelStart.pageY) -lt 5) "$Name wheel input did not stay horizontal while rail movement remained."
+
+    $wheelEnd = Evaluate-Json 'JSON.stringify((() => { const rail = document.querySelector("[data-computational-rail]"); rail.scrollLeft = rail.scrollWidth; return { pageY: scrollY, railX: rail.scrollLeft }; })())'
+    $null = Invoke-Cdp 'Input.dispatchMouseEvent' @{ type = 'mouseWheel'; x = [Math]::Round(($railRect.left + $railRect.right) / 2); y = $dragY; deltaX = 0; deltaY = 180 }
+    Start-Sleep -Milliseconds 250
+    Assert-State ([double](Evaluate 'scrollY') -gt [double]$wheelEnd.pageY + 20) "$Name trapped vertical page scrolling at the end of the rail."
   }
 
   $null = Evaluate '(async () => { const rail = document.querySelector("[data-computational-rail]"); const panels = document.querySelectorAll(".computational-panel"); rail.scrollIntoView({ block: "center" }); rail.scrollLeft += panels[panels.length - 1].getBoundingClientRect().left - rail.getBoundingClientRect().left; await new Promise(resolve => setTimeout(resolve, 700)); return true; })()'

@@ -104,10 +104,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="preload" href="assets/images/architecture-of-elsewhere-1400.jpg" as="image" imagesrcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" imagesizes="(max-width: 960px) 100vw, min(1360px, 86vw)">
-  <link rel="stylesheet" href="assets/css/style.css?v=20260718-lemniscate-02">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260718-lemniscate-03">
 
   <script src="content.js?v=20260715-seo-static-01" defer></script>
-  <script src="assets/js/main.js?v=20260718-lemniscate-02" defer></script>
+  <script src="assets/js/main.js?v=20260718-lemniscate-03" defer></script>
 </head>
 <body class="home-page">
   <div class="loader" id="loader" role="status" aria-label="Initializing Ahmad Alhadidii portfolio field">
@@ -583,102 +583,52 @@
             <div class="computational-rail__track">
               <section class="computational-panel computational-panel--opening" aria-labelledby="lemniscate-title">
                 <header class="computational-opening__header">
-                  <div>
-                    <p class="computational-panel__index">COMPUTATIONAL DESIGN / STUDY 001</p>
-                    <h3 id="lemniscate-title">Mathematical Equation to Architecture</h3>
-                    <p class="computational-opening__subtitle">Lemniscate of Bernoulli</p>
-                  </div>
-                  <p class="computational-opening__description">The equation is evaluated across a defined parameter range, producing multiple numerical outputs rather than a single value. These outputs are assigned to the X, Y, and Z axes to generate points in three-dimensional space. The points are reconstructed as a spatial curve, which becomes the geometric framework for the architectural form.</p>
+                  <p class="computational-panel__index">COMPUTATIONAL DESIGN</p>
+                  <h3 id="lemniscate-title">Mathematical Equation to Architecture</h3>
+                  <p class="computational-opening__subtitle">Lemniscate of Bernoulli</p>
                 </header>
 
-                <div class="computational-opening__flow" aria-label="Equation to graph to architectural geometry">
-                  <div class="computational-opening__equation">
-                    <p>MATHEMATICAL DEFINITION</p>
-                    <div class="computational-equation" aria-label="Lemniscate of Bernoulli equation">
+                <div class="computational-opening__method">
+                  <div class="computational-equation" aria-label="Lemniscate of Bernoulli equation">
+                    <div class="computational-equation__pair">
                       <div class="computational-equation__line">
                         <span>X(t)</span><span>=</span><span class="computational-fraction"><span>a · cos(t)</span><span>1 + sin<sup>2</sup>(t)</span></span>
                       </div>
                       <div class="computational-equation__line">
-                        <span>y(t)</span><span>=</span><span class="computational-fraction"><span>a · sin(t) · cos(t)</span><span>1 + sin<sup>2</sup>(t)</span></span>
+                        <span>Y(t)</span><span>=</span><span class="computational-fraction"><span>a · sin(t) · cos(t)</span><span>1 + sin<sup>2</sup>(t)</span></span>
                       </div>
-                      <p>t ∈ [0, 2π)</p>
                     </div>
+                    <p>t ∈ [0, 2π)</p>
                   </div>
+                  <p class="computational-opening__description">The equation is evaluated across a defined parameter range, producing multiple numerical outputs rather than a single value. These outputs are assigned to the X, Y, and Z axes to generate points in three-dimensional space. The points are reconstructed as a spatial curve, which becomes the geometric framework for the architectural form.</p>
+                </div>
 
-                  <span class="computational-opening__arrow" aria-hidden="true">→</span>
-
-                  <figure class="computational-opening__media computational-opening__media--graph">
+                <div class="computational-opening__relationship" aria-label="Equation to graph to architectural geometry">
+                  <figure class="computational-opening__media">
                     <div><img src="assets/images/computation/lemniscate/graph.webp" width="1800" height="1124" alt="Annotated graph of the Lemniscate of Bernoulli showing its axes, focal points, and traced curve." loading="lazy" decoding="async" draggable="false"></div>
-                    <figcaption>EQUATION GRAPH</figcaption>
+                    <figcaption>GRAPH IN 2D SPACE</figcaption>
                   </figure>
-
                   <span class="computational-opening__arrow" aria-hidden="true">→</span>
-
-                  <figure class="computational-opening__media computational-opening__media--result">
+                  <figure class="computational-opening__media">
                     <div><img src="assets/images/computation/lemniscate/architectural-output-1600.webp" width="1600" height="943" alt="Lemniscate-derived architectural paths in a mountain landscape." loading="lazy" decoding="async" draggable="false"></div>
                     <figcaption>ARCHITECTURAL GEOMETRY</figcaption>
                   </figure>
                 </div>
               </section>
 
-              <figure class="computational-panel computational-panel--definition">
-                <div class="computational-panel__heading"><span>02 / COMPUTATIONAL DEFINITION</span><span>GRASSHOPPER / FULL SYSTEM</span></div>
-                <div class="computational-panel__media">
-                  <img src="assets/images/computation/lemniscate/grasshopper-definition-3600.webp" width="3600" height="706" alt="Complete Grasshopper definition from equation and parameter ranges through point, curve, and architectural geometry construction." loading="lazy" decoding="async" draggable="false">
+              <figure class="computational-panel computational-panel--script">
+                <figcaption class="computational-panel__label">GRASSHOPPER SCRIPT</figcaption>
+                <div class="computational-panel__media computational-panel__media--script">
+                  <img src="assets/images/computation/lemniscate/grasshopper-definition-full.webp" width="14375" height="2819" alt="Complete annotated Grasshopper script showing the parameter range, equation definition, axis assignment, XYZ point generation, 3D curve construction, and geometry." loading="lazy" decoding="async" draggable="false">
                 </div>
-                <figcaption><span>DEFINITION → REPEATED EVALUATION → COORDINATES → CURVE → GEOMETRIC OPERATIONS</span><a href="assets/images/computation/lemniscate/grasshopper-definition-full.webp" target="_blank" rel="noopener">FULL RESOLUTION ↗</a></figcaption>
-              </figure>
-
-              <section class="computational-panel computational-panel--coordinates" aria-labelledby="coordinate-generation-title">
-                <div class="computational-panel__heading"><span>03 / PARAMETER + COORDINATE GENERATION</span><span id="coordinate-generation-title">RANGE / OUTPUTS / X–Y–Z / POINTS</span></div>
-                <div class="computational-coordinate__media">
-                  <figure>
-                    <div><img src="assets/images/computation/lemniscate/parameter-definition.webp" width="2600" height="596" alt="Grasshopper parameter ranges, repeated equation evaluation, and X, Y, Z point generation components." loading="lazy" decoding="async" draggable="false"></div>
-                    <figcaption>DEFINED RANGE + EQUATION EVALUATION</figcaption>
-                  </figure>
-                  <figure>
-                    <div><img src="assets/images/computation/lemniscate/coordinate-generation.webp" width="2200" height="614" alt="Grasshopper panels showing multiple numerical outputs assigned to X, Y, and Z axes to construct points." loading="lazy" decoding="async" draggable="false"></div>
-                    <figcaption>NUMERICAL OUTPUTS + AXIS ASSIGNMENT</figcaption>
-                  </figure>
-                </div>
-                <ol class="computational-logic" aria-label="Parameter and coordinate generation sequence">
-                  <li>PARAMETER RANGE</li><li>MULTIPLE VALUES</li><li>X / Y / Z ASSIGNMENT</li><li>POINT GENERATION</li>
-                </ol>
-              </section>
-
-              <section class="computational-panel computational-panel--curve" aria-labelledby="curve-development-title">
-                <div class="computational-panel__heading"><span>04 / CURVE DEVELOPMENT</span><span id="curve-development-title">POINTS / SPATIAL CURVE / TRANSFORMATION</span></div>
-                <div class="computational-curve__media">
-                  <figure>
-                    <div><img src="assets/images/computation/lemniscate/graph.webp" width="1800" height="1124" alt="Lemniscate graph used to define the coordinate relationship for point generation." loading="lazy" decoding="async" draggable="false"></div>
-                    <figcaption>PARAMETRIC GRAPH</figcaption>
-                  </figure>
-                  <figure>
-                    <div><img src="assets/images/computation/lemniscate/generated-curve.webp" width="1920" height="1080" alt="Generated three-dimensional Lemniscate curve developed into stacked spatial paths." loading="lazy" decoding="async" draggable="false"></div>
-                    <figcaption>THREE-DIMENSIONAL CURVE</figcaption>
-                  </figure>
-                </div>
-                <ol class="computational-logic computational-logic--three" aria-label="Curve development sequence">
-                  <li>POINT SEQUENCE</li><li>SPATIAL CURVE</li><li>GEOMETRIC OPERATIONS</li>
-                </ol>
-              </section>
-
-              <figure class="computational-panel computational-panel--architecture">
-                <div class="computational-panel__heading"><span>05 / ARCHITECTURAL TRANSLATION</span><span>FINAL GEOMETRIC RESULT</span></div>
-                <div class="computational-panel__media">
-                  <img src="assets/images/computation/lemniscate/architectural-output-1600.webp" srcset="assets/images/computation/lemniscate/architectural-output-1600.webp 1600w, assets/images/computation/lemniscate/architectural-output-2600.webp 2600w" sizes="(max-width: 700px) 110vw, 72vw" width="2600" height="1532" alt="Final architectural output formed from stacked Lemniscate-derived concrete paths in a mountain landscape." loading="lazy" decoding="async" draggable="false">
-                </div>
-                <figcaption>SPATIAL CURVE → STRUCTURAL WIDTH → VERTICAL DISPLACEMENT → ARCHITECTURAL FORM</figcaption>
               </figure>
 
               <figure class="computational-panel computational-panel--video">
-                <div class="computational-panel__heading"><span>06 / VIDEO</span><span>SUPPORTING EVIDENCE / 00:15 LOOP</span></div>
                 <div class="computational-panel__media computational-panel__media--video">
                   <video data-computation-video muted loop playsinline preload="metadata" disablepictureinpicture aria-label="Animated Lemniscate geometry study" draggable="false">
                     <source src="assets/media/lemniscate-of-bernoulli.mp4" type="video/mp4">
                   </video>
                 </div>
-                <figcaption>COMPUTATIONAL FORM / ROTATING SPATIAL STUDY</figcaption>
               </figure>
             </div>
           </div>
