@@ -29,6 +29,12 @@
 
     if (!player || !video || !playButton || !seek || !time || !muteButton || !volume || !fullscreenButton) return;
 
+    video.disablePictureInPicture = true;
+    video.disableRemotePlayback = true;
+    video.setAttribute('disablepictureinpicture', '');
+    video.setAttribute('disableremoteplayback', '');
+    video.setAttribute('controlslist', 'nodownload nopictureinpicture noremoteplayback');
+
     var fallbackDuration = Number(seek.max) || 74;
 
     function duration() {
