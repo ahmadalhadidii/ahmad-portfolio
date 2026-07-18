@@ -104,7 +104,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="preload" href="assets/images/architecture-of-elsewhere-1400.jpg" as="image" imagesrcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" imagesizes="(max-width: 960px) 100vw, min(1360px, 86vw)">
-  <link rel="stylesheet" href="assets/css/style.css?v=20260718-computational-refinements-11">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260718-computational-graph-copy-12">
 
   <script src="content.js?v=20260715-seo-static-01" defer></script>
   <script src="assets/js/main.js?v=20260718-responsive-media-protection-06" defer></script>
@@ -572,7 +572,7 @@
 
       <section class="section computation page-width" id="computation" data-nav-section="computation" aria-labelledby="computation-title">
         <header class="section-heading section-heading--record">
-          <h2 id="computation-title" aria-label="Computational Design"><span class="section-heading__code">005 /</span> <span class="pointer-scan" data-pointer-scan data-pointer-text="COMPUTATIONAL DESIGN" data-scramble aria-hidden="true">COMPUTATIONAL DESIGN</span></h2>
+          <h2 id="computation-title" aria-label="Computational Design"><span class="section-heading__code">005 /</span> <span class="pointer-scan" data-pointer-scan data-pointer-text="COMPUTATIONAL DESIGN" data-scramble data-scramble-entry aria-hidden="true">COMPUTATIONAL DESIGN</span></h2>
           <p class="section-heading__note">EQUATION / COORDINATES / GEOMETRY</p>
         </header>
 
@@ -599,7 +599,6 @@
                     </div>
                     <p class="computational-equation__interval"><var>T</var> ranges over the interval [0, 2π)</p>
                   </div>
-                  <p class="computational-opening__description">The equation is evaluated across a defined parameter range, producing multiple numerical outputs rather than a single value. These outputs are assigned to the X, Y, and Z axes to generate points in three-dimensional space. The points are reconstructed as a spatial curve, which becomes the geometric framework for the architectural form.</p>
                 </div>
 
                 <div class="computational-opening__bottom">
@@ -608,10 +607,13 @@
                     <figcaption>ARCHITECTURAL GEOMETRY</figcaption>
                   </figure>
                   <span class="computational-opening__arrow" aria-hidden="true">→</span>
-                  <figure class="computational-opening__media computational-opening__media--graph">
-                    <div><img src="assets/images/computation/lemniscate/graph.webp" width="1800" height="1124" alt="Annotated graph of the Lemniscate of Bernoulli showing its axes, focal points, and traced curve." loading="lazy" decoding="async" draggable="false"></div>
-                    <figcaption>GRAPH IN 2D SPACE</figcaption>
-                  </figure>
+                  <div class="computational-opening__graph-column">
+                    <figure class="computational-opening__media computational-opening__media--graph">
+                      <div><img src="assets/images/computation/lemniscate/graph.webp" width="1800" height="1124" alt="Annotated graph of the Lemniscate of Bernoulli showing its axes, focal points, and traced curve." loading="lazy" decoding="async" draggable="false"></div>
+                      <figcaption>GRAPH IN 2D SPACE</figcaption>
+                    </figure>
+                    <p class="computational-opening__description">The equation is evaluated across a defined parameter range, producing multiple numerical outputs rather than a single value. These outputs are assigned to the X, Y, and Z axes to generate points in three-dimensional space. The points are reconstructed as a spatial curve, which becomes the geometric framework for the architectural form.</p>
+                  </div>
                 </div>
               </section>
 
