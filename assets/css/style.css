@@ -6123,14 +6123,15 @@ html:not([data-initial-theme="manmatic"]) .loader--project.is-ready .project-loa
   }
 
   .computational-panel--process {
-    --computational-script-width: clamp(1050px, 112vw, 1200px);
-    --computational-video-width: clamp(340px, 42vw, 430px);
-    width: calc(var(--computational-script-width) + var(--computational-video-width) + 16px);
+    --computational-process-top-space: clamp(94px, 12vw, 100px);
+    --computational-script-width: clamp(1240px, 155vw, 1380px);
+    --computational-video-width: clamp(360px, 44vw, 440px);
+    width: calc(var(--computational-script-width) + var(--computational-video-width) + 14px);
     height: auto;
     grid-template-columns: var(--computational-script-width) var(--computational-video-width);
-    gap: 16px;
+    gap: 14px;
     align-items: start;
-    padding: 4px 0 0;
+    padding: var(--computational-process-top-space) 0 0;
   }
 
   .computational-process__script {
@@ -6207,8 +6208,8 @@ html:not([data-initial-theme="manmatic"]) .loader--project.is-ready .project-loa
   .computational-panel__label { font-size: 0.51rem; }
 
   .computational-panel--process {
-    --computational-script-width: clamp(980px, 240vw, 1050px);
-    --computational-video-width: clamp(320px, 80vw, 350px);
+    --computational-script-width: clamp(1160px, 285vw, 1240px);
+    --computational-video-width: clamp(340px, 82vw, 360px);
   }
 }
 
