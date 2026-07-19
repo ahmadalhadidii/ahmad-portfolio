@@ -25,15 +25,40 @@
     var time = root.querySelector('[data-elma-time]');
     var muteButton = root.querySelector('[data-elma-mute]');
     var volume = root.querySelector('[data-elma-volume]');
-    var fullscreenButton = root.querySelector('[data-elma-fullscreen]');
 
-    if (!player || !video || !playButton || !seek || !time || !muteButton || !volume || !fullscreenButton) return;
+    if (!player || !video || !playButton || !seek || !time || !muteButton || !volume) return;
 
-    video.disablePictureInPicture = true;
-    video.disableRemotePlayback = true;
-    video.setAttribute('disablepictureinpicture', '');
-    video.setAttribute('disableremoteplayback', '');
-    video.setAttribute('controlslist', 'nodownload nopictureinpicture noremoteplayback');
+    var restrictedControls = 'nodownload noplaybackrate nopictureinpicture noremoteplayback';
+
+    function suppressNativeControls() {
+      video.controls = false;
+      video.removeAttribute('controls');
+      video.disablePictureInPicture = true;
+      video.disableRemotePlayback = true;
+      video.setAttribute('playsinline', '');
+      video.setAttribute('disablepictureinpicture', '');
+      video.setAttribute('disableremoteplayback', '');
+      video.setAttribute('controlslist', restrictedControls);
+    }
+
+    suppressNativeControls();
+
+    if ('MutationObserver' in window) {
+      var nativeControlsObserver = new MutationObserver(function () {
+        if (
+          video.hasAttribute('controls') ||
+          video.getAttribute('controlslist') !== restrictedControls ||
+          !video.hasAttribute('disablepictureinpicture') ||
+          !video.hasAttribute('disableremoteplayback')
+        ) {
+          suppressNativeControls();
+        }
+      });
+      nativeControlsObserver.observe(video, {
+        attributes: true,
+        attributeFilter: ['controls', 'controlslist', 'disablepictureinpicture', 'disableremoteplayback']
+      });
+    }
 
     var fallbackDuration = Number(seek.max) || 74;
 
@@ -92,27 +117,13 @@
       updateSoundState();
     }
 
-    function toggleFullscreen() {
-      var fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
-      if (fullscreenElement) {
-        var exit = document.exitFullscreen || document.webkitExitFullscreen;
-        if (exit) exit.call(document);
-        return;
-      }
-
-      var request = player.requestFullscreen || player.webkitRequestFullscreen;
-      if (request) {
-        request.call(player);
-      } else if (video.webkitEnterFullscreen) {
-        video.webkitEnterFullscreen();
-      }
-    }
-
     playButton.addEventListener('click', togglePlayback);
     if (overlayButton) overlayButton.addEventListener('click', togglePlayback);
     video.addEventListener('click', togglePlayback);
+    video.addEventListener('contextmenu', function (event) {
+      event.preventDefault();
+    });
     muteButton.addEventListener('click', toggleMute);
-    fullscreenButton.addEventListener('click', toggleFullscreen);
 
     seek.addEventListener('input', function () {
       video.currentTime = Number(seek.value);
@@ -132,6 +143,8 @@
     video.addEventListener('pause', updatePlayState);
     video.addEventListener('ended', updatePlayState);
     video.addEventListener('volumechange', updateSoundState);
+    video.addEventListener('play', suppressNativeControls);
+    video.addEventListener('focus', suppressNativeControls);
 
     video.addEventListener('keydown', function (event) {
       var key = event.key.toLowerCase();
@@ -147,20 +160,8 @@
       } else if (key === 'm') {
         event.preventDefault();
         toggleMute();
-      } else if (key === 'f') {
-        event.preventDefault();
-        toggleFullscreen();
       }
     });
-
-    function updateFullscreenState() {
-      var isFullscreen = (document.fullscreenElement || document.webkitFullscreenElement) === player;
-      fullscreenButton.textContent = isFullscreen ? 'EXIT FULLSCREEN' : 'FULLSCREEN';
-      fullscreenButton.setAttribute('aria-label', isFullscreen ? 'Exit ELMA project film fullscreen' : 'Show ELMA project film fullscreen');
-    }
-
-    document.addEventListener('fullscreenchange', updateFullscreenState);
-    document.addEventListener('webkitfullscreenchange', updateFullscreenState);
 
     updateTimeline();
     updatePlayState();
