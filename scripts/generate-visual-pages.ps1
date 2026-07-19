@@ -6,6 +6,7 @@ $ErrorActionPreference = 'Stop'
 $Root = [System.IO.Path]::GetFullPath($Root)
 $CanonicalBase = 'https://www.ahmadalhadidii.manmatic.institute'
 $Build = '20260718-responsive-media-protection-06'
+$DetailBuild = '20260715-visual-routing-01'
 
 function ConvertTo-HtmlEncoded([object]$Value) {
   return [System.Net.WebUtility]::HtmlEncode([string]$Value)
@@ -32,7 +33,7 @@ function Get-MetaDescription([string]$Description) {
   $candidate = $Description.Substring(0, 155).TrimEnd()
   $lastSpace = $candidate.LastIndexOf(' ')
   if ($lastSpace -gt 115) { $candidate = $candidate.Substring(0, $lastSpace) }
-  return $candidate.TrimEnd(' ', ',', ';', ':', '-') + '…'
+  return $candidate.TrimEnd(' ', ',', ';', ':', '-') + '...'
 }
 
 function Get-EmphasizedHtml([string]$Text, [string]$Emphasis) {
@@ -85,6 +86,11 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
   $srcsetAttribute = if ([string]::IsNullOrWhiteSpace($srcset)) { '' } else {
     " srcset=`"$(ConvertTo-HtmlEncoded $srcset)`""
   }
+  $mobileSource = Get-RootPath $visual.mobileSrc
+  $pictureOpen = if ([string]::IsNullOrWhiteSpace($mobileSource)) { '' } else {
+    "<picture class=`"responsive-picture`"><source media=`"(max-width: 767px)`" srcset=`"$(ConvertTo-HtmlEncoded $mobileSource)`">"
+  }
+  $pictureClose = if ([string]::IsNullOrWhiteSpace($mobileSource)) { '' } else { '</picture>' }
 
   $structuredData = [ordered]@{
     '@context' = 'https://schema.org'
@@ -96,8 +102,20 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
     dateCreated = $visual.year
     creator = [ordered]@{
       '@type' = 'Person'
+      '@id' = "$CanonicalBase/#person"
       name = 'Ahmad Alhadidii'
       url = "$CanonicalBase/"
+    }
+    author = [ordered]@{
+      '@type' = 'Person'
+      '@id' = "$CanonicalBase/#person"
+      name = 'Ahmad Alhadidii'
+      url = "$CanonicalBase/"
+    }
+    isPartOf = [ordered]@{
+      '@type' = 'WebSite'
+      '@id' = "$CanonicalBase/#website"
+      name = 'Ahmad Alhadidii Portfolio'
     }
     image = [ordered]@{
       '@type' = 'ImageObject'
@@ -127,16 +145,20 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
 
   $html = @"
 <!doctype html>
-<html lang="en" class="no-js" data-page="visual" data-site-theme="light" data-initial-theme="light" data-build="$Build">
+<html lang="en" class="no-js" data-page="visual" data-site-theme="light" data-initial-theme="light" data-build="$DetailBuild">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="portfolio-build" content="$Build">
+  <meta name="portfolio-build" content="$DetailBuild">
   <meta name="description" content="$(ConvertTo-HtmlEncoded $metaDescription)">
+  <meta name="author" content="Ahmad Alhadidii">
+  <meta name="creator" content="Ahmad Alhadidii">
+  <meta name="copyright" content="Ahmad Alhadidii">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#ffffff">
 
   <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Ahmad Alhadidii Portfolio">
   <meta property="og:title" content="$(ConvertTo-HtmlEncoded $title)">
   <meta property="og:description" content="$(ConvertTo-HtmlEncoded $metaDescription)">
   <meta property="og:url" content="$(ConvertTo-HtmlEncoded $canonical)">
@@ -156,7 +178,7 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
   <link rel="manifest" href="/site.webmanifest">
   <script type="application/ld+json">$jsonLd</script>
 
-  <script src="/content.js?v=$Build"></script>
+  <script src="/content.js?v=$DetailBuild"></script>
   <script>
     (function () {
       var root = document.documentElement;
@@ -185,7 +207,7 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/style.css?v=$Build">
   <script src="/assets/js/main.js?v=$Build" defer></script>
-  <script src="/assets/js/visual.js?v=$Build" defer></script>
+  <script src="/assets/js/visual.js?v=$DetailBuild" defer></script>
 </head>
 <body class="visual-page" data-visual-slug="$(ConvertTo-HtmlEncoded $visual.slug)">
   <div class="loader loader--project loader--visual" id="loader" role="status" aria-label="Opening $(ConvertTo-HtmlEncoded $visual.title)">
@@ -193,7 +215,7 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
     <div class="project-loader" aria-hidden="true">
       <header class="project-loader__identity">
         <p class="project-loader__file" data-project-loader-kicker>VISUAL $($visual.index) / $recordCount</p>
-        <h1 class="project-loader__title" id="loader-name">$(ConvertTo-HtmlEncoded $visual.title.ToUpperInvariant())</h1>
+        <p class="project-loader__title" id="loader-name">$(ConvertTo-HtmlEncoded $visual.title.ToUpperInvariant())</p>
         <p class="project-loader__subtitle" data-project-loader-subtitle>$(ConvertTo-HtmlEncoded $visual.category.ToUpperInvariant())</p>
         <dl>
           <div><dt>YEAR</dt><dd data-project-loader-year>$(ConvertTo-HtmlEncoded $visual.year)</dd></div>
@@ -203,7 +225,7 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
       </header>
       <figure class="project-loader__visual">
         <div class="project-loader__image loader__preview-image">
-          <img data-loader-preview src="$(ConvertTo-HtmlEncoded $imagePath)"$srcsetAttribute width="$($visual.width)" height="$($visual.height)" alt="">
+          $pictureOpen<img data-loader-preview src="$(ConvertTo-HtmlEncoded $imagePath)"$srcsetAttribute width="$($visual.width)" height="$($visual.height)" alt="">$pictureClose
           <span class="project-loader__scan"></span>
           <span class="project-loader__slice project-loader__slice--one"></span>
           <span class="project-loader__slice project-loader__slice--two"></span>
@@ -256,7 +278,7 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
             <h1>$(ConvertTo-HtmlEncoded $visual.title)</h1>
           </header>
           <figure class="visual-record__media orientation--$orientation media--$fit" data-orientation="$orientation" data-media-fit="$fit" style="--media-ratio: $($visual.width) / $($visual.height)">
-            <div class="visual-record__image-frame"><img src="$(ConvertTo-HtmlEncoded $imagePath)"$srcsetAttribute sizes="(max-width: 700px) calc(100vw - 36px), (max-width: 1100px) 58vw, min(980px, 62vw)" width="$($visual.width)" height="$($visual.height)" alt="$(ConvertTo-HtmlEncoded $visual.alt)" loading="eager" decoding="async" fetchpriority="high" draggable="false"></div>
+            <div class="visual-record__image-frame">$pictureOpen<img src="$(ConvertTo-HtmlEncoded $imagePath)"$srcsetAttribute sizes="(max-width: 700px) calc(100vw - 36px), (max-width: 1100px) 58vw, min(980px, 62vw)" width="$($visual.width)" height="$($visual.height)" alt="$(ConvertTo-HtmlEncoded $visual.alt)" loading="eager" decoding="async" fetchpriority="high" draggable="false">$pictureClose</div>
             <figcaption>$(ConvertTo-HtmlEncoded $visual.caption)</figcaption>
           </figure>
           <div class="visual-record__narrative">

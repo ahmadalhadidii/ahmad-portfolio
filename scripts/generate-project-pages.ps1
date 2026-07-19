@@ -13,7 +13,7 @@ $Projects = @(
   @{
     Slug='shila'; Route='projects/shila/'; Number='001'; Theme='light';
     Title='SHILA (STONE) MUSEUM'; Subtitle='THE QUARRY THAT FOLDS INWARD';
-    SeoTitle='Shila Museum — The Quarry That Folds Inward | Ahmad Alhadidii';
+    SeoTitle='Shila Museum | Ahmad Alhadidii';
     Description='Shila Museum transforms Sadahalli Quarry into an inward-folding architectural journey through stone, water, shadow, geology, and spatial memory.';
     Definition='A museum concept where the quarry folds inward, turning stone, water, shadow, and void into spatial memory.';
     Overview='Shila (Stone) Museum explores stone as both material and meaning through an architectural journey carved into a quarry. The project transforms the quarry itself into the exhibition, guiding visitors through descending and ascending paths that reveal the relationship between earth, time, and memory.';
@@ -24,7 +24,7 @@ $Projects = @(
   @{
     Slug='manmatic'; Route='projects/manmatic/'; Number='002'; Theme='manmatic';
     Title='MANMATIC'; Subtitle='AN ARCHITECTURAL METHODOLOGY FOR HUMAN–MACHINE COLLABORATION';
-    SeoTitle='ManMaTIC — Human–Machine Collaboration Research and Design Methodology | Ahmad Alhadidii';
+    SeoTitle='ManMaTIC | Ahmad Alhadidii';
     Description='ManMaTIC is Ahmad Alhadidii''s human–machine collaboration research and design methodology, connecting an active knowledge field to Protocol Port as its architectural application.';
     Definition='An architectural methodology for translating changing human–machine collaboration into institutional and spatial systems.';
     Overview='ManMaTIC is an architectural research methodology developed to translate changing human–machine collaboration into institutional and spatial systems. It connects research, evaluation criteria, design dialogue, technological systems, and architectural application within one evolving framework.';
@@ -39,7 +39,7 @@ $Projects = @(
   @{
     Slug='protocol-port'; Route='projects/protocol-port/'; Number='002.B'; Theme='manmatic';
     Title='PROTOCOL PORT'; Subtitle='FIRST ARCHITECTURAL APPLICATION OF THE MANMATIC FIELD';
-    SeoTitle='Protocol Port — Human–Machine Collaboration Institute | Ahmad Alhadidii';
+    SeoTitle='Protocol Port | Ahmad Alhadidii';
     Description='Protocol Port is the site-specific Human–Machine Collaboration Institute developed in Aqaba as the first architectural application of the ManMaTIC methodology.';
     Definition='The first architectural application through which ManMaTIC criteria, decision protocols, and human–machine collaboration are tested spatially.';
     Overview='Protocol Port is the first site-specific architectural application of ManMaTIC. It translates the methodology''s research, evaluation criteria, and author-led design dialogue into a Human–Machine Collaboration Institute for Aqaba.';
@@ -51,7 +51,7 @@ $Projects = @(
   @{
     Slug='dabouq'; Route='projects/dabouq/'; Number='003'; Theme='light';
     Title='DABOUQ RESIDENTIAL BUILDING'; Subtitle='PROFESSIONAL TRAINING PROJECT';
-    SeoTitle='Dabouq Residential Building — BIM Lab Training Project | Ahmad Alhadidii';
+    SeoTitle='Dabouq Residential Building | Ahmad Alhadidii';
     Description='Dabouq Residential Building is a 2025 professional training project at BIM Lab involving architectural drawings, elevations, minor design modifications, and visual development under supervision.';
     Definition='A residential project developed during professional training at BIM Lab, contributing to architectural drawings, elevation development, minor design modifications, and visual development under supervision.';
     Overview='A residential project developed during professional training at BIM Lab, contributing to architectural drawings, elevation development, minor design modifications, and visual development under supervision.';
@@ -92,16 +92,18 @@ foreach ($Project in $Projects) {
   ) | Where-Object { $_[1] }
   $CreditHtml = ($CreditRows | ForEach-Object { '<div><dt>{0}</dt><dd>{1}</dd></div>' -f (ConvertTo-HtmlEscaped $_[0]),(ConvertTo-HtmlEscaped $_[1]) }) -join ''
 
-  $Creator = @{ '@type'='Person'; '@id'="$CanonicalBase/#ahmad"; name='Ahmad Alhadidii'; url="$CanonicalBase/" }
+  $Creator = @{ '@type'='Person'; '@id'="$CanonicalBase/#person"; name='Ahmad Alhadidii'; url="$CanonicalBase/" }
   $Schema = [ordered]@{
     '@context'='https://schema.org'; '@type'='CreativeWork'; '@id'="$Canonical#project";
     name=$Project.Title; headline=$Project.SeoTitle; description=$Project.Description; url=$Canonical;
-    image=$ImageAbsolute; dateCreated=$Project.Year; creator=$Creator;
+    image=$ImageAbsolute; dateCreated=$Project.Year;
+    creator=if ($Project.Context -eq 'Award-Winning Team Project') { $null } else { $Creator };
     author=if ($Project.Context -eq 'Award-Winning Team Project') { $null } else { $Creator };
+    contributor=if ($Project.Context -eq 'Award-Winning Team Project') { $Creator } else { $null };
     locationCreated=if ($Project.Location) { @{ '@type'='Place'; name=$Project.Location } } else { $null };
     keywords=$Project.Keywords; award=$Project.Award;
     creditText=if ($Project.Context -eq 'Award-Winning Team Project') { "Award-winning team project. Ahmad Alhadidii's role: $($Project.Role)" } else { $null };
-    isPartOf=if ($Project.Slug -eq 'protocol-port') { @{ '@type'='CreativeWork'; '@id'="$CanonicalBase/projects/manmatic/#project"; name='ManMaTIC' } } else { @{ '@type'='WebSite'; '@id'="$CanonicalBase/#website"; name='Ahmad Alhadidii' } }
+    isPartOf=if ($Project.Slug -eq 'protocol-port') { @{ '@type'='CreativeWork'; '@id'="$CanonicalBase/projects/manmatic/#project"; name='ManMaTIC' } } else { @{ '@type'='WebSite'; '@id'="$CanonicalBase/#website"; name='Ahmad Alhadidii Portfolio' } }
   }
   $SchemaJson = $Schema | ConvertTo-Json -Depth 8
 
@@ -123,9 +125,12 @@ foreach ($Project in $Projects) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="$(ConvertTo-HtmlEscaped $Project.Description)">
+  <meta name="author" content="Ahmad Alhadidii">
+  <meta name="creator" content="Ahmad Alhadidii">
+  <meta name="copyright" content="Ahmad Alhadidii">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="$ThemeColor">
-  <meta property="og:type" content="article"><meta property="og:site_name" content="Ahmad Alhadidii">
+  <meta property="og:type" content="article"><meta property="og:site_name" content="Ahmad Alhadidii Portfolio">
   <meta property="og:title" content="$(ConvertTo-HtmlEscaped $Project.SeoTitle)"><meta property="og:description" content="$(ConvertTo-HtmlEscaped $Project.Description)">
   <meta property="og:url" content="$Canonical"><meta property="og:image" content="$ImageAbsolute"><meta property="og:image:alt" content="$(ConvertTo-HtmlEscaped $Project.ImageAlt)"><meta property="og:image:width" content="$($Project.ImageWidth)"><meta property="og:image:height" content="$($Project.ImageHeight)">
   <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="$(ConvertTo-HtmlEscaped $Project.SeoTitle)"><meta name="twitter:description" content="$(ConvertTo-HtmlEscaped $Project.Description)"><meta name="twitter:image" content="$ImageAbsolute"><meta name="twitter:image:alt" content="$(ConvertTo-HtmlEscaped $Project.ImageAlt)">
