@@ -515,22 +515,22 @@ const siteContent = {
       id: "project-dabouq-residential",
       slug: "dabouq",
       route: "projects/dabouq/",
-      seoTitle: "Dabouq Residential Building | Ahmad Alhadidii",
-      metaDescription: "Dabouq Residential Building is a 2025 professional training project at BIM Lab involving architectural drawings, elevations, minor design modifications, and visual development under supervision.",
+      seoTitle: "Dabouq Residential Building | Professional Training at BIM Lab | Ahmad Alhadidii",
+      metaDescription: "Dabouq residential BIM and documentation work developed by Ahmad Alhadidii during professional training at BIM Lab in Amman, including Revit drawings, facade development, a parametric brick-family workflow, and AI-assisted visualisation.",
       number: "003",
       archiveTitle: "DABOUQ RESIDENTIAL BUILDING",
-      archiveSubtitle: "PROFESSIONAL TRAINING PROJECT",
-      navigationTitle: "Dabouq Residential Building — Professional Training Project",
+      archiveSubtitle: "PROFESSIONAL TRAINING — BIM LAB",
+      navigationTitle: "Dabouq Residential Building — Professional Training — BIM Lab",
       title: "Dabouq Residential Building",
-      definition: "A residential project developed during professional training at BIM Lab, contributing to architectural drawings, elevation development, minor design modifications, and visual development under supervision.",
-      overview: "A residential project developed during professional training at BIM Lab, contributing to architectural drawings, elevation development, minor design modifications, and visual development under supervision.",
+      definition: "A residential BIM and documentation project developed during professional training at BIM Lab, including coordinated Revit drawings, elevation development, a parametric brick-family workflow, and AI-assisted visualisation under supervision.",
+      overview: "Refining a provided architectural plan and developing it as a coordinated Revit BIM model. The work included producing architectural drawings, transferring a Grasshopper-generated brick pattern into Revit as an editable family, and using AI tools to develop the final renderings.",
       year: "2025",
       location: "Dabouq, Amman, Jordan",
       category: "Professional Training",
       type: "Residential Architecture",
       context: "Professional Training",
-      role: "Architectural drawings, elevation development, minor design modifications, and visual development under supervision.",
-      office: "BIM Lab",
+      role: "Architectural drawings, elevation development, minor design modifications, Grasshopper-to-Revit brick-family development, and AI-assisted visualisation under supervision.",
+      office: "BIM Lab — Building Information Modelling Consultancy",
       supervision: "Eng. Shaker Khulief",
       featured: true,
       displayOrder: 3,
@@ -539,7 +539,7 @@ const siteContent = {
         "Developed during professional training at BIM Lab and not presented as an independent commission.",
         "Developed during professional training at BIM Lab."
       ],
-      hero: { src: "assets/images/dabouq/dabouq-residential-preview.jpg", width: 1600, height: 1600, orientation: "square", fit: "natural", mediaClass: "media--natural", alt: "Architectural presentation drawing of a residential building developed during professional training at BIM Lab in Dabouq, Amman.", caption: "RESIDENTIAL PROJECT / PROFESSIONAL TRAINING AT BIM LAB" }
+      hero: { src: "assets/images/dabouq/1.webp", width: 4856, height: 2983, orientation: "wide", fit: "cover", mediaClass: "media--wide", alt: "Rainy exterior visualisation of the Dabouq residential building developed during professional training at BIM Lab.", caption: "DABOUQ RESIDENTIAL BUILDING / PROFESSIONAL TRAINING — BIM LAB" }
     }
   ]
 };

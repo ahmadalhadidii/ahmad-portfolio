@@ -1,0 +1,23 @@
+.shila-gallery__progress {
+  display: flex;
+  height: 2px;
+  gap: 3px;
+  transform: none !important;
+  transform-origin: initial;
+  background: transparent !important;
+}
+
+.shila-gallery__progress i {
+  display: block;
+  flex: 1 1 0;
+  background: rgba(17, 17, 17, 0.2);
+  transition: background-color 180ms ease;
+}
+
+.shila-gallery__progress i.is-active {
+  background: #111;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shila-gallery__progress i { transition: none; }
+}
