@@ -11,7 +11,7 @@
     profile: "SUBJECT FILE / AHMAD ALHADIDII / PROFILE",
     cv: "CURRICULUM VITAE / INDEXED RECORD / 2021–2026",
     work: "SELECTED WORK / PROJECT ARCHIVE / 01–04",
-    visual: "VISUALS / IMAGE / THOUGHT / FIELD",
+    visual: "VISUALS / DRAWING / THOUGHT / VISUAL NARRATIVE",
     contact: "CONTACT RECORD / AS-SALT, JORDAN / 2026",
     manmatic: "MANMATIC / HUMAN–MACHINE COLLABORATION / ACTIVE FIELD"
   };
@@ -94,6 +94,14 @@
 
   function initProtectedMedia(scope) {
     const container = scope || document;
+
+    elementsWithin(container, "figcaption").forEach(function (caption) {
+      const cleaned = caption.textContent
+        .replace(/^(?:(?:fig(?:ure)?\.?)|image)\s*\d+\s*(?:[\/:—-]\s*)?/i, "")
+        .trim();
+      if (!cleaned) caption.remove();
+      else if (cleaned !== caption.textContent.trim()) caption.textContent = cleaned;
+    });
 
     elementsWithin(container, "img, video").forEach(function (media) {
       media.draggable = false;
@@ -245,8 +253,10 @@
       const caption = figure.querySelector("figcaption");
       if (caption) {
         const parts = caption.querySelectorAll("span");
-        if (parts[0]) parts[0].textContent = `FIG. ${String(index + 1).padStart(2, "0")}`;
-        if (parts[1] && media.caption) parts[1].textContent = media.caption;
+        if (parts.length > 1) parts[0].remove();
+        const meaningfulCaption = parts.length > 1 ? parts[1] : parts[0];
+        if (meaningfulCaption && media.caption) meaningfulCaption.textContent = media.caption;
+        if (!media.caption) caption.remove();
       }
     });
   }
@@ -731,7 +741,7 @@
           phase.textContent = currentProgress >= 100
             ? "FILE READY"
             : currentProgress >= 68
-              ? "OPENING PROJECT"
+              ? "LOADING FILE"
               : "FILE ACCESS";
         }
       }
@@ -1461,7 +1471,7 @@
         element(
           "p",
           "visual-slide__index",
-          `VISUAL ${study.index || String(slideIndex + 1).padStart(2, "0")} / ${study.category || "VISUAL WORK"}`
+          String(study.category || "VISUAL NARRATIVE").toUpperCase()
         )
       );
       const title = element("h3", "pointer-scan", study.title);
@@ -1474,7 +1484,6 @@
       );
       copy.append(title, description);
       const metadata = element("dl");
-      addMetadata(metadata, "RELATED FIELD", study.relatedProject || study.project);
       addMetadata(metadata, "YEAR", study.year);
       addMetadata(metadata, "CATEGORY", study.category);
       addMetadata(metadata, "AI ROLE", study.aiRole || "PENDING VERIFICATION");

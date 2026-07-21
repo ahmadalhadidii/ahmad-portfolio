@@ -74,9 +74,7 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
   $fit = if ($visual.fit -in @('contain', 'cover')) { $visual.fit } else { 'contain' }
   $recordCount = $visuals.Count.ToString('00')
   $descriptionHtml = Get-EmphasizedHtml $visual.description $visual.emphasis
-  $contextHtml = if ([string]::IsNullOrWhiteSpace($visual.context)) { '' } else {
-    "`n            <p class=`"visual-record__context`">$(ConvertTo-HtmlEncoded $visual.context)</p>"
-  }
+  $contextHtml = ''
   $finalProcessHtml = if ([string]::IsNullOrWhiteSpace($visual.finalProcess)) { '' } else {
     "`n                <div><dt>FINAL PROCESS</dt><dd>$(ConvertTo-HtmlEncoded $visual.finalProcess)</dd></div>"
   }
@@ -130,7 +128,7 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
 
   $loaderData = [ordered]@{
     number = $visual.index
-    kicker = "VISUAL $($visual.index) / $recordCount"
+    kicker = "$($visual.index) / $recordCount"
     title = $visual.title
     subtitle = $visual.category
     type = 'VISUAL NARRATIVE'
@@ -210,11 +208,11 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
   <script src="/assets/js/visual.js?v=$DetailBuild" defer></script>
 </head>
 <body class="visual-page" data-visual-slug="$(ConvertTo-HtmlEncoded $visual.slug)">
-  <div class="loader loader--project loader--visual" id="loader" role="status" aria-label="Opening $(ConvertTo-HtmlEncoded $visual.title)">
-    <p class="visually-hidden" id="loader-announcement" aria-live="polite">$(ConvertTo-HtmlEncoded $visual.title) is opening.</p>
+  <div class="loader loader--project loader--visual" id="loader" role="status" aria-label="Loading $(ConvertTo-HtmlEncoded $visual.title)">
+    <p class="visually-hidden" id="loader-announcement" aria-live="polite">$(ConvertTo-HtmlEncoded $visual.title) is loading.</p>
     <div class="project-loader" aria-hidden="true">
       <header class="project-loader__identity">
-        <p class="project-loader__file" data-project-loader-kicker>VISUAL $($visual.index) / $recordCount</p>
+        <p class="project-loader__file" data-project-loader-kicker>$($visual.index) / $recordCount</p>
         <p class="project-loader__title" id="loader-name">$(ConvertTo-HtmlEncoded $visual.title.ToUpperInvariant())</p>
         <p class="project-loader__subtitle" data-project-loader-subtitle>$(ConvertTo-HtmlEncoded $visual.category.ToUpperInvariant())</p>
         <dl>
@@ -231,10 +229,10 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
           <span class="project-loader__slice project-loader__slice--two"></span>
           <p class="project-loader__fallback" data-project-loader-fallback>VISUAL IMAGE UNAVAILABLE</p>
         </div>
-        <figcaption><span data-project-loader-caption>VISUAL IMAGE</span><span>FRAME <b id="loader-frame">01 / 06</b> · SIGNAL <b id="loader-signal">000.000</b></span></figcaption>
+        <figcaption><span data-project-loader-caption>VISUAL IMAGE</span><span>FRAME <b id="loader-frame">01 / 06</b> &middot; SIGNAL <b id="loader-signal">000.000</b></span></figcaption>
       </figure>
       <footer class="project-loader__footer">
-        <div class="project-loader__opening"><span>OPENING VISUAL</span><div class="project-loader__count"><strong id="loader-progress">000</strong><small>/ 100</small></div></div>
+        <div class="project-loader__opening"><span>LOADING VISUAL</span><div class="project-loader__count"><strong id="loader-progress">000</strong><small>/ 100</small></div></div>
         <div class="loader__progress-track"><span id="loader-progress-bar"></span></div>
         <div class="project-loader__status"><p data-project-loader-status-type>VISUAL NARRATIVE</p><p id="loader-phase">FILE ACCESS</p><p><span id="loader-progress-secondary">000</span> / 100</p></div>
       </footer>
@@ -250,7 +248,7 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
     <header class="site-header" id="site-header">
       <div class="site-header__inner page-width">
         <a class="site-header__name" href="/" aria-label="Ahmad Alhadidii, return to portfolio index">AHMAD ALHADIDII</a>
-        <p class="running-header" aria-hidden="true"><span id="running-header-text">VISUAL $($visual.index) / $(ConvertTo-HtmlEncoded $visual.title.ToUpperInvariant()) / $(ConvertTo-HtmlEncoded $visual.year)</span></p>
+        <p class="running-header" aria-hidden="true"><span id="running-header-text">$($visual.index) / $(ConvertTo-HtmlEncoded $visual.title.ToUpperInvariant()) / $(ConvertTo-HtmlEncoded $visual.year)</span></p>
         <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Open navigation"><span class="nav-toggle__open">MENU</span><span class="nav-toggle__close">CLOSE</span></button>
         <button class="nav-backdrop" type="button" data-nav-dismiss tabindex="-1" aria-label="Close navigation"></button>
         <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation">
@@ -271,7 +269,7 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
         <section class="visual-record page-width orientation--$orientation" data-visual-id="$(ConvertTo-HtmlEncoded $visual.id)"$style>
           <header class="visual-record__header">
             <dl class="visual-record__meta">
-              <div><dt>RECORD</dt><dd>VISUAL $($visual.index) / $recordCount</dd></div>
+              <div><dt>RECORD</dt><dd>$($visual.index) / $recordCount</dd></div>
               <div><dt>CATEGORY</dt><dd>$(ConvertTo-HtmlEncoded $visual.category)</dd></div>
               <div><dt>YEAR</dt><dd>$(ConvertTo-HtmlEncoded $visual.year)</dd></div>
             </dl>
@@ -303,9 +301,9 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
     </main>
 
     <footer class="site-footer page-width">
-      <p>© 2026 AHMAD ALHADIDII</p>
+      <p>&copy; 2026 AHMAD ALHADIDII</p>
       <p>AS-SALT, JORDAN</p>
-      <a href="/#visual-studies">VISUAL INDEX <span aria-hidden="true">↗</span></a>
+      <a href="/#visual-studies">VISUAL INDEX</a>
     </footer>
   </div>
 </body>

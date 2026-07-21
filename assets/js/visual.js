@@ -129,12 +129,9 @@
   function createHeader(visual, total) {
     const header = element("header", "visual-record__header");
     const metadata = element("dl", "visual-record__meta");
-    metadata.appendChild(metadataRow("RECORD", `VISUAL ${visual.index} / ${String(total).padStart(2, "0")}`));
+    metadata.appendChild(metadataRow("RECORD", `${visual.index} / ${String(total).padStart(2, "0")}`));
     metadata.appendChild(metadataRow("CATEGORY", visual.category || "VISUAL NARRATIVE"));
     metadata.appendChild(metadataRow("YEAR", visual.year || "ARCHIVE"));
-    if (hasText(visual.relatedProject || visual.project)) {
-      metadata.appendChild(metadataRow("RELATED FIELD", visual.relatedProject || visual.project));
-    }
     const title = element("h1", "", visual.title);
     header.append(metadata, title);
     return header;
@@ -178,7 +175,8 @@
     } else {
       frame.appendChild(image);
     }
-    figure.append(frame, element("figcaption", "", visual.caption || `VISUAL ${visual.index}`));
+    if (hasText(visual.caption)) figure.append(frame, element("figcaption", "", visual.caption));
+    else figure.appendChild(frame);
     return figure;
   }
 
@@ -198,9 +196,6 @@
       description.textContent = text;
     }
     narrative.appendChild(description);
-    if (hasText(visual.context)) {
-      narrative.appendChild(element("p", "visual-record__context", visual.context));
-    }
     const processRecord = element("section", "visual-record__process");
     processRecord.appendChild(element("h2", "", "PROCESS RECORD"));
     const processMeta = element("dl", "visual-record__process-meta");

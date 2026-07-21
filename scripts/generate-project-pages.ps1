@@ -38,10 +38,10 @@ $Projects = @(
   },
   @{
     Slug='protocol-port'; Route='projects/protocol-port/'; Number='002.B'; Theme='manmatic';
-    Title='PROTOCOL PORT'; Subtitle='HUMAN–MACHINE PROTOCOL ENVIRONMENT / AQABA, JORDAN';
+    Title='PROTOCOL PORT'; Subtitle='HUMAN–MACHINE PROTOCOL ENVIRONMENT';
     SeoTitle='Protocol Port | Ahmad Alhadidii';
     Description='Protocol Port is a prospective human–machine protocol environment in Aqaba for logistics protocol development, human learning, and territorial impact.';
-    Definition='Human–Machine Protocol Environment / Aqaba, Jordan';
+    Definition='Human–Machine Protocol Environment';
     Overview='Protocol Port is a prospective human–machine collaboration environment in Aqaba, where students, developers, researchers, and logistics actors work with intelligent systems to study site conditions, develop operational protocols, and test their deployment within the logistics landscape. The project uses the site itself as an active source of data and action, transforming local conditions into protocols that can support logistics performance, guide human learning, and generate impact for the port, the community, and the wider territory.';
     Year='2026'; Location='Aqaba, Jordan'; Type='Human–Machine Protocol Environment'; Context='Human–Machine Protocol Environment'; Role='Architecture, research, systems thinking, visual communication';
     Image='/assets/images/manmatic/protocol-port-001-1200.jpg'; ImageWidth='1200'; ImageHeight='743'; ImageAlt='Protocol Port axonometric drawing across Aqaba''s logistics landscape.'; Caption='MANMATIC SYSTEM / PROTOCOL PORT / AQABA, JORDAN';
@@ -55,7 +55,7 @@ $Projects = @(
     Description='Dabouq Residential Building is a 2025 professional training project at BIM Lab involving architectural drawings, elevations, minor design modifications, and visual development under supervision.';
     Definition='A residential project developed during professional training at BIM Lab, contributing to architectural drawings, elevation development, minor design modifications, and visual development under supervision.';
     Overview='A residential project developed during professional training at BIM Lab, contributing to architectural drawings, elevation development, minor design modifications, and visual development under supervision.';
-    Year='2025'; Location='Dabouq, Amman, Jordan'; Type='Residential Architecture'; Context='Professional Training'; Office='BIM Lab'; Supervision='Supervised by Eng. Shaker Khulief'; Role='Architectural drawings, elevation development, minor design modifications, and visual development under supervision.';
+    Year='2025'; Location='Dabouq, Amman, Jordan'; Type='Residential Architecture'; Context='Professional Training'; Office='BIM Lab'; Supervision='Arch. Shaker Khulief'; Role='Architectural drawings, elevation development, minor design modifications, and visual development under supervision.';
     Image='/assets/images/dabouq/dabouq-residential-preview.jpg'; ImageWidth='1600'; ImageHeight='1600'; ImageAlt='Architectural presentation drawing of a residential building developed during professional training at BIM Lab in Dabouq, Amman.'; Caption='RESIDENTIAL PROJECT / PROFESSIONAL TRAINING AT BIM LAB';
     Keywords='Dabouq residential building, BIM Lab, professional training, residential architecture';
   },
@@ -75,6 +75,9 @@ $Projects = @(
 $Primary = @('shila','manmatic','dabouq','concrete-fatigue')
 
 foreach ($Project in $Projects) {
+  if ($Project.Extra) {
+    $Project.Extra = $Project.Extra.Replace('HUMAN–MACHINE PROTOCOL ENVIRONMENT<br>AQABA, JORDAN', 'HUMAN–MACHINE PROTOCOL ENVIRONMENT')
+  }
   $Canonical = "$CanonicalBase/$($Project.Route)"
   $ImageAbsolute = "$CanonicalBase$($Project.Image)"
   $ThemeColor = if ($Project.Theme -eq 'manmatic') { '#0a0a0a' } else { '#ffffff' }

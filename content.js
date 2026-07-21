@@ -60,8 +60,6 @@ const siteContent = {
         "Somewhere between the last drawn line and the first built wall, the ground begins to slip away from the familiar. Paths stretch forward, fragments hover, and the building appears as if it is still deciding what world it belongs to. Above it, distant planets turn the horizon from an ending into an opening. Architecture of Elsewhere holds that unfinished moment when a place is no longer entirely here, but has not yet fully arrived anywhere else.",
       emphasis: "Architecture of Elsewhere",
       accent: "#9b5b35",
-      context:
-        "This image originated from a shot developed during the ManMaTIC process, but it is presented here as an independent visual narrative and architectural experiment. It is not an accurate image or literal rendering of the ManMaTIC building; the actual design does not resemble this architecture.",
       src: "assets/images/architecture-of-elsewhere-2400.jpg",
       srcset:
         "assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w",
@@ -70,7 +68,7 @@ const siteContent = {
       orientation: "wide",
       fit: "contain",
       mediaClass: "media--wide media--board",
-      caption: "VISUAL 01 / ARCHITECTURE OF ELSEWHERE / 2026",
+      caption: "01 / ARCHITECTURE OF ELSEWHERE / 2026",
       authorship: "Ahmad Alhadidii",
       process: "Original composition, digital drawing, and manual post-production",
       tools: "Digital drawing and image-editing tools",
@@ -89,7 +87,6 @@ const siteContent = {
         "Before the place disappears, red holds it in a final moment between presence and erasure. It fills the air, closes the distance, and leaves the world almost without form. Then a few lines of light cut through—not enough to reveal everything, but enough to pull edges, depth, and space back into existence. What appears is not simply illuminated; it is rescued from the colour that nearly consumed it. Drawn Out of Red asks: if light is the last thing keeping a place alive, what remains when it is gone?",
       emphasis: "Drawn Out of Red",
       accent: "#8f241f",
-      context: "Independent visual narrative / atmospheric study.",
       src: "assets/images/drawn-out-of-red.webp",
       mobileSrc: "assets/images/drawn-out-of-red-mobile.webp",
       srcset:
@@ -99,7 +96,7 @@ const siteContent = {
       orientation: "wide",
       fit: "contain",
       mediaClass: "media--wide media--cinematic",
-      caption: "VISUAL 02 / DRAWN OUT OF RED / 2026",
+      caption: "02 / DRAWN OUT OF RED / 2026",
       authorship: "Ahmad Alhadidii",
       process: "Original composition, digital drawing, and manual post-production",
       tools: "Digital drawing and image-editing tools",
@@ -118,8 +115,6 @@ const siteContent = {
         "Before the night passes, the stone is given one quiet moment beneath the moon. Its roughness no longer speaks only of weight; in the pale light, something ancient begins to feel intimate. The stair does not lead toward a destination, but keeps the body within this encounter, allowing the stone to disappear and return with every step. Stone by Moonlight holds a brief meeting between earth and sky—between something shaped over millions of years and the light that touches it for only a night.",
       emphasis: "Stone by Moonlight",
       accent: "#8b603d",
-      context:
-        "Related to Shila Museum; presented through the visual narrative of stone, light, and spatial encounter rather than as an explanation of the full project.",
       src: "assets/images/stone-by-moonlight.webp",
       srcset:
         "assets/images/stone-by-moonlight-1400.webp 1400w, assets/images/stone-by-moonlight.webp 2400w",
@@ -128,7 +123,7 @@ const siteContent = {
       orientation: "wide",
       fit: "contain",
       mediaClass: "media--wide media--board",
-      caption: "VISUAL 03 / STONE BY MOONLIGHT / 2026",
+      caption: "03 / STONE BY MOONLIGHT / 2026",
       authorship: "Ahmad Alhadidii",
       process: "Original composition, digital drawing, and manual post-production",
       tools: "Digital drawing and image-editing tools",
@@ -147,7 +142,6 @@ const siteContent = {
         "Human–Machine History traces the long evolution of the bond between humans, tools, machines, and technological systems. The journey begins with the Agricultural Revolution, when early tools changed how societies lived, worked, and organized themselves. Visitors move through a stone-carved timeline as inventions and mechanisms unfold across centuries of progress. Compressed sloping walls, filtered light, and engraved histories turn development into an immersive spatial sequence. The Mechanics of Becoming reveals the machine not as something separate from the human, but as part of humanity’s continuous becoming.",
       emphasis: "The Mechanics of Becoming",
       accent: "#835b37",
-      context: "Human–Machine History / immersive spatial narrative.",
       src: "assets/images/the-mechanics-of-becoming.webp",
       srcset:
         "assets/images/the-mechanics-of-becoming-1100.webp 1100w, assets/images/the-mechanics-of-becoming.webp 1724w",
@@ -156,7 +150,7 @@ const siteContent = {
       orientation: "landscape",
       fit: "contain",
       mediaClass: "media--landscape media--render",
-      caption: "VISUAL 04 / THE MECHANICS OF BECOMING / 2026",
+      caption: "04 / THE MECHANICS OF BECOMING / 2026",
       authorship: "Ahmad Alhadidii",
       process: "Author-directed composition, material development, textures, light, shadow, detailing, atmosphere, Photoshop editing, and digital painting",
       tools: "Photoshop and digital painting tools",
@@ -176,8 +170,6 @@ const siteContent = {
         "Before tomorrow becomes real, this room holds both a warning and a beginning. The fractured stone is not merely a sign of collapse; it images a human–machine future left without human judgment, where machines continue to move while people remain outside the logic that guides them. Yet the transparent orange layer suggests another possibility: potential remains visible, unfinished, and waiting to be shaped. The Last Room Before Tomorrow is where fear becomes a question, and the question becomes action. If a better future can still be formed, will you take part in shaping it?",
       emphasis: "The Last Room Before Tomorrow",
       accent: "#9a4d2b",
-      context:
-        "Conceptually connected to ManMaTIC; presented as an independent visual narrative rather than a literal project rendering.",
       src: "assets/images/the-last-room-before-tomorrow.webp",
       srcset:
         "assets/images/the-last-room-before-tomorrow-900.webp 900w, assets/images/the-last-room-before-tomorrow.webp 1272w",
@@ -186,7 +178,7 @@ const siteContent = {
       orientation: "square",
       fit: "contain",
       mediaClass: "media--square media--render",
-      caption: "VISUAL 05 / THE LAST ROOM BEFORE TOMORROW / 2026",
+      caption: "05 / THE LAST ROOM BEFORE TOMORROW / 2026",
       authorship: "Ahmad Alhadidii",
       process: "Author-directed composition, material development, textures, light, shadow, detailing, atmosphere, Photoshop editing, and digital painting",
       tools: "Photoshop and digital painting tools",
@@ -482,10 +474,10 @@ const siteContent = {
       metaDescription: "Protocol Port is a prospective human–machine protocol environment in Aqaba for logistics protocol development, human learning, and territorial impact.",
       number: "002.B",
       archiveTitle: "PROTOCOL PORT",
-      archiveSubtitle: "HUMAN–MACHINE PROTOCOL ENVIRONMENT / AQABA, JORDAN",
+      archiveSubtitle: "HUMAN–MACHINE PROTOCOL ENVIRONMENT",
       navigationTitle: "Protocol Port — Human–Machine Protocol Environment",
       title: "Protocol Port",
-      definition: "Human–Machine Protocol Environment / Aqaba, Jordan",
+      definition: "Human–Machine Protocol Environment",
       overview: "Protocol Port is a prospective human–machine collaboration environment in Aqaba, where students, developers, researchers, and logistics actors work with intelligent systems to study site conditions, develop operational protocols, and test their deployment within the logistics landscape. The project uses the site itself as an active source of data and action, transforming local conditions into protocols that can support logistics performance, guide human learning, and generate impact for the port, the community, and the wider territory.",
       year: "2026",
       location: "Aqaba, Jordan",
@@ -503,9 +495,9 @@ const siteContent = {
         { code: "01", title: "PROJECT OPENING", text: "Protocol Port is a prospective human–machine collaboration environment for developing and testing logistics protocols in Aqaba." },
         { code: "02", title: "FUNCTION AND SITE", text: "Students, developers, researchers, and logistics actors work with intelligent systems to read site conditions and develop operational protocols.", facts: [["YEAR", "2026"], ["SITE", "AQABA, JORDAN"], ["TYPE", "HUMAN–MACHINE PROTOCOL ENVIRONMENT"], ["FUNCTION", "HUMAN–MACHINE COLLABORATION FOR LOGISTICS PROTOCOL DEVELOPMENT"]] },
         { code: "03", title: "KNOWLEDGE TO PROTOCOL", text: "Research, criteria, site data, and design dialogue are translated into protocols that support logistics performance, human learning, and wider territorial impact." },
-        { code: "04", title: "DESIGN DEVELOPMENT", text: "Hand drawing and iterative section studies record the author-led development of the project.", media: { src: "assets/images/manmatic/protocol-port-process-002-900.jpg", width: 506, height: 900, alt: "Protocol Port hand sketches arranged around a pen and laptop.", caption: "FIG. 01 / IMAGE 002 / HAND-DRAWN DEVELOPMENT" } },
+        { code: "04", title: "DESIGN DEVELOPMENT", text: "Hand drawing and iterative section studies record the author-led development of the project.", media: { src: "assets/images/manmatic/protocol-port-process-002-900.jpg", width: 506, height: 900, alt: "Protocol Port hand sketches arranged around a pen and laptop.", caption: "HAND-DRAWN DEVELOPMENT" } },
         { code: "05", title: "ARCHITECTURAL SYSTEM", text: "The developing system coordinates institutional programme, circulation, technical elements, and the project’s relationship to the logistics landscape." },
-        { code: "06", title: "IMAGES AND DRAWINGS", text: "Section and elevation studies test the project’s vertical elements, long spatial sequence, and architectural thresholds.", media: { src: "assets/images/manmatic/protocol-port-process-003-900.jpg", width: 653, height: 900, alt: "Protocol Port section and elevation sketches surrounding a tablet drawing.", caption: "FIG. 02 / IMAGE 003 / SECTION AND ELEVATION STUDIES" } },
+        { code: "06", title: "IMAGES AND DRAWINGS", text: "Section and elevation studies test the project’s vertical elements, long spatial sequence, and architectural thresholds.", media: { src: "assets/images/manmatic/protocol-port-process-003-900.jpg", width: 653, height: 900, alt: "Protocol Port section and elevation sketches surrounding a tablet drawing.", caption: "SECTION AND ELEVATION STUDIES" } },
         { code: "07", title: "STATUS AND NEXT DEVELOPMENT", text: "The architectural application remains iterative while its institutional and spatial systems are refined.", status: "UNDER MODIFICATION", statusNote: "STILL NEGOTIATING ITS FINAL FORM." }
       ],
       hero: { src: "assets/images/manmatic/protocol-port-001-1200.jpg", width: 1200, height: 743, orientation: "wide", fit: "contain", mediaClass: "media--wide media--drawing", alt: "Protocol Port axonometric drawing across Aqaba’s logistics landscape.", caption: "MANMATIC SYSTEM / PROTOCOL PORT / AQABA, JORDAN" }
@@ -530,7 +522,7 @@ const siteContent = {
       context: "Professional Training",
       role: "Architectural drawings, elevation development, minor design modifications, Grasshopper-to-Revit brick-family development, and AI-assisted visualisation under supervision.",
       office: "BIM Lab — Building Information Modelling Consultancy",
-      supervision: "Eng. Shaker Khulief",
+      supervision: "Arch. Shaker Khulief",
       featured: true,
       displayOrder: 3,
       points: [
