@@ -3127,6 +3127,7 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
 }
 
 .visual-slide {
+  position: relative;
   flex: 0 0 100%;
   min-width: 0;
   display: grid;
