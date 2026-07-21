@@ -1029,9 +1029,11 @@ body.shila-page,
 .shila-board .shila-spatial__middle > p {
   text-align: justify;
   text-align-last: left;
-  -webkit-hyphens: auto;
-  hyphens: auto;
-  overflow-wrap: break-word;
+  -webkit-hyphens: none;
+  hyphens: none;
+  word-break: normal;
+  overflow-wrap: normal;
+  text-wrap: pretty;
 }
 
 @media (prefers-reduced-motion: reduce) {

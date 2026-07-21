@@ -101,7 +101,11 @@
       media.dataset.protectedMedia = "true";
       media.removeAttribute("download");
       if (media.tagName === "VIDEO") {
-        media.setAttribute("controlslist", "nodownload");
+        media.setAttribute("controlslist", "nodownload noremoteplayback");
+        media.setAttribute("disablepictureinpicture", "");
+        media.setAttribute("disableremoteplayback", "");
+        media.disablePictureInPicture = true;
+        media.disableRemotePlayback = true;
       }
     });
 

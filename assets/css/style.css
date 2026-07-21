@@ -1442,6 +1442,7 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
 }
 
 .manifesto__text {
+  width: 100%;
   max-width: 1400px;
   margin-top: clamp(18px, 1.8vw, 28px);
   font-family: var(--font-sans);
@@ -1825,9 +1826,10 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
 }
 
 .profile__statement {
-  grid-column: 7 / 13;
+  grid-column: 5 / 13;
   grid-row: 1;
-  max-width: 31ch;
+  width: 100%;
+  max-width: 44ch;
   font-size: clamp(1.55rem, 2.15vw, 2.55rem);
   line-height: 1.2;
   letter-spacing: -0.025em;
@@ -2053,7 +2055,8 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
 /* Work index */
 
 .work__intro {
-  max-width: 58ch;
+  width: 100%;
+  max-width: none;
   margin: 0 0 clamp(28px, 3vw, 42px) 0;
   font-family: var(--font-sans);
   font-size: clamp(1.14rem, 1.5vw, 1.55rem);
@@ -3033,7 +3036,8 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
 }
 
 .project-row--manmatic > .project-row__link .project-row__copy > p {
-  max-width: 78ch;
+  width: 100%;
+  max-width: 96ch;
 }
 
 .project-row--manmatic > .project-row__link .project-row__copy dl {
@@ -3711,8 +3715,20 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
   }
 }
 
+img,
+picture,
+figure,
+video,
 [data-protected-media="true"] {
+  -webkit-user-drag: none;
+  user-drag: none;
   -webkit-touch-callout: none;
+}
+
+img,
+picture,
+video,
+[data-protected-media="true"] {
   -webkit-user-select: none;
   user-select: none;
 }
@@ -4325,7 +4341,8 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
   }
 
   .profile__statement {
-    grid-column: 8 / 13;
+    grid-column: 6 / 13;
+    max-width: 44ch;
     font-size: clamp(1.5rem, 2.35vw, 2.35rem);
   }
 
@@ -5822,10 +5839,14 @@ html:not([data-initial-theme="manmatic"]) .loader--project.is-ready .project-loa
   min-width: 0;
   width: 100%;
   max-width: none;
-  text-align: left;
+  text-align: justify;
+  text-align-last: left;
+  -webkit-hyphens: none;
+  hyphens: none;
   white-space: normal;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
   word-break: normal;
+  text-wrap: pretty;
   font: 400 clamp(0.7rem, 0.79vw, 0.82rem)/1.45 var(--font-sans);
 }
 
@@ -6467,7 +6488,7 @@ body #monitor-description,
 body .project-row__copy > p:not(.project-row__file),
 body .visual-slide__copy > p:not(.visual-slide__index),
 body .project-header__definition,
-body .project-copy-section__body > p,
+body .project-copy-section__body > p:not(.project-record__subtitle),
 body .visual-record__description,
 body .visual-record__context,
 body .contact__statement,
@@ -6475,13 +6496,60 @@ body .cv-entry__header > div > p:last-child,
 body .cv-row div > p:last-child,
 body .award-primary div > p:last-child,
 body .cv-entry__note,
-body .manmatic-branch > p,
+body .manifesto__text,
+body .profile__statement,
+body .manmatic-branch > p:nth-of-type(3),
+body .computation-record > p:not(.editorial-label),
 body .computation-detail__statement {
   text-align: justify;
   text-align-last: left;
-  -webkit-hyphens: auto;
-  hyphens: auto;
-  overflow-wrap: break-word;
+  -webkit-hyphens: none;
+  hyphens: none;
+  word-break: normal;
+  overflow-wrap: normal;
+  text-wrap: pretty;
+}
+
+.project-record__subtitle,
+.manmatic-branch > p:nth-of-type(2) {
+  text-align: left;
+  text-align-last: auto;
+  text-wrap: balance;
+}
+
+.project-record__subtitle {
+  max-width: 62ch;
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font: 500 clamp(0.72rem, 0.9vw, 0.9rem)/1.4 var(--font-mono);
+  letter-spacing: 0.015em;
+}
+
+@media (min-width: 1200px) {
+  .work__intro {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 1199px) {
+  .work__intro {
+    max-width: 78ch;
+    text-wrap: pretty;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+figcaption,
+.section-heading,
+.project-navigation,
+.project-row__file,
+.editorial-label {
+  text-wrap: balance;
 }
 
 /* Homepage copy remains static; heading scramble is retained without pointer light. */
