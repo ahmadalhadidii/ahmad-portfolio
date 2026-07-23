@@ -180,26 +180,37 @@ function Dispatch-TouchGesture([string]$selector, [double]$deltaX, [double]$delt
   $null = Invoke-Cdp 'Input.dispatchTouchEvent' @{ type = 'touchEnd'; touchPoints = @() }
 }
 
-function Dispatch-TouchPointerGesture([string]$selector, [double]$deltaX, [double]$deltaY) {
-  $quoted = $selector | ConvertTo-Json -Compress
-  $null = Evaluate @"
-(()=>{
-  const target=document.querySelector($quoted);
-  const rect=target.getBoundingClientRect();
-  const startX=rect.x+rect.width*.68;
-  const startY=rect.y+Math.min(rect.height*.48,rect.height-18);
-  const emit=(type,x,y,buttons)=>target.dispatchEvent(new PointerEvent(type,{
-    bubbles:true,cancelable:true,composed:true,pointerId:97,pointerType:"touch",
-    isPrimary:true,button:0,buttons:buttons,clientX:x,clientY:y
-  }));
-  emit("pointerdown",startX,startY,1);
-  for(let step=1;step<=5;step+=1){
-    emit("pointermove",startX+($deltaX*step/5),startY+($deltaY*step/5),1);
+function Measure-TouchGesture([string]$selector, [double]$deltaX, [double]$deltaY, [string]$probeExpression) {
+  $rect = Get-Rect $selector
+  $startX = [Math]::Max(12, [Math]::Min($rect.x + $rect.width * 0.68, (Evaluate 'innerWidth') - 12))
+  $startY = [Math]::Max(12, [Math]::Min($rect.y + [Math]::Min($rect.height * 0.48, $rect.height - 18), (Evaluate 'innerHeight') - 12))
+  $before = [double](Evaluate $probeExpression)
+  $point = @{ x = $startX; y = $startY; radiusX = 2; radiusY = 2; force = 1; id = 1 }
+  $null = Invoke-Cdp 'Input.dispatchTouchEvent' @{ type = 'touchStart'; touchPoints = @($point) }
+  $mid = $before
+  for ($i = 1; $i -le 6; $i++) {
+    $move = @{
+      x = $startX + ($deltaX * $i / 6)
+      y = $startY + ($deltaY * $i / 6)
+      radiusX = 2
+      radiusY = 2
+      force = 1
+      id = 1
+    }
+    $null = Invoke-Cdp 'Input.dispatchTouchEvent' @{ type = 'touchMove'; touchPoints = @($move) }
+    Start-Sleep -Milliseconds 28
+    if ($i -eq 3) { $mid = [double](Evaluate $probeExpression) }
   }
-  emit("pointerup",startX+$deltaX,startY+$deltaY,0);
-  return true;
-})()
-"@
+  $released = [double](Evaluate $probeExpression)
+  $null = Invoke-Cdp 'Input.dispatchTouchEvent' @{ type = 'touchEnd'; touchPoints = @() }
+  Start-Sleep -Milliseconds 420
+  $settled = [double](Evaluate $probeExpression)
+  return [ordered]@{
+    before = $before
+    mid = $mid
+    released = $released
+    settled = $settled
+  }
 }
 
 function Load-HomeSection([string]$selector, [string]$readyExpression) {
@@ -399,7 +410,7 @@ try {
   Write-Output 'PHASE visuals-touch'
   Load-HomeSection '#visual-studies' 'document.querySelector("[data-visual-slider]")?.dataset.visualInitialized === "true"'
   $touchStart = [int](Evaluate 'document.querySelector("[data-visual-current]").textContent')
-  Dispatch-TouchPointerGesture '[data-visual-viewport]' -210 4
+  Dispatch-TouchGesture '[data-visual-viewport]' -210 4
   Start-Sleep -Milliseconds 820
   $touchEnd = [int](Evaluate 'document.querySelector("[data-visual-current]").textContent')
   $pageBefore = [double](Evaluate 'scrollY')
@@ -435,7 +446,7 @@ try {
   Write-Output 'PHASE computation-touch'
   Load-HomeSection '#computation' 'document.querySelector("[data-computational-rail]")?.dataset.computationalRailInitialized === "true"'
   $railTouchStart = [double](Evaluate 'document.querySelector("[data-computational-rail]").scrollLeft')
-  Dispatch-TouchPointerGesture '[data-computational-rail]' -260 4
+  Dispatch-TouchGesture '[data-computational-rail]' -260 4
   Start-Sleep -Milliseconds 180
   $railTouchEnd = [double](Evaluate 'document.querySelector("[data-computational-rail]").scrollLeft')
   $railPageBefore = [double](Evaluate 'scrollY')
@@ -453,6 +464,82 @@ try {
   $beforeRatio = $ratioBefore.left / [Math]::Max(1, $ratioBefore.limit)
   $afterRatio = $ratioAfter.left / [Math]::Max(1, $ratioAfter.limit)
   Assert-State ([Math]::Abs($beforeRatio - $afterRatio) -lt 0.04) 'Computational rail preserves its active position after resize' @{ before = $beforeRatio; after = $afterRatio }
+
+  $touchProfiles = @(
+    @{ name = 'phone-portrait'; width = 390; height = 844 },
+    @{ name = 'phone-landscape'; width = 844; height = 390 },
+    @{ name = 'tablet-portrait'; width = 820; height = 1180 },
+    @{ name = 'tablet-landscape'; width = 1180; height = 820 }
+  )
+  $touchGalleryProfiles = @()
+  foreach ($profileCase in $touchProfiles) {
+    Set-Viewport $profileCase.width $profileCase.height $true
+    Write-Output "PHASE galleries-$($profileCase.name)"
+    Load-HomeSection '#visual-studies' 'document.querySelector("[data-visual-slider]")?.dataset.visualInitialized === "true"'
+    $visualProfileStart = [int](Evaluate 'document.querySelector("[data-visual-current]").textContent')
+    $visualHorizontalPageStart = [double](Evaluate 'scrollY')
+    $visualGesture = Measure-TouchGesture '[data-visual-viewport]' -120 2 'parseFloat(document.querySelector("[data-visual-slider]").style.getPropertyValue("--slider-drag"))||0'
+    $visualHorizontalPageEnd = [double](Evaluate 'scrollY')
+    $visualProfileEnd = [int](Evaluate 'document.querySelector("[data-visual-current]").textContent')
+    $visualProfileTotal = [int](Evaluate 'document.querySelectorAll(".visual-slide").length')
+    $visualPageBefore = [double](Evaluate 'scrollY')
+    Dispatch-TouchGesture '[data-visual-viewport]' 3 -130
+    Start-Sleep -Milliseconds 180
+    $visualPageAfter = [double](Evaluate 'scrollY')
+
+    Load-HomeSection '#computation' 'document.querySelector("[data-computational-rail]")?.dataset.computationalRailInitialized === "true"'
+    $railHorizontalPageStart = [double](Evaluate 'scrollY')
+    $railGesture = Measure-TouchGesture '[data-computational-rail]' -120 2 'document.querySelector("[data-computational-rail]").scrollLeft'
+    $railHorizontalPageEnd = [double](Evaluate 'scrollY')
+    $railPageBeforeProfile = [double](Evaluate 'scrollY')
+    $railBeforeVertical = [double](Evaluate 'document.querySelector("[data-computational-rail]").scrollLeft')
+    Dispatch-TouchGesture '[data-computational-rail]' 3 -130
+    Start-Sleep -Milliseconds 180
+    $railPageAfterProfile = [double](Evaluate 'scrollY')
+    $railAfterVertical = [double](Evaluate 'document.querySelector("[data-computational-rail]").scrollLeft')
+
+    $null = Evaluate '(()=>{const r=document.querySelector("[data-computational-rail]");r.scrollLeft=r.scrollWidth-r.clientWidth;document.querySelector("[data-computation-video]").scrollIntoView({block:"center",inline:"nearest"});return true})()'
+    Start-Sleep -Milliseconds 100
+    $videoGesture = Measure-TouchGesture '[data-computation-video]' 100 2 'document.querySelector("[data-computational-rail]").scrollLeft'
+
+    $profileState = [ordered]@{
+      name = $profileCase.name
+      width = $profileCase.width
+      height = $profileCase.height
+      visual = $visualGesture
+      visualStart = $visualProfileStart
+      visualEnd = $visualProfileEnd
+      visualHorizontalPageDrift = $visualHorizontalPageEnd - $visualHorizontalPageStart
+      visualPageTravel = $visualPageAfter - $visualPageBefore
+      rail = $railGesture
+      railHorizontalPageDrift = $railHorizontalPageEnd - $railHorizontalPageStart
+      railPageTravel = $railPageAfterProfile - $railPageBeforeProfile
+      railVerticalDrift = $railAfterVertical - $railBeforeVertical
+      video = $videoGesture
+    }
+    $touchGalleryProfiles += $profileState
+
+    Assert-State (
+      [Math]::Abs($visualGesture.mid - $visualGesture.before) -gt 55 -and
+      $visualProfileEnd -eq (($visualProfileStart % $visualProfileTotal) + 1) -and
+      [Math]::Abs($visualHorizontalPageEnd - $visualHorizontalPageStart) -lt 8
+    ) "Visuals follows the finger and settles one slide at $($profileCase.name)" $profileState
+    Assert-State (
+      [Math]::Abs($visualPageAfter - $visualPageBefore) -gt 20
+    ) "Visuals preserves vertical page scrolling at $($profileCase.name)" $profileState
+    Assert-State (
+      $railGesture.mid - $railGesture.before -gt 75 -and
+      $railGesture.settled - $railGesture.released -gt 20 -and
+      [Math]::Abs($railHorizontalPageEnd - $railHorizontalPageStart) -lt 8
+    ) "Computational Design follows touch and carries momentum at $($profileCase.name)" $profileState
+    Assert-State (
+      [Math]::Abs($railPageAfterProfile - $railPageBeforeProfile) -gt 20 -and
+      [Math]::Abs($railAfterVertical - $railBeforeVertical) -lt 8
+    ) "Computational Design preserves vertical page scrolling at $($profileCase.name)" $profileState
+    Assert-State (
+      $videoGesture.settled -lt $videoGesture.before - 100
+    ) "Computational Design accepts a swipe beginning on video at $($profileCase.name)" $profileState
+  }
 
   $null = Invoke-Cdp 'Emulation.setEmulatedMedia' @{ features = @(@{ name = 'prefers-reduced-motion'; value = 'reduce' }) }
   Navigate '/'
@@ -479,6 +566,7 @@ try {
     tests = $script:results
     shilaViewports = $shilaViewports
     manmaticViewports = $manmaticStates
+    touchGalleryProfiles = $touchGalleryProfiles
     recording = $recording
     screenshots = @(
       $transitionShot,

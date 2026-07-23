@@ -1,6 +1,6 @@
 ﻿{
-    "passed":  41,
-    "failed":  0,
+    "passed":  53,
+    "failed":  8,
     "tests":  [
                   {
                       "name":  "Fresh homepage shows the original white loader",
@@ -14,23 +14,22 @@
                   },
                   {
                       "name":  "Homepage to ManMaTIC is immediate and loader-free",
-                      "passed":  true,
+                      "passed":  false,
                       "details":  {
-                                      "loaderCount":  0,
+                                      "loaderCount":  1,
                                       "pending":  false,
                                       "mainVisible":  true
                                   }
                   },
                   {
-                      "name":  "ManMaTIC exit reveals the white homepage under transparent glitch bands",
+                      "name":  "ManMaTIC exit restores the clean white homepage without transition layers",
                       "passed":  true,
                       "details":  {
                                       "homeBackground":  "rgb(255, 255, 255)",
                                       "loaderDisplay":  "none",
-                                      "transitionBackground":  "rgba(0, 0, 0, 0)",
-                                      "active":  false,
-                                      "beforeHeight":  "4.04688px",
-                                      "afterHeight":  "23.3906px"
+                                      "transitionLayers":  0,
+                                      "transientState":  false,
+                                      "theme":  "light"
                                   }
                   },
                   {
@@ -62,36 +61,37 @@
                   },
                   {
                       "name":  "Project-to-project navigation is loader-free",
-                      "passed":  true,
+                      "passed":  false,
                       "details":  {
-                                      "loaderCount":  0,
+                                      "loaderCount":  1,
                                       "pending":  false
                                   }
                   },
                   {
-                      "name":  "Browser Back restores one clean homepage transition",
-                      "passed":  true,
+                      "name":  "Browser Back restores the clean white homepage without a route layer",
+                      "passed":  false,
                       "details":  {
-                                      "routeGlitch":  true,
-                                      "listenerReady":  "true",
-                                      "loaderDisplay":  "none"
+                                      "transitionLayers":  0,
+                                      "transientState":  false,
+                                      "theme":  "light",
+                                      "loaderDisplay":  "block"
                                   }
                   },
                   {
-                      "name":  "Browser Forward restores one clean project transition",
+                      "name":  "Browser Forward restores the project without a route layer",
                       "passed":  true,
                       "details":  {
-                                      "routeGlitch":  true,
-                                      "listenerReady":  "true",
+                                      "transitionLayers":  0,
+                                      "transientState":  false,
                                       "loaderCount":  0
                                   }
                   },
                   {
                       "name":  "Direct route is loader-free: /projects/manmatic/",
-                      "passed":  true,
+                      "passed":  false,
                       "details":  {
-                                      "loaderCount":  0,
-                                      "pending":  false,
+                                      "loaderCount":  1,
+                                      "pending":  true,
                                       "visible":  true
                                   }
                   },
@@ -297,10 +297,10 @@
                   },
                   {
                       "name":  "ManMaTIC diagrams integrate at 1440px",
-                      "passed":  true,
+                      "passed":  false,
                       "details":  {
                                       "width":  1440,
-                                      "body":  "rgb(39, 39, 39)",
+                                      "body":  "rgb(255, 255, 255)",
                                       "imageBackground":  "rgba(0, 0, 0, 0)",
                                       "wrapperBackground":  "rgba(0, 0, 0, 0)",
                                       "opacity":  "1",
@@ -311,10 +311,10 @@
                   },
                   {
                       "name":  "ManMaTIC diagrams integrate at 820px",
-                      "passed":  true,
+                      "passed":  false,
                       "details":  {
                                       "width":  820,
-                                      "body":  "rgb(39, 39, 39)",
+                                      "body":  "rgb(255, 255, 255)",
                                       "imageBackground":  "rgba(0, 0, 0, 0)",
                                       "wrapperBackground":  "rgba(0, 0, 0, 0)",
                                       "opacity":  "1",
@@ -325,10 +325,10 @@
                   },
                   {
                       "name":  "ManMaTIC diagrams integrate at 390px",
-                      "passed":  true,
+                      "passed":  false,
                       "details":  {
                                       "width":  390,
-                                      "body":  "rgb(39, 39, 39)",
+                                      "body":  "rgb(255, 255, 255)",
                                       "imageBackground":  "rgba(0, 0, 0, 0)",
                                       "wrapperBackground":  "rgba(0, 0, 0, 0)",
                                       "opacity":  "1",
@@ -373,8 +373,8 @@
                       "name":  "Vertical touch over Visuals scrolls the page",
                       "passed":  true,
                       "details":  {
-                                      "before":  12206,
-                                      "after":  12371
+                                      "before":  12194,
+                                      "after":  12359
                                   }
                   },
                   {
@@ -402,16 +402,16 @@
                       "passed":  true,
                       "details":  {
                                       "start":  0,
-                                      "end":  260
+                                      "end":  519
                                   }
                   },
                   {
                       "name":  "Vertical touch over Computational Design scrolls the page and clears drag state",
                       "passed":  true,
                       "details":  {
-                                      "before":  11600,
+                                      "before":  11043,
                                       "dragging":  false,
-                                      "after":  11775
+                                      "after":  11218
                                   }
                   },
                   {
@@ -423,11 +423,691 @@
                                   }
                   },
                   {
-                      "name":  "Reduced motion skips internal route animation without adding a loader",
+                      "name":  "Visuals follows the finger and settles one slide at phone-portrait",
                       "passed":  true,
                       "details":  {
-                                      "loaderCount":  0,
-                                      "routeGlitch":  false
+                                      "name":  "phone-portrait",
+                                      "width":  390,
+                                      "height":  844,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  289
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  1984,
+                                                    "mid":  1907,
+                                                    "released":  1829,
+                                                    "settled":  1740
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Visuals preserves vertical page scrolling at phone-portrait",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "phone-portrait",
+                                      "width":  390,
+                                      "height":  844,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  289
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  1984,
+                                                    "mid":  1907,
+                                                    "released":  1829,
+                                                    "settled":  1740
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Computational Design follows touch and carries momentum at phone-portrait",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "phone-portrait",
+                                      "width":  390,
+                                      "height":  844,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  289
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  1984,
+                                                    "mid":  1907,
+                                                    "released":  1829,
+                                                    "settled":  1740
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Computational Design preserves vertical page scrolling at phone-portrait",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "phone-portrait",
+                                      "width":  390,
+                                      "height":  844,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  289
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  1984,
+                                                    "mid":  1907,
+                                                    "released":  1829,
+                                                    "settled":  1740
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Computational Design accepts a swipe beginning on video at phone-portrait",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "phone-portrait",
+                                      "width":  390,
+                                      "height":  844,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  289
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  1984,
+                                                    "mid":  1907,
+                                                    "released":  1829,
+                                                    "settled":  1740
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Visuals follows the finger and settles one slide at phone-landscape",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "phone-landscape",
+                                      "width":  844,
+                                      "height":  390,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  346
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  1813,
+                                                    "mid":  1736,
+                                                    "released":  1658,
+                                                    "settled":  1553
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Visuals preserves vertical page scrolling at phone-landscape",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "phone-landscape",
+                                      "width":  844,
+                                      "height":  390,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  346
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  1813,
+                                                    "mid":  1736,
+                                                    "released":  1658,
+                                                    "settled":  1553
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Computational Design follows touch and carries momentum at phone-landscape",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "phone-landscape",
+                                      "width":  844,
+                                      "height":  390,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  346
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  1813,
+                                                    "mid":  1736,
+                                                    "released":  1658,
+                                                    "settled":  1553
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Computational Design preserves vertical page scrolling at phone-landscape",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "phone-landscape",
+                                      "width":  844,
+                                      "height":  390,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  346
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  1813,
+                                                    "mid":  1736,
+                                                    "released":  1658,
+                                                    "settled":  1553
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Computational Design accepts a swipe beginning on video at phone-landscape",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "phone-landscape",
+                                      "width":  844,
+                                      "height":  390,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  346
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  1813,
+                                                    "mid":  1736,
+                                                    "released":  1658,
+                                                    "settled":  1553
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Visuals follows the finger and settles one slide at tablet-portrait",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "tablet-portrait",
+                                      "width":  820,
+                                      "height":  1180,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  188,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  273
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  1,
+                                      "video":  {
+                                                    "before":  1785,
+                                                    "mid":  1708,
+                                                    "released":  1630,
+                                                    "settled":  1515
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Visuals preserves vertical page scrolling at tablet-portrait",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "tablet-portrait",
+                                      "width":  820,
+                                      "height":  1180,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  188,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  273
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  1,
+                                      "video":  {
+                                                    "before":  1785,
+                                                    "mid":  1708,
+                                                    "released":  1630,
+                                                    "settled":  1515
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Computational Design follows touch and carries momentum at tablet-portrait",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "tablet-portrait",
+                                      "width":  820,
+                                      "height":  1180,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  188,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  273
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  1,
+                                      "video":  {
+                                                    "before":  1785,
+                                                    "mid":  1708,
+                                                    "released":  1630,
+                                                    "settled":  1515
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Computational Design preserves vertical page scrolling at tablet-portrait",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "tablet-portrait",
+                                      "width":  820,
+                                      "height":  1180,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  188,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  273
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  1,
+                                      "video":  {
+                                                    "before":  1785,
+                                                    "mid":  1708,
+                                                    "released":  1630,
+                                                    "settled":  1515
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Computational Design accepts a swipe beginning on video at tablet-portrait",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "tablet-portrait",
+                                      "width":  820,
+                                      "height":  1180,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  188,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  273
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  1,
+                                      "video":  {
+                                                    "before":  1785,
+                                                    "mid":  1708,
+                                                    "released":  1630,
+                                                    "settled":  1515
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Visuals follows the finger and settles one slide at tablet-landscape",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "tablet-landscape",
+                                      "width":  1180,
+                                      "height":  820,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  294
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  2774,
+                                                    "mid":  2697,
+                                                    "released":  2619,
+                                                    "settled":  2534
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Visuals preserves vertical page scrolling at tablet-landscape",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "tablet-landscape",
+                                      "width":  1180,
+                                      "height":  820,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  294
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  2774,
+                                                    "mid":  2697,
+                                                    "released":  2619,
+                                                    "settled":  2534
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Computational Design follows touch and carries momentum at tablet-landscape",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "tablet-landscape",
+                                      "width":  1180,
+                                      "height":  820,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  294
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  2774,
+                                                    "mid":  2697,
+                                                    "released":  2619,
+                                                    "settled":  2534
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Computational Design preserves vertical page scrolling at tablet-landscape",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "tablet-landscape",
+                                      "width":  1180,
+                                      "height":  820,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  294
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  2774,
+                                                    "mid":  2697,
+                                                    "released":  2619,
+                                                    "settled":  2534
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Computational Design accepts a swipe beginning on video at tablet-landscape",
+                      "passed":  true,
+                      "details":  {
+                                      "name":  "tablet-landscape",
+                                      "width":  1180,
+                                      "height":  820,
+                                      "visual":  {
+                                                     "before":  0,
+                                                     "mid":  -76.8,
+                                                     "released":  -153.6,
+                                                     "settled":  0
+                                                 },
+                                      "visualStart":  1,
+                                      "visualEnd":  2,
+                                      "visualHorizontalPageDrift":  0,
+                                      "visualPageTravel":  115,
+                                      "rail":  {
+                                                   "before":  0,
+                                                   "mid":  93,
+                                                   "released":  186,
+                                                   "settled":  294
+                                               },
+                                      "railHorizontalPageDrift":  0,
+                                      "railPageTravel":  115,
+                                      "railVerticalDrift":  2,
+                                      "video":  {
+                                                    "before":  2774,
+                                                    "mid":  2697,
+                                                    "released":  2619,
+                                                    "settled":  2534
+                                                }
+                                  }
+                  },
+                  {
+                      "name":  "Reduced motion keeps internal navigation free of route layers and extra loaders",
+                      "passed":  false,
+                      "details":  {
+                                      "loaderCount":  1,
+                                      "transitionLayers":  0
                                   }
                   },
                   {
@@ -537,7 +1217,7 @@
     "manmaticViewports":  [
                               {
                                   "width":  1440,
-                                  "body":  "rgb(39, 39, 39)",
+                                  "body":  "rgb(255, 255, 255)",
                                   "imageBackground":  "rgba(0, 0, 0, 0)",
                                   "wrapperBackground":  "rgba(0, 0, 0, 0)",
                                   "opacity":  "1",
@@ -547,7 +1227,7 @@
                               },
                               {
                                   "width":  820,
-                                  "body":  "rgb(39, 39, 39)",
+                                  "body":  "rgb(255, 255, 255)",
                                   "imageBackground":  "rgba(0, 0, 0, 0)",
                                   "wrapperBackground":  "rgba(0, 0, 0, 0)",
                                   "opacity":  "1",
@@ -557,7 +1237,7 @@
                               },
                               {
                                   "width":  390,
-                                  "body":  "rgb(39, 39, 39)",
+                                  "body":  "rgb(255, 255, 255)",
                                   "imageBackground":  "rgba(0, 0, 0, 0)",
                                   "wrapperBackground":  "rgba(0, 0, 0, 0)",
                                   "opacity":  "1",
@@ -566,6 +1246,128 @@
                                   "overflow":  false
                               }
                           ],
+    "touchGalleryProfiles":  [
+                                 {
+                                     "name":  "phone-portrait",
+                                     "width":  390,
+                                     "height":  844,
+                                     "visual":  {
+                                                    "before":  0,
+                                                    "mid":  -76.8,
+                                                    "released":  -153.6,
+                                                    "settled":  0
+                                                },
+                                     "visualStart":  1,
+                                     "visualEnd":  2,
+                                     "visualHorizontalPageDrift":  0,
+                                     "visualPageTravel":  115,
+                                     "rail":  {
+                                                  "before":  0,
+                                                  "mid":  93,
+                                                  "released":  186,
+                                                  "settled":  289
+                                              },
+                                     "railHorizontalPageDrift":  0,
+                                     "railPageTravel":  115,
+                                     "railVerticalDrift":  2,
+                                     "video":  {
+                                                   "before":  1984,
+                                                   "mid":  1907,
+                                                   "released":  1829,
+                                                   "settled":  1740
+                                               }
+                                 },
+                                 {
+                                     "name":  "phone-landscape",
+                                     "width":  844,
+                                     "height":  390,
+                                     "visual":  {
+                                                    "before":  0,
+                                                    "mid":  -76.8,
+                                                    "released":  -153.6,
+                                                    "settled":  0
+                                                },
+                                     "visualStart":  1,
+                                     "visualEnd":  2,
+                                     "visualHorizontalPageDrift":  0,
+                                     "visualPageTravel":  115,
+                                     "rail":  {
+                                                  "before":  0,
+                                                  "mid":  93,
+                                                  "released":  186,
+                                                  "settled":  346
+                                              },
+                                     "railHorizontalPageDrift":  0,
+                                     "railPageTravel":  115,
+                                     "railVerticalDrift":  2,
+                                     "video":  {
+                                                   "before":  1813,
+                                                   "mid":  1736,
+                                                   "released":  1658,
+                                                   "settled":  1553
+                                               }
+                                 },
+                                 {
+                                     "name":  "tablet-portrait",
+                                     "width":  820,
+                                     "height":  1180,
+                                     "visual":  {
+                                                    "before":  0,
+                                                    "mid":  -76.8,
+                                                    "released":  -153.6,
+                                                    "settled":  0
+                                                },
+                                     "visualStart":  1,
+                                     "visualEnd":  2,
+                                     "visualHorizontalPageDrift":  0,
+                                     "visualPageTravel":  188,
+                                     "rail":  {
+                                                  "before":  0,
+                                                  "mid":  93,
+                                                  "released":  186,
+                                                  "settled":  273
+                                              },
+                                     "railHorizontalPageDrift":  0,
+                                     "railPageTravel":  115,
+                                     "railVerticalDrift":  1,
+                                     "video":  {
+                                                   "before":  1785,
+                                                   "mid":  1708,
+                                                   "released":  1630,
+                                                   "settled":  1515
+                                               }
+                                 },
+                                 {
+                                     "name":  "tablet-landscape",
+                                     "width":  1180,
+                                     "height":  820,
+                                     "visual":  {
+                                                    "before":  0,
+                                                    "mid":  -76.8,
+                                                    "released":  -153.6,
+                                                    "settled":  0
+                                                },
+                                     "visualStart":  1,
+                                     "visualEnd":  2,
+                                     "visualHorizontalPageDrift":  0,
+                                     "visualPageTravel":  115,
+                                     "rail":  {
+                                                  "before":  0,
+                                                  "mid":  93,
+                                                  "released":  186,
+                                                  "settled":  294
+                                              },
+                                     "railHorizontalPageDrift":  0,
+                                     "railPageTravel":  115,
+                                     "railVerticalDrift":  2,
+                                     "video":  {
+                                                   "before":  2774,
+                                                   "mid":  2697,
+                                                   "released":  2619,
+                                                   "settled":  2534
+                                               }
+                                 }
+                             ],
     "recording":  "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\portfolio-regression-recording.mp4",
     "screenshots":  [
                         "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\01-manmatic-to-white-home.png",

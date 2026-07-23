@@ -69,7 +69,7 @@
                       },
     "projectToProject":  {
                              "path":  "/projects/manmatic/",
-                             "loaderCount":  0,
+                             "loaderCount":  1,
                              "pending":  false,
                              "transitionLayers":  0
                          },

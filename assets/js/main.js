@@ -1372,10 +1372,15 @@
     let index = 0;
     let signalTimer = 0;
     let pointerId = null;
+    let touchIdentifier = null;
     let startX = 0;
     let startY = 0;
     let lastX = 0;
     let startedAt = 0;
+    let lastSampleX = 0;
+    let lastSampleAt = 0;
+    let velocityX = 0;
+    let touchGesture = false;
     let gestureDirection = "";
     let resizeTimer = 0;
 
@@ -1527,22 +1532,88 @@
         viewport.releasePointerCapture(pointerId);
       }
       pointerId = null;
+      touchIdentifier = null;
+      touchGesture = false;
+      velocityX = 0;
       gestureDirection = "";
       slider.classList.remove("is-dragging");
       slider.style.setProperty("--slider-drag", "0px");
     }
 
-    function finishGesture(event) {
-      if (pointerId === null || (event && event.pointerId !== pointerId)) return;
+    function completeGesture() {
       const distance = lastX - startX;
       const elapsed = Math.max(performance.now() - startedAt, 1);
-      const velocity = distance / elapsed;
-      if (gestureDirection === "horizontal" && (Math.abs(distance) > 44 || Math.abs(velocity) > 0.45)) {
-        setIndex(index + (distance < 0 ? 1 : -1), true);
+      const dragScale = touchGesture ? 1.28 : 1;
+      const recentVelocity = performance.now() - lastSampleAt < 110 ? velocityX : 0;
+      const velocity = touchGesture ? recentVelocity * dragScale : distance / elapsed;
+      const projectedDistance = (distance * dragScale) + (touchGesture ? velocity * 180 : 0);
+      const swipeThreshold = touchGesture
+        ? Math.min(52, Math.max(34, viewport.clientWidth * 0.1))
+        : 44;
+      if (
+        gestureDirection === "horizontal" &&
+        (Math.abs(projectedDistance) > swipeThreshold || Math.abs(velocity) > (touchGesture ? 0.24 : 0.45))
+      ) {
+        const direction = Math.abs(velocity) > (touchGesture ? 0.24 : 0.45)
+          ? velocity
+          : projectedDistance;
+        setIndex(index + (direction < 0 ? 1 : -1), true);
       } else {
         setIndex(index, false);
       }
       resetGesture();
+    }
+
+    function finishGesture(event) {
+      if (pointerId === null || (event && event.pointerId !== pointerId)) return;
+      completeGesture();
+    }
+
+    function beginGesture(clientX, clientY, isTouchGesture) {
+      startX = clientX;
+      startY = clientY;
+      lastX = clientX;
+      startedAt = performance.now();
+      lastSampleX = clientX;
+      lastSampleAt = startedAt;
+      velocityX = 0;
+      touchGesture = isTouchGesture;
+      gestureDirection = "";
+    }
+
+    function updateGesture(clientX, clientY, event, capturePointer) {
+      const deltaX = clientX - startX;
+      const deltaY = clientY - startY;
+      const sampleAt = performance.now();
+      const sampleElapsed = Math.max(sampleAt - lastSampleAt, 1);
+      const instantaneousVelocity = (clientX - lastSampleX) / sampleElapsed;
+      velocityX = velocityX * 0.58 + instantaneousVelocity * 0.42;
+      lastSampleX = clientX;
+      lastSampleAt = sampleAt;
+      lastX = clientX;
+      if (!gestureDirection && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 7) {
+        gestureDirection = Math.abs(deltaX) > Math.abs(deltaY) * 1.08
+          ? "horizontal"
+          : "vertical";
+        if (gestureDirection === "vertical") {
+          resetGesture();
+          return;
+        }
+        slider.classList.add("is-dragging");
+        if (capturePointer && pointerId !== null && typeof viewport.setPointerCapture === "function") {
+          try {
+            viewport.setPointerCapture(pointerId);
+          } catch (error) {
+            // The gesture can continue without capture when the pointer already ended.
+          }
+        }
+      }
+      if (gestureDirection !== "horizontal") return;
+      if (event.cancelable) event.preventDefault();
+      const dragScale = touchGesture ? 1.28 : 1;
+      const scaledDelta = deltaX * dragScale;
+      const resistance = Math.abs(scaledDelta) > viewport.clientWidth ? 0.35 : 1;
+      slider.style.setProperty("--slider-drag", `${(scaledDelta * resistance).toFixed(1)}px`);
     }
 
     previous.addEventListener("click", function () {
@@ -1563,45 +1634,53 @@
     viewport.addEventListener("pointerdown", function (event) {
       if (event.button !== undefined && event.button !== 0) return;
       if (event.target.closest("a, button, input, select, textarea")) return;
+      if (
+        event.pointerType === "touch" &&
+        window.matchMedia("(max-width: 1366px)").matches
+      ) return;
       pointerId = event.pointerId;
-      startX = event.clientX;
-      startY = event.clientY;
-      lastX = event.clientX;
-      startedAt = performance.now();
-      gestureDirection = "";
+      beginGesture(event.clientX, event.clientY, false);
     });
     viewport.addEventListener("pointermove", function (event) {
       if (pointerId === null || event.pointerId !== pointerId) return;
-      const deltaX = event.clientX - startX;
-      const deltaY = event.clientY - startY;
-      lastX = event.clientX;
-      if (!gestureDirection && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 7) {
-        gestureDirection = Math.abs(deltaX) > Math.abs(deltaY) * 1.08
-          ? "horizontal"
-          : "vertical";
-        if (gestureDirection === "vertical") {
-          resetGesture();
-          return;
-        }
-        slider.classList.add("is-dragging");
-        if (typeof viewport.setPointerCapture === "function") {
-          try {
-            viewport.setPointerCapture(pointerId);
-          } catch (error) {
-            // The gesture can continue without capture when the pointer already ended.
-          }
-        }
-      }
-      if (gestureDirection !== "horizontal") return;
-      if (event.cancelable) event.preventDefault();
-      const resistance = Math.abs(deltaX) > viewport.clientWidth ? 0.35 : 1;
-      slider.style.setProperty("--slider-drag", `${(deltaX * resistance).toFixed(1)}px`);
-    });
+      updateGesture(event.clientX, event.clientY, event, true);
+    }, { passive: false });
     viewport.addEventListener("pointerup", finishGesture);
     viewport.addEventListener("pointercancel", finishGesture);
     viewport.addEventListener("lostpointercapture", function () {
       if (pointerId !== null) resetGesture();
     });
+    viewport.addEventListener("touchstart", function (event) {
+      if (!window.matchMedia("(max-width: 1366px)").matches) return;
+      if (touchIdentifier !== null || pointerId !== null || !event.changedTouches.length) return;
+      if (event.target.closest("a, button, input, select, textarea")) return;
+      const touch = event.changedTouches[0];
+      touchIdentifier = touch.identifier;
+      beginGesture(touch.clientX, touch.clientY, true);
+    }, { passive: true });
+    viewport.addEventListener("touchmove", function (event) {
+      if (touchIdentifier === null) return;
+      const touch = Array.from(event.touches).find(function (candidate) {
+        return candidate.identifier === touchIdentifier;
+      });
+      if (!touch) return;
+      updateGesture(touch.clientX, touch.clientY, event, false);
+    }, { passive: false });
+    viewport.addEventListener("touchend", function (event) {
+      if (
+        touchIdentifier === null ||
+        !Array.from(event.changedTouches).some(function (touch) {
+          return touch.identifier === touchIdentifier;
+        })
+      ) return;
+      completeGesture();
+    }, { passive: true });
+    viewport.addEventListener("touchcancel", function () {
+      if (touchIdentifier !== null) {
+        setIndex(index, false);
+        resetGesture();
+      }
+    }, { passive: true });
     viewport.addEventListener("dragstart", function (event) {
       event.preventDefault();
     });
@@ -1930,8 +2009,7 @@
   }
 
   function setSiteTheme(theme) {
-    const homePage = document.body && document.body.classList.contains("home-page");
-    const nextTheme = !homePage && theme === "manmatic" ? "manmatic" : "light";
+    const nextTheme = theme === "manmatic" ? "manmatic" : "light";
     const changed = root.dataset.siteTheme !== nextTheme;
     root.dataset.siteTheme = nextTheme;
     if (changed) {
@@ -2074,11 +2152,13 @@
     if (root.dataset.manmaticRouteReady === "true") return;
     root.dataset.manmaticRouteReady = "true";
 
-    const transitionKey = "ahmad-manmatic-route-transition-v3";
-    const lastRouteKey = "ahmad-manmatic-last-route-v3";
+    const lastRouteKey = "ahmad-manmatic-last-route-v4";
     const transitionDuration = 340;
+    const themeSwapDelay = 150;
     let cleanupTimer = 0;
+    let themeSwapTimer = 0;
     let activeShell = null;
+    let transitionComplete = null;
 
     function isManmaticRoute(pathname) {
       return /^\/projects\/manmatic(?:\/index\.html)?\/?$/.test(pathname);
@@ -2104,10 +2184,25 @@
       } catch (error) {}
     }
 
-    function clearTransition() {
+    function applyTheme(theme, instant) {
+      if (instant) root.classList.add("theme-swap-instant");
+      setSiteTheme(theme);
+      if (instant) {
+        void document.body.offsetWidth;
+        window.requestAnimationFrame(function () {
+          root.classList.remove("theme-swap-instant");
+        });
+      }
+    }
+
+    function clearTransition(runCompletion) {
       if (cleanupTimer) {
         window.clearTimeout(cleanupTimer);
         cleanupTimer = 0;
+      }
+      if (themeSwapTimer) {
+        window.clearTimeout(themeSwapTimer);
+        themeSwapTimer = 0;
       }
       if (activeShell) {
         activeShell.removeEventListener("animationend", handleAnimationEnd);
@@ -2115,6 +2210,9 @@
       }
       activeShell = null;
       delete root.dataset.manmaticRouteTransition;
+      const completion = transitionComplete;
+      transitionComplete = null;
+      if (runCompletion && completion) completion();
     }
 
     function handleAnimationEnd(event) {
@@ -2122,54 +2220,59 @@
         event.target !== activeShell ||
         event.animationName !== "manmatic-content-signal"
       ) return;
-      clearTransition();
+      clearTransition(true);
     }
 
-    function storeTransition(destination, direction) {
-      try {
-        window.sessionStorage.setItem(transitionKey, JSON.stringify({
-          target: destination,
-          direction: direction,
-          startedAt: Date.now()
-        }));
-      } catch (error) {}
-    }
-
-    function readTransition() {
-      let request = null;
-      try {
-        request = JSON.parse(
-          window.sessionStorage.getItem(transitionKey) || "null"
-        );
-        window.sessionStorage.removeItem(transitionKey);
-      } catch (error) {
-        request = null;
+    function playTransition(direction, targetTheme, completion) {
+      const resolvedTheme = targetTheme === "manmatic" ? "manmatic" : "light";
+      if (reducedMotion.matches) {
+        applyTheme(resolvedTheme, true);
+        if (completion) completion();
+        return;
+      }
+      const shell = document.querySelector(".site-shell");
+      if (!shell) {
+        applyTheme(resolvedTheme, true);
+        if (completion) completion();
+        return;
       }
 
-      if (
-        !request ||
-        Date.now() - Number(request.startedAt || 0) > 5000 ||
-        request.target !== window.location.pathname + window.location.search
-      ) return null;
-      return request;
-    }
-
-    function playTransition(request) {
-      if (!request || reducedMotion.matches) return;
-      const shell = document.querySelector(".site-shell");
-      if (!shell) return;
-
-      clearTransition();
+      clearTransition(false);
       activeShell = shell;
       root.dataset.manmaticRouteTransition =
-        request.direction === "exit" ? "exit" : "enter";
+        direction === "exit" ? "exit" : "enter";
+      transitionComplete = completion || null;
       shell.addEventListener("animationend", handleAnimationEnd);
       shell.classList.add("is-manmatic-route-transitioning");
+      themeSwapTimer = window.setTimeout(function () {
+        applyTheme(resolvedTheme, true);
+        themeSwapTimer = 0;
+      }, themeSwapDelay);
       cleanupTimer = window.setTimeout(
-        clearTransition,
+        function () { clearTransition(true); },
         transitionDuration + 100
       );
     }
+
+    const navigationEntry = window.performance &&
+      performance.getEntriesByType &&
+      performance.getEntriesByType("navigation")[0];
+    const previousRouteState = readLastRouteState();
+    const initialRouteState = currentRouteState();
+    if (
+      navigationEntry &&
+      navigationEntry.type === "back_forward" &&
+      previousRouteState !== initialRouteState
+    ) {
+      applyTheme(previousRouteState, true);
+      playTransition(
+        initialRouteState === "manmatic" ? "enter" : "exit",
+        initialRouteState
+      );
+    } else {
+      applyTheme(initialRouteState, true);
+    }
+    rememberCurrentRoute();
 
     document.addEventListener("click", function (event) {
       if (
@@ -2205,50 +2308,36 @@
       const destinationIsManmatic = isManmaticRoute(destination.pathname);
       if (sourceIsManmatic === destinationIsManmatic) return;
 
-      storeTransition(
-        destination.pathname + destination.search,
-        destinationIsManmatic ? "enter" : "exit"
+      event.preventDefault();
+      playTransition(
+        destinationIsManmatic ? "enter" : "exit",
+        destinationIsManmatic ? "manmatic" : "light",
+        function () {
+          window.location.assign(destination.href);
+        }
       );
     });
 
     window.addEventListener("pageshow", function (event) {
-      const request = readTransition();
-      if (request) {
-        playTransition(request);
-      } else if (event.persisted) {
+      if (event.persisted) {
         const previousState = readLastRouteState();
         const nextState = currentRouteState();
         if (previousState !== nextState) {
-          playTransition({
-            direction: nextState === "manmatic" ? "enter" : "exit"
-          });
+          applyTheme(previousState, true);
+          playTransition(
+            nextState === "manmatic" ? "enter" : "exit",
+            nextState
+          );
+        } else {
+          applyTheme(nextState, true);
         }
       }
       rememberCurrentRoute();
     });
     window.addEventListener("pagehide", function () {
-      clearTransition();
+      clearTransition(false);
       rememberCurrentRoute();
     });
-
-    const initialRequest = readTransition();
-    if (initialRequest) {
-      playTransition(initialRequest);
-    } else {
-      const navigationEntry = window.performance &&
-        performance.getEntriesByType &&
-        performance.getEntriesByType("navigation")[0];
-      if (navigationEntry && navigationEntry.type === "back_forward") {
-        const previousState = readLastRouteState();
-        const nextState = currentRouteState();
-        if (previousState !== nextState) {
-          playTransition({
-            direction: nextState === "manmatic" ? "enter" : "exit"
-          });
-        }
-      }
-    }
-    rememberCurrentRoute();
   }
 
   function projectAtReadingLine() {
@@ -2622,73 +2711,191 @@
       if (rail.dataset.computationalRailInitialized === "true") return;
       rail.dataset.computationalRailInitialized = "true";
       let pointerId = null;
+      let touchIdentifier = null;
       let gestureDirection = "";
       let pointerStartX = 0;
       let pointerStartY = 0;
       let scrollStart = 0;
       let scrollRatio = 0;
+      let lastPointerX = 0;
+      let lastPointerAt = 0;
+      let scrollVelocity = 0;
+      let touchGesture = false;
+      let momentumFrame = 0;
+
+      function isTouchSizedPointer(event) {
+        return event.pointerType === "touch" &&
+          window.matchMedia("(max-width: 1366px)").matches;
+      }
+
+      function stopMomentum() {
+        if (!momentumFrame) return;
+        window.cancelAnimationFrame(momentumFrame);
+        momentumFrame = 0;
+      }
+
+      function startMomentum(initialVelocity) {
+        stopMomentum();
+        if (reducedMotion.matches || Math.abs(initialVelocity) < 0.12) return;
+        let velocity = clamp(initialVelocity, -3.2, 3.2);
+        let previousTime = performance.now();
+
+        function advance(now) {
+          const elapsed = Math.min(Math.max(now - previousTime, 1), 32);
+          previousTime = now;
+          const limit = Math.max(0, rail.scrollWidth - rail.clientWidth);
+          const previousPosition = rail.scrollLeft;
+          const nextPosition = clamp(previousPosition + velocity * elapsed, 0, limit);
+          rail.scrollLeft = nextPosition;
+          velocity *= Math.pow(0.94, elapsed / 16.667);
+
+          if (
+            Math.abs(velocity) < 0.035 ||
+            (nextPosition === previousPosition && (nextPosition === 0 || nextPosition === limit))
+          ) {
+            momentumFrame = 0;
+            return;
+          }
+          momentumFrame = window.requestAnimationFrame(advance);
+        }
+
+        momentumFrame = window.requestAnimationFrame(advance);
+      }
+
+      function beginRailGesture(clientX, clientY, isTouchGesture) {
+        stopMomentum();
+        gestureDirection = "";
+        pointerStartX = clientX;
+        pointerStartY = clientY;
+        lastPointerX = clientX;
+        lastPointerAt = performance.now();
+        scrollVelocity = 0;
+        scrollStart = rail.scrollLeft;
+        touchGesture = isTouchGesture;
+      }
+
+      function clearRailGesture() {
+        if (
+          pointerId !== null &&
+          rail.hasPointerCapture &&
+          rail.hasPointerCapture(pointerId)
+        ) {
+          rail.releasePointerCapture(pointerId);
+        }
+        pointerId = null;
+        touchIdentifier = null;
+        touchGesture = false;
+        scrollVelocity = 0;
+        gestureDirection = "";
+        rail.classList.remove("is-dragging");
+      }
+
+      function updateRailGesture(clientX, clientY, event, capturePointer) {
+        const deltaX = clientX - pointerStartX;
+        const deltaY = clientY - pointerStartY;
+        const sampleAt = performance.now();
+        const sampleElapsed = Math.max(sampleAt - lastPointerAt, 1);
+        const dragScale = touchGesture ? 1.55 : 1;
+        const instantaneousVelocity = ((lastPointerX - clientX) * dragScale) / sampleElapsed;
+        scrollVelocity = scrollVelocity * 0.56 + instantaneousVelocity * 0.44;
+        lastPointerX = clientX;
+        lastPointerAt = sampleAt;
+        if (!gestureDirection && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 7) {
+          gestureDirection = Math.abs(deltaX) > Math.abs(deltaY) * 1.1
+            ? "horizontal"
+            : "vertical";
+          if (gestureDirection === "vertical") {
+            clearRailGesture();
+            return;
+          }
+          rail.classList.add("is-dragging");
+          if (
+            capturePointer &&
+            pointerId !== null &&
+            typeof rail.setPointerCapture === "function"
+          ) {
+            try {
+              rail.setPointerCapture(pointerId);
+            } catch (error) {
+              // Pointer capture is optional; direct pointer events still update the rail.
+            }
+          }
+        }
+        if (gestureDirection !== "horizontal") return;
+        if (event.cancelable) event.preventDefault();
+        rail.scrollLeft = clamp(
+          scrollStart - deltaX * dragScale,
+          0,
+          Math.max(0, rail.scrollWidth - rail.clientWidth)
+        );
+      }
+
+      function finishRailGesture(allowMomentum) {
+        const shouldContinueMomentum = allowMomentum &&
+          touchGesture &&
+          gestureDirection === "horizontal";
+        const releaseVelocity = performance.now() - lastPointerAt < 110
+          ? scrollVelocity
+          : 0;
+        clearRailGesture();
+        if (shouldContinueMomentum) startMomentum(releaseVelocity);
+      }
 
       rail.addEventListener("pointerdown", function (event) {
         if (event.button !== undefined && event.button !== 0) return;
+        if (isTouchSizedPointer(event)) return;
         if (event.target.closest("a, button, video, input, select, textarea")) return;
         pointerId = event.pointerId;
-        gestureDirection = "";
-        pointerStartX = event.clientX;
-        pointerStartY = event.clientY;
-        scrollStart = rail.scrollLeft;
+        beginRailGesture(event.clientX, event.clientY, false);
       });
 
       rail.addEventListener(
         "pointermove",
         function (event) {
           if (pointerId === null || event.pointerId !== pointerId) return;
-          const deltaX = event.clientX - pointerStartX;
-          const deltaY = event.clientY - pointerStartY;
-          if (!gestureDirection && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 7) {
-            gestureDirection = Math.abs(deltaX) > Math.abs(deltaY) * 1.1
-              ? "horizontal"
-              : "vertical";
-            if (gestureDirection === "vertical") {
-              pointerId = null;
-              return;
-            }
-            rail.classList.add("is-dragging");
-            if (typeof rail.setPointerCapture === "function") {
-              try {
-                rail.setPointerCapture(pointerId);
-              } catch (error) {
-                // Pointer capture is optional; direct pointer events still update the rail.
-              }
-            }
-          }
-          if (gestureDirection !== "horizontal") return;
-          if (event.cancelable) event.preventDefault();
-          rail.scrollLeft = clamp(
-            scrollStart - deltaX,
-            0,
-            Math.max(0, rail.scrollWidth - rail.clientWidth)
-          );
+          updateRailGesture(event.clientX, event.clientY, event, true);
         },
         { passive: false }
       );
 
       function finishPointer(event) {
         if (pointerId === null || (event && event.pointerId !== pointerId)) return;
-        if (rail.hasPointerCapture && rail.hasPointerCapture(pointerId)) {
-          rail.releasePointerCapture(pointerId);
-        }
-        pointerId = null;
-        gestureDirection = "";
-        rail.classList.remove("is-dragging");
+        finishRailGesture(false);
       }
 
       rail.addEventListener("pointerup", finishPointer);
       rail.addEventListener("pointercancel", finishPointer);
       rail.addEventListener("lostpointercapture", function () {
-        pointerId = null;
-        gestureDirection = "";
-        rail.classList.remove("is-dragging");
+        if (pointerId !== null) clearRailGesture();
       });
+      rail.addEventListener("touchstart", function (event) {
+        if (!window.matchMedia("(max-width: 1366px)").matches) return;
+        if (touchIdentifier !== null || pointerId !== null || !event.changedTouches.length) return;
+        if (event.target.closest("a, button, input, select, textarea")) return;
+        const touch = event.changedTouches[0];
+        touchIdentifier = touch.identifier;
+        beginRailGesture(touch.clientX, touch.clientY, true);
+      }, { passive: true });
+      rail.addEventListener("touchmove", function (event) {
+        if (touchIdentifier === null) return;
+        const touch = Array.from(event.touches).find(function (candidate) {
+          return candidate.identifier === touchIdentifier;
+        });
+        if (!touch) return;
+        updateRailGesture(touch.clientX, touch.clientY, event, false);
+      }, { passive: false });
+      rail.addEventListener("touchend", function (event) {
+        if (
+          touchIdentifier === null ||
+          !Array.from(event.changedTouches).some(function (touch) {
+            return touch.identifier === touchIdentifier;
+          })
+        ) return;
+        finishRailGesture(true);
+      }, { passive: true });
+      rail.addEventListener("touchcancel", function () {
+        if (touchIdentifier !== null) finishRailGesture(false);
+      }, { passive: true });
       rail.addEventListener("dragstart", function (event) {
         event.preventDefault();
       });
@@ -2719,7 +2926,8 @@
         const observer = new ResizeObserver(function () {
           const limit = Math.max(0, rail.scrollWidth - rail.clientWidth);
           rail.scrollLeft = clamp(scrollRatio * limit, 0, limit);
-          finishPointer({ pointerId: pointerId });
+          stopMomentum();
+          if (pointerId !== null || touchIdentifier !== null) finishRailGesture(false);
         });
         observer.observe(rail);
         const track = rail.querySelector(".computational-rail__track");
