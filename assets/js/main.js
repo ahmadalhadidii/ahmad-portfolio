@@ -1991,7 +1991,7 @@
     if (themeMeta) {
       themeMeta.setAttribute(
         "content",
-        nextTheme === "manmatic" ? "#0a0a0a" : "#ffffff"
+        nextTheme === "manmatic" ? "#272727" : "#ffffff"
       );
     }
   }
@@ -2657,11 +2657,37 @@
       .forEach(function (row) { archive.appendChild(row); });
   }
 
+  function enforceExplicitProjectActions() {
+    document.querySelectorAll(".project-row > a.project-row__link, .manmatic-category__record > a.manmatic-branch").forEach(function (wrapper) {
+      const href = wrapper.getAttribute("href");
+      const label = wrapper.getAttribute("aria-label") || "Open project";
+      const replacement = document.createElement("div");
+      replacement.className = wrapper.className;
+      Array.from(wrapper.attributes).forEach(function (attribute) {
+        if (!["href", "aria-label", "target", "rel"].includes(attribute.name)) {
+          replacement.setAttribute(attribute.name, attribute.value);
+        }
+      });
+      while (wrapper.firstChild) replacement.appendChild(wrapper.firstChild);
+      const oldAction = replacement.querySelector(":scope > .project-row__action, :scope > span:last-child");
+      if (oldAction && href) {
+        const action = document.createElement("a");
+        action.className = oldAction.className || "project-row__action";
+        action.href = href;
+        action.setAttribute("aria-label", label);
+        action.innerHTML = oldAction.innerHTML;
+        oldAction.replaceWith(action);
+      }
+      wrapper.replaceWith(replacement);
+    });
+  }
+
   function init() {
     respectReducedMotion();
     initAmbientMotion();
     initMobileNavigation();
     normalizeProjectArchiveOrder();
+    enforceExplicitProjectActions();
     hydrateContentMedia();
     initRunningHeader();
     visualSliderController = initVisuals();

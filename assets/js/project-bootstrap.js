@@ -36,22 +36,16 @@
       : "50% 50%"
   } : null;
 
-  root.classList.remove("no-js");
-  root.classList.add("js", "loader-pending");
+  root.classList.remove("no-js", "loader-pending");
+  root.classList.add("js", "loader-complete", "motion-ready");
   root.dataset.initialTheme = theme;
   root.dataset.siteTheme = theme;
   if (themeColor) {
-    themeColor.setAttribute("content", theme === "manmatic" ? "#0a0a0a" : "#ffffff");
+    themeColor.setAttribute("content", theme === "manmatic" ? "#272727" : "#ffffff");
   }
-
-  window.__portfolioLoaderFallback = window.setTimeout(function () {
-    if (!root.classList.contains("loader-pending")) return;
-    var loader = document.getElementById("loader");
-    root.classList.remove("loader-pending");
-    root.classList.add("loader-complete", "motion-ready");
-    if (loader) {
-      loader.hidden = true;
-      loader.setAttribute("aria-hidden", "true");
-    }
-  }, 3200);
+  var loader = document.getElementById("loader");
+  if (loader) {
+    loader.hidden = true;
+    loader.setAttribute("aria-hidden", "true");
+  }
 })();

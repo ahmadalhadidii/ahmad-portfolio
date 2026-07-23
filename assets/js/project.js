@@ -68,7 +68,7 @@
     document.documentElement.dataset.initialTheme = theme;
     document.documentElement.dataset.siteTheme = theme;
     if (themeColor) {
-      themeColor.setAttribute("content", theme === "manmatic" ? "#0a0a0a" : "#ffffff");
+      themeColor.setAttribute("content", theme === "manmatic" ? "#272727" : "#ffffff");
     }
   }
 
