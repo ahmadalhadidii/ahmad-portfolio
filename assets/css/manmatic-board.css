@@ -1,4 +1,4 @@
-:root{--surface-dark:#272727;--surface-dark-rgb:39,39,39;--mm-text:#f2f1ed;--mm-secondary:#b6b4ae;--mm-meta:#918f89;--mm-accent:#df713c;--motion-standard:360ms;--motion-easing:cubic-bezier(.22,1,.36,1)}
+:root{--surface-dark:#272727;--surface-dark-rgb:39,39,39;--mm-text:#f2f1ed;--mm-secondary:#b6b4ae;--mm-meta:#918f89;--mm-accent:#df713c;--motion-fast:280ms;--motion-standard:480ms;--motion-slow:760ms;--motion-easing:cubic-bezier(.22,1,.36,1)}
 html[data-site-theme=manmatic],.manmatic-board-page,.manmatic-board-page main{background:var(--surface-dark);color:var(--mm-text)}
 .manmatic-board-page{--theme-bg:var(--surface-dark);--theme-text:var(--mm-text);--theme-muted:var(--mm-secondary);--theme-line:#4b4b4b;overflow-x:hidden}
 .mm-board{padding-top:clamp(84px,8vw,118px);background:var(--surface-dark);font-family:var(--font-mono)}

@@ -5,7 +5,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $Root = [System.IO.Path]::GetFullPath($Root)
 $CanonicalBase = 'https://www.ahmadalhadidii.manmatic.institute'
-$Build = '20260718-responsive-media-protection-06'
+$Build = '20260723-regression-repair-01'
 $DetailBuild = '20260715-visual-routing-01'
 
 function ConvertTo-HtmlEncoded([object]$Value) {
@@ -126,21 +126,6 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
   }
   $jsonLd = ($structuredData | ConvertTo-Json -Depth 6 -Compress).Replace('</', '<\/')
 
-  $loaderData = [ordered]@{
-    number = $visual.index
-    kicker = "$($visual.index) / $recordCount"
-    title = $visual.title
-    subtitle = $visual.category
-    type = 'VISUAL NARRATIVE'
-    year = $visual.year
-    location = ''
-    theme = 'light'
-    image = $imagePath
-    srcset = $srcset
-    objectPosition = if ($visual.objectPosition) { $visual.objectPosition } else { '50% 50%' }
-  }
-  $loaderJson = ($loaderData | ConvertTo-Json -Depth 4 -Compress).Replace('</', '<\/')
-
   $html = @"
 <!doctype html>
 <html lang="en" class="no-js" data-page="visual" data-site-theme="light" data-initial-theme="light" data-build="$DetailBuild">
@@ -177,28 +162,9 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
   <script type="application/ld+json">$jsonLd</script>
 
   <script src="/content.js?v=$DetailBuild"></script>
-  <script>
-    (function () {
-      var root = document.documentElement;
-      window.__portfolioDetailLoaderData = $loaderJson;
-      root.classList.remove("no-js");
-      root.classList.add("js", "loader-pending");
-      window.__portfolioLoaderFallback = window.setTimeout(function () {
-        if (!root.classList.contains("loader-pending")) return;
-        var loader = document.getElementById("loader");
-        root.classList.remove("loader-pending");
-        root.classList.add("loader-complete", "motion-ready");
-        if (loader) {
-          loader.hidden = true;
-          loader.setAttribute("aria-hidden", "true");
-        }
-      }, 3200);
-    })();
-  </script>
 
   <style>
     html, body, main { background: #ffffff; color: #111111; }
-    .no-js .loader { display: none; }
   </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -208,38 +174,7 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
   <script src="/assets/js/visual.js?v=$DetailBuild" defer></script>
 </head>
 <body class="visual-page" data-visual-slug="$(ConvertTo-HtmlEncoded $visual.slug)">
-  <div class="loader loader--project loader--visual" id="loader" role="status" aria-label="Loading $(ConvertTo-HtmlEncoded $visual.title)">
-    <p class="visually-hidden" id="loader-announcement" aria-live="polite">$(ConvertTo-HtmlEncoded $visual.title) is loading.</p>
-    <div class="project-loader" aria-hidden="true">
-      <header class="project-loader__identity">
-        <p class="project-loader__file" data-project-loader-kicker>$($visual.index) / $recordCount</p>
-        <p class="project-loader__title" id="loader-name">$(ConvertTo-HtmlEncoded $visual.title.ToUpperInvariant())</p>
-        <p class="project-loader__subtitle" data-project-loader-subtitle>$(ConvertTo-HtmlEncoded $visual.category.ToUpperInvariant())</p>
-        <dl>
-          <div><dt>YEAR</dt><dd data-project-loader-year>$(ConvertTo-HtmlEncoded $visual.year)</dd></div>
-          <div><dt>TYPE</dt><dd data-project-loader-type>VISUAL NARRATIVE</dd></div>
-          <div><dt>STATE</dt><dd id="loader-state">FILE INDEXING</dd></div>
-        </dl>
-      </header>
-      <figure class="project-loader__visual">
-        <div class="project-loader__image loader__preview-image">
-          $pictureOpen<img data-loader-preview src="$(ConvertTo-HtmlEncoded $imagePath)"$srcsetAttribute width="$($visual.width)" height="$($visual.height)" alt="">$pictureClose
-          <span class="project-loader__scan"></span>
-          <span class="project-loader__slice project-loader__slice--one"></span>
-          <span class="project-loader__slice project-loader__slice--two"></span>
-          <p class="project-loader__fallback" data-project-loader-fallback>VISUAL IMAGE UNAVAILABLE</p>
-        </div>
-        <figcaption><span data-project-loader-caption>VISUAL IMAGE</span><span>FRAME <b id="loader-frame">01 / 06</b> &middot; SIGNAL <b id="loader-signal">000.000</b></span></figcaption>
-      </figure>
-      <footer class="project-loader__footer">
-        <div class="project-loader__opening"><span>LOADING VISUAL</span><div class="project-loader__count"><strong id="loader-progress">000</strong><small>/ 100</small></div></div>
-        <div class="loader__progress-track"><span id="loader-progress-bar"></span></div>
-        <div class="project-loader__status"><p data-project-loader-status-type>VISUAL NARRATIVE</p><p id="loader-phase">FILE ACCESS</p><p><span id="loader-progress-secondary">000</span> / 100</p></div>
-      </footer>
-    </div>
-  </div>
-
-  <noscript><style>.loader, .nav-toggle { display: none !important; }</style></noscript>
+  <noscript><style>.nav-toggle { display: none !important; }</style></noscript>
   <a class="skip-link" href="#main-content">Skip to visual content</a>
   <div class="ambient-signal" aria-hidden="true"></div>
   <div class="material-texture" aria-hidden="true"></div>

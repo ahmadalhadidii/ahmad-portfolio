@@ -67,10 +67,6 @@ body.shila-page,
   font: 400 clamp(0.86rem, 1.08vw, 1.03rem) / 1.48 var(--font-sans);
 }
 
-.shila-board__hero {
-  width: 100%;
-}
-
 .shila-board__hero img {
   aspect-ratio: 3657 / 2244;
   object-fit: contain;
@@ -79,6 +75,10 @@ body.shila-page,
 .shila-board__inner {
   width: 94.55%;
   margin-inline: auto;
+}
+
+.shila-board__hero {
+  width: 100%;
 }
 
 .shila-opening {
@@ -271,7 +271,7 @@ body.shila-page,
   grid-auto-columns: 100%;
   width: 100%;
   transform: translate3d(calc(var(--gallery-position) * -100% + var(--gallery-drag)), 0, 0);
-  transition: transform 220ms cubic-bezier(0.22, 0.7, 0.25, 1);
+  transition: transform var(--motion-standard) var(--motion-easing);
   will-change: transform;
 }
 
@@ -327,12 +327,20 @@ body.shila-page,
   cursor: pointer;
 }
 
-.shila-gallery__controls button:hover,
 .shila-gallery__controls button:active {
   border: 0;
   background: transparent;
   box-shadow: none;
   color: #000000;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .shila-gallery__controls button:hover {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    color: #000000;
+  }
 }
 
 .shila-gallery__controls button:focus-visible {
@@ -364,7 +372,7 @@ body.shila-page,
   background: #222;
   transform: scaleX(0.2);
   transform-origin: left center;
-  transition: transform 180ms ease;
+  transition: transform var(--motion-fast) var(--motion-easing);
 }
 
 .shila-spatial {
@@ -435,14 +443,14 @@ body.shila-page,
   opacity: 0;
   transform: translate3d(0, 12px, 0);
   transition:
-    opacity 520ms var(--ease-editorial),
-    transform 640ms var(--ease-editorial);
+    opacity var(--motion-standard) var(--motion-easing),
+    transform var(--motion-slow) var(--motion-easing);
   transition-delay: var(--shila-reveal-delay, 0ms);
 }
 
 .motion-ready .shila-motion [data-shila-reveal][data-shila-reveal-kind="fade"].shila-reveal-ready {
   opacity: 0;
-  transition: opacity 680ms var(--ease-editorial);
+  transition: opacity var(--motion-slow) var(--motion-easing);
   transition-delay: var(--shila-reveal-delay, 0ms);
 }
 
@@ -451,9 +459,9 @@ body.shila-page,
   clip-path: inset(0 100% 0 0);
   transform: translate3d(10px, 0, 0);
   transition:
-    opacity 620ms var(--ease-editorial),
-    clip-path 880ms var(--ease-editorial),
-    transform 880ms var(--ease-editorial);
+    opacity var(--motion-standard) var(--motion-easing),
+    clip-path var(--motion-slow) var(--motion-easing),
+    transform var(--motion-slow) var(--motion-easing);
   transition-delay: var(--shila-reveal-delay, 0ms);
 }
 

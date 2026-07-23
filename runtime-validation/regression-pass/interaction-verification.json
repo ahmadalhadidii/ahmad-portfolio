@@ -1,0 +1,583 @@
+﻿{
+    "passed":  41,
+    "failed":  0,
+    "tests":  [
+                  {
+                      "name":  "Fresh homepage shows the original white loader",
+                      "passed":  true,
+                      "details":  {
+                                      "present":  true,
+                                      "display":  "block",
+                                      "background":  "rgb(255, 255, 255)",
+                                      "pending":  true
+                                  }
+                  },
+                  {
+                      "name":  "Homepage to ManMaTIC is immediate and loader-free",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "mainVisible":  true
+                                  }
+                  },
+                  {
+                      "name":  "ManMaTIC exit reveals the white homepage under transparent glitch bands",
+                      "passed":  true,
+                      "details":  {
+                                      "homeBackground":  "rgb(255, 255, 255)",
+                                      "loaderDisplay":  "none",
+                                      "transitionBackground":  "rgba(0, 0, 0, 0)",
+                                      "active":  false,
+                                      "beforeHeight":  "4.04688px",
+                                      "afterHeight":  "23.3906px"
+                                  }
+                  },
+                  {
+                      "name":  "Homepage to Shila is loader-free",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "mainVisible":  true
+                                  }
+                  },
+                  {
+                      "name":  "Homepage to Dabouq is loader-free",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "mainVisible":  true
+                                  }
+                  },
+                  {
+                      "name":  "Homepage to ELMA â€” TREE UNIT is loader-free",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "mainVisible":  true
+                                  }
+                  },
+                  {
+                      "name":  "Project-to-project navigation is loader-free",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false
+                                  }
+                  },
+                  {
+                      "name":  "Browser Back restores one clean homepage transition",
+                      "passed":  true,
+                      "details":  {
+                                      "routeGlitch":  true,
+                                      "listenerReady":  "true",
+                                      "loaderDisplay":  "none"
+                                  }
+                  },
+                  {
+                      "name":  "Browser Forward restores one clean project transition",
+                      "passed":  true,
+                      "details":  {
+                                      "routeGlitch":  true,
+                                      "listenerReady":  "true",
+                                      "loaderCount":  0
+                                  }
+                  },
+                  {
+                      "name":  "Direct route is loader-free: /projects/manmatic/",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "visible":  true
+                                  }
+                  },
+                  {
+                      "name":  "Direct route is loader-free: /projects/shila/",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "visible":  true
+                                  }
+                  },
+                  {
+                      "name":  "Direct route is loader-free: /projects/dabouq/",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "visible":  true
+                                  }
+                  },
+                  {
+                      "name":  "Direct route is loader-free: /projects/concrete-fatigue/",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "visible":  true
+                                  }
+                  },
+                  {
+                      "name":  "Direct route is loader-free: /projects/protocol-port/",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "visible":  true
+                                  }
+                  },
+                  {
+                      "name":  "Direct route is loader-free: /visuals/architecture-of-elsewhere/",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "visible":  true
+                                  }
+                  },
+                  {
+                      "name":  "Direct route is loader-free: /visuals/drawn-out-of-red/",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "visible":  true
+                                  }
+                  },
+                  {
+                      "name":  "Direct route is loader-free: /visuals/stone-by-moonlight/",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "visible":  true
+                                  }
+                  },
+                  {
+                      "name":  "Direct route is loader-free: /visuals/the-mechanics-of-becoming/",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "visible":  true
+                                  }
+                  },
+                  {
+                      "name":  "Direct route is loader-free: /visuals/the-last-room-before-tomorrow/",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "pending":  false,
+                                      "visible":  true
+                                  }
+                  },
+                  {
+                      "name":  "Shila hero aligns at 1440x900",
+                      "passed":  true,
+                      "details":  {
+                                      "width":  1440,
+                                      "height":  900,
+                                      "heroLeft":  62,
+                                      "innerLeft":  62,
+                                      "heroRight":  1363,
+                                      "innerRight":  1363,
+                                      "leftDelta":  0,
+                                      "rightDelta":  0,
+                                      "overflow":  false,
+                                      "naturalRatio":  1.6296791443850267,
+                                      "renderedRatio":  1.629687622328349
+                                  }
+                  },
+                  {
+                      "name":  "Shila hero aligns at 1024x1366",
+                      "passed":  true,
+                      "details":  {
+                                      "width":  1024,
+                                      "height":  1366,
+                                      "heroLeft":  40,
+                                      "innerLeft":  40,
+                                      "heroRight":  984,
+                                      "innerRight":  984,
+                                      "leftDelta":  0,
+                                      "rightDelta":  0,
+                                      "overflow":  false,
+                                      "naturalRatio":  1.6296791443850267,
+                                      "renderedRatio":  1.6296935692706085
+                                  }
+                  },
+                  {
+                      "name":  "Shila hero aligns at 820x1180",
+                      "passed":  true,
+                      "details":  {
+                                      "width":  820,
+                                      "height":  1180,
+                                      "heroLeft":  40,
+                                      "innerLeft":  40,
+                                      "heroRight":  780,
+                                      "innerRight":  780,
+                                      "leftDelta":  0,
+                                      "rightDelta":  0,
+                                      "overflow":  false,
+                                      "naturalRatio":  1.6296791443850267,
+                                      "renderedRatio":  1.6297315898141775
+                                  }
+                  },
+                  {
+                      "name":  "Shila hero aligns at 768x1024",
+                      "passed":  true,
+                      "details":  {
+                                      "width":  768,
+                                      "height":  1024,
+                                      "heroLeft":  40,
+                                      "innerLeft":  40,
+                                      "heroRight":  728,
+                                      "innerRight":  728,
+                                      "leftDelta":  0,
+                                      "rightDelta":  0,
+                                      "overflow":  false,
+                                      "naturalRatio":  1.6296791443850267,
+                                      "renderedRatio":  1.6297283292619735
+                                  }
+                  },
+                  {
+                      "name":  "Shila hero aligns at 430x932",
+                      "passed":  true,
+                      "details":  {
+                                      "width":  430,
+                                      "height":  932,
+                                      "heroLeft":  36,
+                                      "innerLeft":  36,
+                                      "heroRight":  394,
+                                      "innerRight":  394,
+                                      "leftDelta":  0,
+                                      "rightDelta":  0,
+                                      "overflow":  false,
+                                      "naturalRatio":  1.6296791443850267,
+                                      "renderedRatio":  1.6297033928444413
+                                  }
+                  },
+                  {
+                      "name":  "Shila hero aligns at 390x844",
+                      "passed":  true,
+                      "details":  {
+                                      "width":  390,
+                                      "height":  844,
+                                      "heroLeft":  36,
+                                      "innerLeft":  36,
+                                      "heroRight":  354,
+                                      "innerRight":  354,
+                                      "leftDelta":  0,
+                                      "rightDelta":  0,
+                                      "overflow":  false,
+                                      "naturalRatio":  1.6296791443850267,
+                                      "renderedRatio":  1.6297245355541319
+                                  }
+                  },
+                  {
+                      "name":  "Shila hero aligns at 360x800",
+                      "passed":  true,
+                      "details":  {
+                                      "width":  360,
+                                      "height":  800,
+                                      "heroLeft":  36,
+                                      "innerLeft":  36,
+                                      "heroRight":  324,
+                                      "innerRight":  324,
+                                      "leftDelta":  0,
+                                      "rightDelta":  0,
+                                      "overflow":  false,
+                                      "naturalRatio":  1.6296791443850267,
+                                      "renderedRatio":  1.629708222811671
+                                  }
+                  },
+                  {
+                      "name":  "ManMaTIC diagrams integrate at 1440px",
+                      "passed":  true,
+                      "details":  {
+                                      "width":  1440,
+                                      "body":  "rgb(39, 39, 39)",
+                                      "imageBackground":  "rgba(0, 0, 0, 0)",
+                                      "wrapperBackground":  "rgba(0, 0, 0, 0)",
+                                      "opacity":  "1",
+                                      "filter":  "none",
+                                      "mixBlend":  "normal",
+                                      "overflow":  false
+                                  }
+                  },
+                  {
+                      "name":  "ManMaTIC diagrams integrate at 820px",
+                      "passed":  true,
+                      "details":  {
+                                      "width":  820,
+                                      "body":  "rgb(39, 39, 39)",
+                                      "imageBackground":  "rgba(0, 0, 0, 0)",
+                                      "wrapperBackground":  "rgba(0, 0, 0, 0)",
+                                      "opacity":  "1",
+                                      "filter":  "none",
+                                      "mixBlend":  "normal",
+                                      "overflow":  false
+                                  }
+                  },
+                  {
+                      "name":  "ManMaTIC diagrams integrate at 390px",
+                      "passed":  true,
+                      "details":  {
+                                      "width":  390,
+                                      "body":  "rgb(39, 39, 39)",
+                                      "imageBackground":  "rgba(0, 0, 0, 0)",
+                                      "wrapperBackground":  "rgba(0, 0, 0, 0)",
+                                      "opacity":  "1",
+                                      "filter":  "none",
+                                      "mixBlend":  "normal",
+                                      "overflow":  false
+                                  }
+                  },
+                  {
+                      "name":  "Visuals mouse drag advances exactly one slide",
+                      "passed":  true,
+                      "details":  {
+                                      "start":  1,
+                                      "end":  2
+                                  }
+                  },
+                  {
+                      "name":  "Visuals Next button advances exactly one slide",
+                      "passed":  true,
+                      "details":  {
+                                      "start":  2,
+                                      "end":  3
+                                  }
+                  },
+                  {
+                      "name":  "Visuals keyboard arrow advances exactly one slide",
+                      "passed":  true,
+                      "details":  {
+                                      "start":  3,
+                                      "end":  4
+                                  }
+                  },
+                  {
+                      "name":  "Visuals touch swipe advances exactly one slide",
+                      "passed":  true,
+                      "details":  {
+                                      "start":  1,
+                                      "end":  2
+                                  }
+                  },
+                  {
+                      "name":  "Vertical touch over Visuals scrolls the page",
+                      "passed":  true,
+                      "details":  {
+                                      "before":  12206,
+                                      "after":  12371
+                                  }
+                  },
+                  {
+                      "name":  "Computational rail supports mouse drag and horizontal trackpad input",
+                      "passed":  true,
+                      "details":  {
+                                      "afterWheel":  1273,
+                                      "afterDrag":  853,
+                                      "start":  0
+                                  }
+                  },
+                  {
+                      "name":  "Computational rail reaches and stops at its final panel",
+                      "passed":  true,
+                      "details":  {
+                                      "left":  3047,
+                                      "limit":  3047,
+                                      "dragging":  false,
+                                      "videoPaused":  false,
+                                      "videoHydrated":  "true"
+                                  }
+                  },
+                  {
+                      "name":  "Computational rail supports touch swipe",
+                      "passed":  true,
+                      "details":  {
+                                      "start":  0,
+                                      "end":  260
+                                  }
+                  },
+                  {
+                      "name":  "Vertical touch over Computational Design scrolls the page and clears drag state",
+                      "passed":  true,
+                      "details":  {
+                                      "before":  11600,
+                                      "dragging":  false,
+                                      "after":  11775
+                                  }
+                  },
+                  {
+                      "name":  "Computational rail preserves its active position after resize",
+                      "passed":  true,
+                      "details":  {
+                                      "before":  0.6,
+                                      "after":  0.6
+                                  }
+                  },
+                  {
+                      "name":  "Reduced motion skips internal route animation without adding a loader",
+                      "passed":  true,
+                      "details":  {
+                                      "loaderCount":  0,
+                                      "routeGlitch":  false
+                                  }
+                  },
+                  {
+                      "name":  "No uncaught browser errors",
+                      "passed":  true,
+                      "details":  {
+                                      "value":  [
+
+                                                ],
+                                      "Count":  0
+                                  }
+                  }
+              ],
+    "shilaViewports":  [
+                           {
+                               "width":  1440,
+                               "height":  900,
+                               "heroLeft":  62,
+                               "innerLeft":  62,
+                               "heroRight":  1363,
+                               "innerRight":  1363,
+                               "leftDelta":  0,
+                               "rightDelta":  0,
+                               "overflow":  false,
+                               "naturalRatio":  1.6296791443850267,
+                               "renderedRatio":  1.629687622328349
+                           },
+                           {
+                               "width":  1024,
+                               "height":  1366,
+                               "heroLeft":  40,
+                               "innerLeft":  40,
+                               "heroRight":  984,
+                               "innerRight":  984,
+                               "leftDelta":  0,
+                               "rightDelta":  0,
+                               "overflow":  false,
+                               "naturalRatio":  1.6296791443850267,
+                               "renderedRatio":  1.6296935692706085
+                           },
+                           {
+                               "width":  820,
+                               "height":  1180,
+                               "heroLeft":  40,
+                               "innerLeft":  40,
+                               "heroRight":  780,
+                               "innerRight":  780,
+                               "leftDelta":  0,
+                               "rightDelta":  0,
+                               "overflow":  false,
+                               "naturalRatio":  1.6296791443850267,
+                               "renderedRatio":  1.6297315898141775
+                           },
+                           {
+                               "width":  768,
+                               "height":  1024,
+                               "heroLeft":  40,
+                               "innerLeft":  40,
+                               "heroRight":  728,
+                               "innerRight":  728,
+                               "leftDelta":  0,
+                               "rightDelta":  0,
+                               "overflow":  false,
+                               "naturalRatio":  1.6296791443850267,
+                               "renderedRatio":  1.6297283292619735
+                           },
+                           {
+                               "width":  430,
+                               "height":  932,
+                               "heroLeft":  36,
+                               "innerLeft":  36,
+                               "heroRight":  394,
+                               "innerRight":  394,
+                               "leftDelta":  0,
+                               "rightDelta":  0,
+                               "overflow":  false,
+                               "naturalRatio":  1.6296791443850267,
+                               "renderedRatio":  1.6297033928444413
+                           },
+                           {
+                               "width":  390,
+                               "height":  844,
+                               "heroLeft":  36,
+                               "innerLeft":  36,
+                               "heroRight":  354,
+                               "innerRight":  354,
+                               "leftDelta":  0,
+                               "rightDelta":  0,
+                               "overflow":  false,
+                               "naturalRatio":  1.6296791443850267,
+                               "renderedRatio":  1.6297245355541319
+                           },
+                           {
+                               "width":  360,
+                               "height":  800,
+                               "heroLeft":  36,
+                               "innerLeft":  36,
+                               "heroRight":  324,
+                               "innerRight":  324,
+                               "leftDelta":  0,
+                               "rightDelta":  0,
+                               "overflow":  false,
+                               "naturalRatio":  1.6296791443850267,
+                               "renderedRatio":  1.629708222811671
+                           }
+                       ],
+    "manmaticViewports":  [
+                              {
+                                  "width":  1440,
+                                  "body":  "rgb(39, 39, 39)",
+                                  "imageBackground":  "rgba(0, 0, 0, 0)",
+                                  "wrapperBackground":  "rgba(0, 0, 0, 0)",
+                                  "opacity":  "1",
+                                  "filter":  "none",
+                                  "mixBlend":  "normal",
+                                  "overflow":  false
+                              },
+                              {
+                                  "width":  820,
+                                  "body":  "rgb(39, 39, 39)",
+                                  "imageBackground":  "rgba(0, 0, 0, 0)",
+                                  "wrapperBackground":  "rgba(0, 0, 0, 0)",
+                                  "opacity":  "1",
+                                  "filter":  "none",
+                                  "mixBlend":  "normal",
+                                  "overflow":  false
+                              },
+                              {
+                                  "width":  390,
+                                  "body":  "rgb(39, 39, 39)",
+                                  "imageBackground":  "rgba(0, 0, 0, 0)",
+                                  "wrapperBackground":  "rgba(0, 0, 0, 0)",
+                                  "opacity":  "1",
+                                  "filter":  "none",
+                                  "mixBlend":  "normal",
+                                  "overflow":  false
+                              }
+                          ],
+    "recording":  "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\portfolio-regression-recording.mp4",
+    "screenshots":  [
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\01-manmatic-to-white-home.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\02-shila-desktop-1440.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\03-shila-tablet-820.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\04-shila-mobile-390.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\05-manmatic-desktop-1440.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\06-manmatic-tablet-820.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\07-manmatic-mobile-390.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\08-visuals-desktop.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\09-visuals-mobile.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\10-computation-desktop.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\regression-pass\\11-computation-tablet.png"
+                    ]
+}

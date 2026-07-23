@@ -570,62 +570,10 @@
     const announcement = document.getElementById("loader-announcement");
     const loaderName = document.getElementById("loader-name");
     const preview = loader.querySelector("[data-loader-preview]");
-    const projectLoaderData = window.__portfolioDetailLoaderData || window.__portfolioProjectLoaderData || null;
-    const isProjectPage = loader.classList.contains("loader--project");
-    const isProjectLoader = isProjectPage && projectLoaderData;
-
-    if (isProjectLoader) {
-      const isDarkLoader = projectLoaderData.theme === "manmatic";
-      loader.classList.toggle("loader--project-dark", isDarkLoader);
-      loader.classList.toggle("loader--project-light", !isDarkLoader);
-      if (loaderName) loaderName.textContent = projectLoaderData.title;
-      const kicker = loader.querySelector("[data-project-loader-kicker]");
-      const caption = loader.querySelector("[data-project-loader-caption]");
-      const type = loader.querySelector("[data-project-loader-type]");
-      const statusType = loader.querySelector("[data-project-loader-status-type]");
-      const subtitle = loader.querySelector("[data-project-loader-subtitle]");
-      const year = loader.querySelector("[data-project-loader-year]");
-      if (kicker) {
-        kicker.textContent = projectLoaderData.kicker || `PROJECT FILE ${projectLoaderData.number || ""}`.trim();
-      }
-      if (caption) caption.textContent = `${projectLoaderData.title} / ${projectLoaderData.year}`;
-      if (type) type.textContent = projectLoaderData.type;
-      if (statusType) statusType.textContent = projectLoaderData.type;
-      if (subtitle) subtitle.textContent = projectLoaderData.subtitle || projectLoaderData.type;
-      if (year) {
-        year.textContent = [projectLoaderData.location, projectLoaderData.year]
-          .filter(Boolean)
-          .join(" / ");
-      }
-      if (preview) {
-        const markImageMissing = function () {
-          loader.classList.add("is-image-missing");
-          preview.removeAttribute("srcset");
-          preview.removeAttribute("src");
-        };
-        preview.addEventListener("error", markImageMissing, { once: true });
-        if (projectLoaderData.hasImage === false || !projectLoaderData.image) {
-          markImageMissing();
-        } else {
-          preview.src = projectLoaderData.image;
-        }
-        if (projectLoaderData.srcset) preview.srcset = projectLoaderData.srcset;
-        else preview.removeAttribute("srcset");
-        if (projectLoaderData.objectPosition) {
-          preview.style.objectPosition = projectLoaderData.objectPosition;
-        }
-      }
-    }
     const startedAt = performance.now();
-    const minimumDuration = isProjectPage
-      ? reducedMotion.matches ? 70 : 520
-      : 0;
-    const maximumDuration = isProjectPage
-      ? reducedMotion.matches ? 150 : 820
-      : reducedMotion.matches ? 180 : 980;
-    const exitDuration = isProjectPage
-      ? reducedMotion.matches ? 20 : 200
-      : reducedMotion.matches ? 20 : 260;
+    const minimumDuration = reducedMotion.matches ? 180 : 1280;
+    const maximumDuration = reducedMotion.matches ? 340 : 2100;
+    const exitDuration = reducedMotion.matches ? 30 : 380;
     const timers = new Set();
     let frameRequest = 0;
     let assetsReady = false;
@@ -669,7 +617,7 @@
         }
         preview.addEventListener("load", finish, { once: true });
         preview.addEventListener("error", finish, { once: true });
-        schedule(finish, isProjectPage ? 720 : 700);
+        schedule(finish, 1050);
         if (typeof preview.decode === "function") {
           preview.decode().then(finish, function () {});
         }
@@ -681,7 +629,7 @@
       return Promise.race([
         document.fonts.ready.catch(function () {}),
         new Promise(function (resolve) {
-          schedule(resolve, isProjectPage ? 720 : 700);
+          schedule(resolve, 1050);
         })
       ]);
     }
@@ -732,26 +680,7 @@
       if (state) state.textContent = stateText;
       if (phase) phase.textContent = phaseText;
 
-      if (isProjectPage) {
-        if (state) {
-          state.textContent = currentProgress >= 100
-            ? "PROJECT OPEN"
-            : currentProgress >= 68
-              ? "HERO ALIGNMENT"
-              : currentProgress >= 35
-                ? "IMAGE ASSEMBLY"
-                : "FILE INDEXING";
-        }
-        if (phase) {
-          phase.textContent = currentProgress >= 100
-            ? "FILE READY"
-            : currentProgress >= 68
-              ? "LOADING FILE"
-              : "FILE ACCESS";
-        }
-      }
-
-      if (!isProjectLoader && !reducedMotion.matches) {
+      if (!reducedMotion.matches) {
         blackFlashPoints.forEach(function (point) {
           if (currentProgress < point || completedBlackFlashes.has(point)) return;
           completedBlackFlashes.add(point);
@@ -773,7 +702,7 @@
               : 0;
       if (nextSignalStage !== signalStage) {
         signalStage = nextSignalStage;
-        const shouldGlitch = isProjectPage ? signalStage === 2 : signalStage > 0;
+        const shouldGlitch = signalStage > 0;
         if (!reducedMotion.matches && shouldGlitch) {
           loader.classList.remove("is-glitching");
           void loader.offsetWidth;
@@ -789,20 +718,13 @@
       if (reducedMotion.matches) {
         return clamp((elapsed / minimumDuration) * 100, 0, 100);
       }
-      if (isProjectPage) {
-        if (elapsed < 140) return (elapsed / 140) * 18;
-        if (elapsed < 330) return 18 + ((elapsed - 140) / 190) * 30;
-        if (elapsed < 570) return 48 + ((elapsed - 330) / 240) * 30;
-        if (!assetsReady) return 78 + clamp((elapsed - 570) / 430, 0, 1) * 14;
-        return 78 + clamp((elapsed - 570) / 180, 0, 1) * 22;
-      }
-      if (elapsed < 100) return (elapsed / 100) * 12;
-      if (elapsed < 260) return 12 + ((elapsed - 100) / 160) * 19;
-      if (elapsed < 420) return 31 + ((elapsed - 260) / 160) * 16;
-      if (elapsed < 570) return 47 + ((elapsed - 420) / 150) * 21;
-      if (elapsed < 720) return 68 + ((elapsed - 570) / 150) * 16;
-      if (!assetsReady) return 84 + clamp((elapsed - 720) / 260, 0, 1) * 10;
-      return 84 + clamp((elapsed - 720) / 180, 0, 1) * 16;
+      if (elapsed < 280) return (elapsed / 280) * 12;
+      if (elapsed < 700) return 12 + ((elapsed - 280) / 420) * 19;
+      if (elapsed < 1120) return 31 + ((elapsed - 700) / 420) * 16;
+      if (elapsed < 1480) return 47 + ((elapsed - 1120) / 360) * 21;
+      if (elapsed < 1780) return 68 + ((elapsed - 1480) / 300) * 16;
+      if (!assetsReady) return 84 + clamp((elapsed - 1780) / 900, 0, 1) * 10;
+      return 84 + clamp((elapsed - 1780) / 300, 0, 1) * 16;
     }
 
     function settle() {
@@ -828,9 +750,7 @@
       exitStarted = true;
       setProgress(100);
       if (announcement) {
-        announcement.textContent = isProjectLoader
-          ? `${projectLoaderData.title} project file open.`
-          : "Portfolio field active.";
+        announcement.textContent = "Portfolio field active.";
       }
       loader.classList.add("is-ready");
       schedule(function () {
@@ -862,7 +782,7 @@
     }
 
     finishMonitorBoot = beginExit;
-    scrambleElement(loaderName, reducedMotion.matches ? 1 : isProjectLoader ? 260 : 640);
+    scrambleElement(loaderName, reducedMotion.matches ? 1 : 640);
     Promise.all([waitForPreview(), waitForFonts()]).then(function () {
       assetsReady = true;
     });
@@ -1601,6 +1521,13 @@
     }
 
     function resetGesture() {
+      if (
+        pointerId !== null &&
+        viewport.hasPointerCapture &&
+        viewport.hasPointerCapture(pointerId)
+      ) {
+        viewport.releasePointerCapture(pointerId);
+      }
       pointerId = null;
       gestureDirection = "";
       slider.classList.remove("is-dragging");
@@ -1644,14 +1571,6 @@
       lastX = event.clientX;
       startedAt = performance.now();
       gestureDirection = "";
-      slider.classList.add("is-dragging");
-      if (typeof viewport.setPointerCapture === "function") {
-        try {
-          viewport.setPointerCapture(pointerId);
-        } catch (error) {
-          // Pointer capture can be rejected if the pointer ended immediately.
-        }
-      }
     });
     viewport.addEventListener("pointermove", function (event) {
       if (pointerId === null || event.pointerId !== pointerId) return;
@@ -1662,6 +1581,18 @@
         gestureDirection = Math.abs(deltaX) > Math.abs(deltaY) * 1.08
           ? "horizontal"
           : "vertical";
+        if (gestureDirection === "vertical") {
+          resetGesture();
+          return;
+        }
+        slider.classList.add("is-dragging");
+        if (typeof viewport.setPointerCapture === "function") {
+          try {
+            viewport.setPointerCapture(pointerId);
+          } catch (error) {
+            // The gesture can continue without capture when the pointer already ended.
+          }
+        }
       }
       if (gestureDirection !== "horizontal") return;
       if (event.cancelable) event.preventDefault();
@@ -1670,6 +1601,15 @@
     });
     viewport.addEventListener("pointerup", finishGesture);
     viewport.addEventListener("pointercancel", finishGesture);
+    viewport.addEventListener("lostpointercapture", function () {
+      if (pointerId !== null) resetGesture();
+    });
+    viewport.addEventListener("dragstart", function (event) {
+      event.preventDefault();
+    });
+    viewport.addEventListener("selectstart", function (event) {
+      if (slider.classList.contains("is-dragging")) event.preventDefault();
+    });
     window.addEventListener("resize", function () {
       if (resizeTimer) window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(function () {
@@ -2085,11 +2025,11 @@
     manmaticCommitTimer = window.setTimeout(function () {
       commitManmaticState(active, token);
       manmaticCommitTimer = 0;
-    }, active ? 150 : 140);
+    }, active ? 330 : 300);
     manmaticTransitionTimer = window.setTimeout(function () {
       clearManmaticTransition(token);
       manmaticTransitionTimer = 0;
-    }, 330);
+    }, 690);
   }
 
   function setManmaticActive(active) {
@@ -2507,46 +2447,112 @@
   function initComputationalRails(scope) {
     const rails = elementsWithin(scope || document, "[data-computational-rail]");
     rails.forEach(function (rail) {
-      let pointerActive = false;
-      let pointerMoved = false;
+      if (rail.dataset.computationalRailInitialized === "true") return;
+      rail.dataset.computationalRailInitialized = "true";
+      let pointerId = null;
+      let gestureDirection = "";
       let pointerStartX = 0;
+      let pointerStartY = 0;
       let scrollStart = 0;
+      let scrollRatio = 0;
 
       rail.addEventListener("pointerdown", function (event) {
-        if (event.button !== 0 || event.pointerType === "touch") return;
+        if (event.button !== undefined && event.button !== 0) return;
         if (event.target.closest("a, button, video, input, select, textarea")) return;
-        pointerActive = true;
-        pointerMoved = false;
+        pointerId = event.pointerId;
+        gestureDirection = "";
         pointerStartX = event.clientX;
+        pointerStartY = event.clientY;
         scrollStart = rail.scrollLeft;
-        rail.setPointerCapture(event.pointerId);
       });
 
       rail.addEventListener(
         "pointermove",
         function (event) {
-          if (!pointerActive) return;
-          const distance = event.clientX - pointerStartX;
-          if (Math.abs(distance) > 4) {
-            pointerMoved = true;
+          if (pointerId === null || event.pointerId !== pointerId) return;
+          const deltaX = event.clientX - pointerStartX;
+          const deltaY = event.clientY - pointerStartY;
+          if (!gestureDirection && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 7) {
+            gestureDirection = Math.abs(deltaX) > Math.abs(deltaY) * 1.1
+              ? "horizontal"
+              : "vertical";
+            if (gestureDirection === "vertical") {
+              pointerId = null;
+              return;
+            }
             rail.classList.add("is-dragging");
+            if (typeof rail.setPointerCapture === "function") {
+              try {
+                rail.setPointerCapture(pointerId);
+              } catch (error) {
+                // Pointer capture is optional; direct pointer events still update the rail.
+              }
+            }
           }
-          if (!pointerMoved) return;
-          event.preventDefault();
-          rail.scrollLeft = scrollStart - distance;
+          if (gestureDirection !== "horizontal") return;
+          if (event.cancelable) event.preventDefault();
+          rail.scrollLeft = clamp(
+            scrollStart - deltaX,
+            0,
+            Math.max(0, rail.scrollWidth - rail.clientWidth)
+          );
         },
         { passive: false }
       );
 
       function finishPointer(event) {
-        if (!pointerActive) return;
-        pointerActive = false;
-        if (rail.hasPointerCapture(event.pointerId)) rail.releasePointerCapture(event.pointerId);
-        window.requestAnimationFrame(function () { rail.classList.remove("is-dragging"); });
+        if (pointerId === null || (event && event.pointerId !== pointerId)) return;
+        if (rail.hasPointerCapture && rail.hasPointerCapture(pointerId)) {
+          rail.releasePointerCapture(pointerId);
+        }
+        pointerId = null;
+        gestureDirection = "";
+        rail.classList.remove("is-dragging");
       }
 
       rail.addEventListener("pointerup", finishPointer);
       rail.addEventListener("pointercancel", finishPointer);
+      rail.addEventListener("lostpointercapture", function () {
+        pointerId = null;
+        gestureDirection = "";
+        rail.classList.remove("is-dragging");
+      });
+      rail.addEventListener("dragstart", function (event) {
+        event.preventDefault();
+      });
+      rail.addEventListener("wheel", function (event) {
+        if (Math.abs(event.deltaX) <= Math.abs(event.deltaY) || Math.abs(event.deltaX) < 2) return;
+        const limit = Math.max(0, rail.scrollWidth - rail.clientWidth);
+        const next = clamp(rail.scrollLeft + event.deltaX, 0, limit);
+        if (next === rail.scrollLeft) return;
+        if (event.cancelable) event.preventDefault();
+        rail.scrollLeft = next;
+      }, { passive: false });
+      rail.addEventListener("keydown", function (event) {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        rail.scrollBy({
+          left: (event.key === "ArrowRight" ? 1 : -1) * Math.max(240, rail.clientWidth * 0.72),
+          behavior: reducedMotion.matches ? "auto" : "smooth"
+        });
+      });
+
+      function rememberRatio() {
+        const limit = Math.max(0, rail.scrollWidth - rail.clientWidth);
+        scrollRatio = limit > 0 ? rail.scrollLeft / limit : 0;
+      }
+
+      rail.addEventListener("scroll", rememberRatio, { passive: true });
+      if ("ResizeObserver" in window) {
+        const observer = new ResizeObserver(function () {
+          const limit = Math.max(0, rail.scrollWidth - rail.clientWidth);
+          rail.scrollLeft = clamp(scrollRatio * limit, 0, limit);
+          finishPointer({ pointerId: pointerId });
+        });
+        observer.observe(rail);
+        const track = rail.querySelector(".computational-rail__track");
+        if (track) observer.observe(track);
+      }
     });
   }
 
@@ -2746,64 +2752,107 @@
     if (root.dataset.projectNavigationReady === "true") return;
     root.dataset.projectNavigationReady = "true";
 
-    const transitionKey = "ahmad-project-transition-v1";
-    let navigationTimer = 0;
+    const transitionKey = "ahmad-route-glitch-v2";
+    const lastThemeKey = "ahmad-route-last-theme-v1";
+    const transitionDuration = 680;
+    let cleanupTimer = 0;
+    let transition = document.querySelector("[data-manmatic-transition]");
 
-    function clearProjectTransition() {
-      if (navigationTimer) {
-        window.clearTimeout(navigationTimer);
-        navigationTimer = 0;
-      }
-      root.classList.remove("project-transition-active");
-      const loader = document.querySelector(".loader--project");
-      if (!loader) return;
-      loader.classList.remove("is-glitching", "is-ready");
-      loader.hidden = true;
-      loader.setAttribute("aria-hidden", "true");
+    function currentTheme() {
+      return root.dataset.siteTheme === "manmatic" ||
+        root.dataset.initialTheme === "manmatic" ||
+        document.body.classList.contains("manmatic-page")
+        ? "dark"
+        : "light";
     }
 
-    function requestEntryTransition(url) {
+    function readLastTheme() {
+      try {
+        return window.sessionStorage.getItem(lastThemeKey) === "dark" ? "dark" : "light";
+      } catch (error) {
+        return "light";
+      }
+    }
+
+    function rememberCurrentTheme() {
+      try {
+        window.sessionStorage.setItem(lastThemeKey, currentTheme());
+      } catch (error) {}
+    }
+
+    function clearRouteTransition() {
+      if (cleanupTimer) {
+        window.clearTimeout(cleanupTimer);
+        cleanupTimer = 0;
+      }
+      if (!transition) return;
+      transition.removeEventListener("animationend", handleAnimationEnd);
+      transition.classList.remove(
+        "is-active",
+        "is-running",
+        "is-route-glitch",
+        "is-from-dark",
+        "is-from-light"
+      );
+    }
+
+    function handleAnimationEnd(event) {
+      if (event.target !== transition) return;
+      clearRouteTransition();
+    }
+
+    function ensureTransition() {
+      if (transition) return transition;
+      transition = element("div", "manmatic-transition");
+      transition.dataset.manmaticTransition = "";
+      transition.setAttribute("aria-hidden", "true");
+      document.body.appendChild(transition);
+      return transition;
+    }
+
+    function storeTransition(target) {
       try {
         window.sessionStorage.setItem(transitionKey, JSON.stringify({
-          target: url.pathname,
+          target: target || "*",
+          sourceTheme: currentTheme(),
           startedAt: Date.now()
         }));
       } catch (error) {}
     }
 
-    function openExitTransition(loader, destination) {
-      const data = window.__portfolioDetailLoaderData || window.__portfolioProjectLoaderData || null;
-      const preview = loader.querySelector("[data-loader-preview]");
-      if (preview && data && data.image) {
-        preview.src = data.image;
-        if (data.srcset) preview.srcset = data.srcset;
-        if (data.objectPosition) preview.style.objectPosition = data.objectPosition;
+    function readTransition() {
+      let request = null;
+      try {
+        request = JSON.parse(window.sessionStorage.getItem(transitionKey) || "null");
+        window.sessionStorage.removeItem(transitionKey);
+      } catch (error) {
+        request = null;
       }
+      if (
+        !request ||
+        Date.now() - Number(request.startedAt || 0) > 5000 ||
+        (request.target !== "*" &&
+          request.target !== window.location.pathname + window.location.search)
+      ) return null;
+      return request;
+    }
 
-      loader.querySelectorAll("#loader-progress, #loader-progress-secondary").forEach(function (node) {
-        node.textContent = "100";
-      });
-      const progressBar = loader.querySelector("#loader-progress-bar");
-      if (progressBar) progressBar.style.transform = "scaleX(1)";
-      loader.style.setProperty("--loader-ratio", "1");
-      loader.style.setProperty("--project-reveal", "0%");
-      loader.style.setProperty("--project-band-inset", "0%");
-      loader.hidden = false;
-      loader.setAttribute("aria-hidden", "false");
-      loader.classList.remove("is-complete", "is-glitching");
-      loader.classList.add("is-ready");
-      root.classList.add("project-transition-active");
-
+    function playTransition(request) {
+      if (!request || reducedMotion.matches) return;
+      const layer = ensureTransition();
+      clearRouteTransition();
+      layer.classList.add(
+        "is-active",
+        "is-route-glitch",
+        request.sourceTheme === "dark" ? "is-from-dark" : "is-from-light"
+      );
+      layer.addEventListener("animationend", handleAnimationEnd);
       window.requestAnimationFrame(function () {
         window.requestAnimationFrame(function () {
-          loader.classList.add("is-glitching");
+          layer.classList.add("is-running");
         });
       });
-
-      navigationTimer = window.setTimeout(function () {
-        navigationTimer = 0;
-        window.location.assign(destination.href);
-      }, 230);
+      cleanupTimer = window.setTimeout(clearRouteTransition, transitionDuration + 100);
     }
 
     document.addEventListener("click", function (event) {
@@ -2830,26 +2879,43 @@
       const sameDocument = destination.pathname === window.location.pathname &&
         destination.search === window.location.search;
       if (sameDocument && destination.hash) return;
-
-      const isProjectTarget = /^\/projects\/[^/]+\/?/.test(destination.pathname);
-      const isProjectPage = document.body.classList.contains("project-page");
-
-      if (!isProjectPage) {
-        if (isProjectTarget && !reducedMotion.matches) requestEntryTransition(destination);
-        return;
-      }
-
-      if (reducedMotion.matches || sameDocument) return;
-      const loader = document.querySelector(".loader--project");
-      if (!loader || root.classList.contains("project-transition-active")) return;
-
-      event.preventDefault();
-      openExitTransition(loader, destination);
+      if (sameDocument || reducedMotion.matches) return;
+      storeTransition(destination.pathname + destination.search);
     });
 
     window.addEventListener("pageshow", function (event) {
-      if (event.persisted) clearProjectTransition();
+      const request = readTransition();
+      if (request) {
+        playTransition(request);
+      } else if (event.persisted) {
+        playTransition({ sourceTheme: readLastTheme() });
+      }
+      rememberCurrentTheme();
     });
+
+    window.addEventListener("pagehide", function () {
+      let existing = null;
+      try {
+        existing = JSON.parse(window.sessionStorage.getItem(transitionKey) || "null");
+      } catch (error) {}
+      if (!existing || Date.now() - Number(existing.startedAt || 0) > 1000) {
+        storeTransition("*");
+      }
+      clearRouteTransition();
+    });
+
+    const initialRequest = readTransition();
+    if (initialRequest) {
+      playTransition(initialRequest);
+    } else {
+      const navigationEntry = window.performance &&
+        performance.getEntriesByType &&
+        performance.getEntriesByType("navigation")[0];
+      if (navigationEntry && navigationEntry.type === "back_forward") {
+        playTransition({ sourceTheme: readLastTheme() });
+      }
+    }
+    rememberCurrentTheme();
   }
 
   function initDeferredEnhancements() {
@@ -2880,10 +2946,10 @@
       initPixelPortrait(section);
       initReadingProgress(section);
 
-      if (section.id === "visuals") {
+      if (section.id === "visual-studies") {
         visualSliderController = initVisuals();
       }
-      if (section.id === "computational") {
+      if (section.id === "computation") {
         initComputationalRails(section);
         computationVideoController = initComputationVideos(section);
       }
@@ -2914,6 +2980,8 @@
   }
 
   function init() {
+    root.classList.remove("no-js");
+    root.classList.add("js");
     respectReducedMotion();
     initAmbientMotion();
     initMobileNavigation();
