@@ -83,6 +83,43 @@
         window.history.replaceState(window.history.state, "", cleanHomeUrl);
       }
 
+      try {
+        window.history.scrollRestoration = "manual";
+        var returnState = JSON.parse(
+          window.sessionStorage.getItem("ahmad-project-return-state-v1") || "null"
+        );
+        var returnIntent = JSON.parse(
+          window.sessionStorage.getItem("ahmad-project-return-intent-v1") || "null"
+        );
+        var returnFallback = JSON.parse(
+          window.sessionStorage.getItem("ahmad-project-return-fallback-v1") || "null"
+        );
+        var historyToken = window.history.state &&
+          window.history.state.portfolioHomeReturnToken;
+        var earlyNavigationEntry = window.performance &&
+          performance.getEntriesByType &&
+          performance.getEntriesByType("navigation")[0];
+        var earlyHistoryReturn = earlyNavigationEntry &&
+          earlyNavigationEntry.type === "back_forward";
+        var hasSavedReturn = returnState &&
+          returnState.token &&
+          (
+            (returnIntent && returnIntent.kind === "saved" &&
+              returnIntent.token === returnState.token) ||
+            (earlyHistoryReturn && historyToken === returnState.token)
+          );
+        var hasFallbackReturn = returnFallback &&
+          returnFallback.projectPath &&
+          (
+            (returnIntent && returnIntent.kind === "fallback") ||
+            (earlyHistoryReturn && historyToken && !returnState)
+          );
+        if (hasSavedReturn || hasFallbackReturn) {
+          root.classList.add("route-restoration-pending");
+          root.dataset.routeRestoration = "pending";
+        }
+      } catch (error) {}
+
       root.classList.remove("no-js");
       root.classList.add("js");
 
@@ -130,57 +167,15 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
   <link rel="preload" href="assets/images/architecture-of-elsewhere-800.webp" as="image" imagesrcset="assets/images/architecture-of-elsewhere-800.webp 800w, assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" imagesizes="(max-width: 960px) 100vw, min(1360px, 86vw)">
-  <link rel="stylesheet" href="assets/css/style.css?v=20260723-manmatic-route-state-05">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260723-route-restoration-07">
 
   <script src="content.js?v=20260718-elma-correction-02" defer></script>
-  <script src="assets/js/main.js?v=20260723-manmatic-route-state-05" defer></script>
+  <script src="assets/js/main.js?v=20260723-route-restoration-07" defer></script>
 </head>
 <body class="home-page">
   <div class="loader" id="loader" role="status" aria-label="Initializing Ahmad Alhadidii portfolio field">
     <p class="visually-hidden" id="loader-announcement" aria-live="polite">Portfolio field initialization in progress.</p>
-    <div class="loader__binary" aria-hidden="true">
-      <span class="loader__binary-stream loader__binary-stream--one">01001001 00110001 01000001 00110110 01001000 00110010</span>
-      <span class="loader__binary-stream loader__binary-stream--two">101001 011010 001101 110010 010110 100101</span>
-      <span class="loader__binary-stream loader__binary-stream--three">0011 0101 1001 0110 1100 0010</span>
-    </div>
-    <div class="loader__grid" aria-hidden="true">
-      <header class="loader__header">
-        <div>
-          <p class="loader__name" id="loader-name">AHMAD ALHADIDII</p>
-          <p>PORTFOLIO FIELD</p>
-        </div>
-        <dl>
-          <div><dt>STATE</dt><dd id="loader-state">SYSTEM INITIALIZATION</dd></div>
-          <div><dt>FRAME</dt><dd id="loader-frame">01 / 06</dd></div>
-          <div><dt>SIGNAL</dt><dd id="loader-signal">000.000</dd></div>
-        </dl>
-      </header>
-
-      <div class="loader__field">
-        <figure class="loader__preview">
-          <div class="loader__preview-image">
-            <img data-loader-preview src="assets/images/architecture-of-elsewhere-800.webp" srcset="assets/images/architecture-of-elsewhere-800.webp 800w, assets/images/architecture-of-elsewhere-1400.jpg 1400w" sizes="(max-width: 960px) 100vw, min(700px, 48vw)" width="800" height="430" alt="">
-            <span class="loader__preview-scan"></span>
-            <span class="loader__preview-slice loader__preview-slice--one"></span>
-            <span class="loader__preview-slice loader__preview-slice--two"></span>
-          </div>
-          <figcaption><span>VISUAL FIELD / A-H26</span><span>IMAGE BUFFER</span></figcaption>
-        </figure>
-        <div class="loader__counter">
-          <span id="loader-progress">000</span><small>/ 100</small>
-        </div>
-        <p class="loader__active-binary" id="loader-active-binary">00000000 / 00000000</p>
-      </div>
-
-      <footer class="loader__footer">
-        <div class="loader__progress-track"><span id="loader-progress-bar"></span></div>
-        <div class="loader__footer-meta">
-          <p>ARCHITECTURE / RESEARCH / COMPUTATION</p>
-          <p id="loader-phase">ARCHIVE ACCESS</p>
-          <p><span id="loader-progress-secondary">000</span> / 100</p>
-        </div>
-      </footer>
-    </div>
+    <div class="loader__counter" aria-hidden="true"><span id="loader-progress">000</span></div>
   </div>
 
   <noscript>
@@ -490,7 +485,7 @@
         <p class="work__intro">A selection of projects developed across architecture, research, mapping, environmental design, and speculative drawing.</p>
 
         <div class="project-index" aria-label="Selected projects">
-          <article class="project-row project-row--shila" data-project-index="01" data-project-order="1" data-project-id="project-05">
+          <article class="project-row project-row--shila" id="shila-project" data-project-index="01" data-project-order="1" data-project-id="project-05">
             <a class="project-row__link" href="/projects/shila/">
               <p class="project-row__number" data-scramble aria-hidden="true">001</p>
               <div class="project-row__copy">
@@ -549,7 +544,7 @@
             </div>
           </article>
 
-          <article class="project-row project-row--elma" data-project-index="04" data-project-order="4" data-project-id="project-02">
+          <article class="project-row project-row--elma" id="concrete-fatigue-project" data-project-index="04" data-project-order="4" data-project-id="project-02">
             <a class="project-row__link" href="/projects/concrete-fatigue/">
               <p class="project-row__number" data-scramble aria-hidden="true">004</p>
               <div class="project-row__copy">
@@ -565,7 +560,7 @@
             </a>
           </article>
 
-          <article class="project-row project-row--dabouq" data-project-index="03" data-project-order="3" data-project-id="dabouq-residential-building">
+          <article class="project-row project-row--dabouq" id="dabouq-project" data-project-index="03" data-project-order="3" data-project-id="dabouq-residential-building">
             <a class="project-row__link" href="/projects/dabouq/">
               <p class="project-row__number" aria-hidden="true">003</p>
               <div class="project-row__copy">
@@ -634,7 +629,7 @@
               <section class="computational-panel computational-panel--process" aria-label="Grasshopper script and supporting video">
                 <figure class="computational-process__script">
                   <div class="computational-panel__media computational-panel__media--script">
-                    <img src="assets/images/computation/lemniscate/grasshopper-definition-full.webp" width="14375" height="2819" alt="Complete annotated Grasshopper script showing the parameter range, equation definition, axis assignment, XYZ point generation, 3D curve construction, and geometry." loading="lazy" decoding="async" draggable="false">
+                    <img src="assets/images/computation/lemniscate/grasshopper-definition-3600.webp" width="3600" height="706" alt="Complete annotated Grasshopper script showing the parameter range, equation definition, axis assignment, XYZ point generation, 3D curve construction, and geometry." loading="lazy" decoding="async" draggable="false">
                   </div>
                   <figcaption class="computational-panel__label">GRASSHOPPER SCRIPT</figcaption>
                 </figure>

@@ -279,7 +279,7 @@ try {
     if ($i -eq 2) { $transitionShot = Screenshot '01-manmatic-to-white-home.png' }
     Start-Sleep -Milliseconds 65
   }
-  $exitState = Get-Json '({homeBackground:getComputedStyle(document.body).backgroundColor,loaderDisplay:getComputedStyle(document.querySelector(".loader")).display,transitionLayers:document.querySelectorAll(".manmatic-transition").length,transientState:document.documentElement.classList.contains("is-system-switching"),theme:document.documentElement.dataset.siteTheme})'
+  $exitState = Get-Json '(()=>{const loader=document.querySelector(".loader");return{homeBackground:getComputedStyle(document.body).backgroundColor,loaderDisplay:loader?getComputedStyle(loader).display:"none",transitionLayers:document.querySelectorAll(".manmatic-transition").length,transientState:document.documentElement.classList.contains("is-system-switching"),theme:document.documentElement.dataset.siteTheme}})()'
   Assert-State ($exitState.homeBackground -eq 'rgb(255, 255, 255)' -and $exitState.loaderDisplay -eq 'none' -and $exitState.transitionLayers -eq 0 -and -not $exitState.transientState -and $exitState.theme -eq 'light') 'ManMaTIC exit restores the clean white homepage without transition layers' $exitState
 
   $navigationCases = @(
@@ -306,19 +306,163 @@ try {
   Assert-State ($projectToProject.loaderCount -eq 0 -and -not $projectToProject.pending) 'Project-to-project navigation is loader-free' $projectToProject
 
   Navigate '/'
+  Wait-For '!document.documentElement.classList.contains("loader-pending")'
   Write-Output 'PHASE browser-history'
   Click '.project-row--elma > .project-row__link'
   Wait-For 'location.pathname === "/projects/concrete-fatigue/"'
   $null = Evaluate 'history.back();true'
   Wait-For 'location.pathname === "/"'
   Start-Sleep -Milliseconds 120
-  $back = Get-Json '({transitionLayers:document.querySelectorAll(".manmatic-transition").length,transientState:document.documentElement.classList.contains("is-system-switching"),theme:document.documentElement.dataset.siteTheme,loaderDisplay:getComputedStyle(document.querySelector(".loader")).display})'
+  $back = Get-Json '(()=>{const loader=document.querySelector(".loader");return{transitionLayers:document.querySelectorAll(".manmatic-transition").length,transientState:document.documentElement.classList.contains("is-system-switching"),theme:document.documentElement.dataset.siteTheme,loaderDisplay:loader?getComputedStyle(loader).display:"none"}})()'
   $null = Evaluate 'history.forward();true'
   Wait-For 'location.pathname === "/projects/concrete-fatigue/"'
   Start-Sleep -Milliseconds 120
   $forward = Get-Json '({transitionLayers:document.querySelectorAll(".manmatic-transition").length,transientState:document.documentElement.classList.contains("is-system-switching"),loaderCount:document.querySelectorAll(".loader").length})'
   Assert-State ($back.transitionLayers -eq 0 -and -not $back.transientState -and $back.theme -eq 'light' -and $back.loaderDisplay -eq 'none') 'Browser Back restores the clean white homepage without a route layer' $back
   Assert-State ($forward.transitionLayers -eq 0 -and -not $forward.transientState -and $forward.loaderCount -eq 0) 'Browser Forward restores the project without a route layer' $forward
+
+  $null = Invoke-Cdp 'Page.addScriptToEvaluateOnNewDocument' @{
+    source = @'
+if (/^\/(?:index(?:\.html)?\/?)?$/.test(location.pathname)) {
+  window.__routeRestorationFrames = [];
+  let settledFrames = 0;
+  function sampleRouteRestoration() {
+    const root = document.documentElement;
+    const shell = document.querySelector(".site-shell");
+    const visible = Boolean(shell) &&
+      getComputedStyle(shell).visibility !== "hidden" &&
+      Number(getComputedStyle(shell).opacity) > 0;
+    window.__routeRestorationFrames.push({
+      scrollY: window.scrollY,
+      visible,
+      pending: root.classList.contains("route-restoration-pending"),
+      state: root.dataset.routeRestoration || ""
+    });
+    if (root.dataset.routeRestoration === "complete") settledFrames += 1;
+    if (settledFrames < 6 && window.__routeRestorationFrames.length < 300) {
+      requestAnimationFrame(sampleRouteRestoration);
+    }
+  }
+  requestAnimationFrame(sampleRouteRestoration);
+}
+'@
+  }
+
+  $restorationViewports = @(
+    @{ width = 360; height = 800 },
+    @{ width = 390; height = 844 },
+    @{ width = 768; height = 1024 },
+    @{ width = 820; height = 1180 },
+    @{ width = 1024; height = 768 }
+  )
+  $restorationProjects = @(
+    @{ name = 'Shila'; selector = '.project-row--shila > .project-row__link'; path = '/projects/shila/'; row = '#shila-project' },
+    @{ name = 'ManMaTIC'; selector = '.project-row--manmatic > .project-row__link'; path = '/projects/manmatic/'; row = '#manmatic-project' },
+    @{ name = 'Dabouq'; selector = '.project-row--dabouq > .project-row__link'; path = '/projects/dabouq/'; row = '#dabouq-project' },
+    @{ name = 'ELMA'; selector = '.project-row--elma > .project-row__link'; path = '/projects/concrete-fatigue/'; row = '#concrete-fatigue-project' },
+    @{ name = 'Protocol Port'; selector = '.manmatic-branch[href="/projects/protocol-port/"]'; path = '/projects/protocol-port/'; row = '#manmatic-project' }
+  )
+
+  foreach ($viewport in $restorationViewports) {
+    foreach ($project in $restorationProjects) {
+      Write-Output "PHASE restore-close-$($viewport.width)x$($viewport.height)-$($project.name)"
+      Set-Viewport $viewport.width $viewport.height $true
+      Navigate '/'
+      Wait-For '!document.documentElement.classList.contains("loader-pending")'
+      $null = Evaluate 'sessionStorage.removeItem("ahmad-project-return-state-v1");sessionStorage.removeItem("ahmad-project-return-intent-v1");sessionStorage.removeItem("ahmad-project-return-fallback-v1");history.replaceState({},"",location.pathname);true'
+      $rowSelector = $project.row | ConvertTo-Json -Compress
+      $linkSelector = $project.selector | ConvertTo-Json -Compress
+      $null = Evaluate "(()=>{const row=document.querySelector($rowSelector);document.documentElement.style.scrollBehavior='auto';scrollTo(0,row.getBoundingClientRect().top+scrollY-innerHeight*.22);return true})()"
+      $beforeRestore = Get-Json "(()=>{const r=document.querySelector($rowSelector).getBoundingClientRect();return{scrollY,top:r.top,bottom:r.bottom}})()"
+      $null = Evaluate "document.querySelector($linkSelector).click();true"
+      Wait-For "location.pathname === '$($project.path)'"
+      $null = Evaluate 'scrollTo(0,Math.min(720,document.documentElement.scrollHeight-innerHeight));true'
+      Click '.site-header__name'
+      Wait-For 'location.pathname === "/"'
+      Wait-For 'document.documentElement.dataset.routeRestoration === "complete" && !document.documentElement.classList.contains("route-restoration-pending")'
+      $afterRestore = Get-Json "(()=>{const r=document.querySelector($rowSelector).getBoundingClientRect(),frames=window.__routeRestorationFrames||[],finalY=scrollY,lastPending=frames.reduce((last,f,i)=>f.pending?i:last,-1),routeFrames=frames.slice(Math.max(0,lastPending)).filter(f=>f.pending||f.state);return{scrollY:finalY,top:r.top,bottom:r.bottom,visible:r.bottom>0&&r.top<innerHeight,shellVisible:getComputedStyle(document.querySelector('.site-shell')).visibility!=='hidden',wrongVisibleFrames:routeFrames.filter(f=>f.visible&&Math.abs(f.scrollY-finalY)>3).length,scrollCalls:routeFrames.filter((f,i)=>i&&Math.abs(f.scrollY-routeFrames[i-1].scrollY)>1).length,frames:routeFrames.length}})()"
+      $restoredExactly = [Math]::Abs([double]$afterRestore.top - [double]$beforeRestore.top) -le 3
+      Assert-State ($restoredExactly -and $afterRestore.visible -and $afterRestore.shellVisible -and $afterRestore.wrongVisibleFrames -eq 0 -and $afterRestore.scrollCalls -le 1) "Close restores $($project.name) at $($viewport.width)x$($viewport.height) without a visible jump" ([ordered]@{ before = $beforeRestore; after = $afterRestore })
+    }
+  }
+
+  Set-Viewport 390 844 $true
+  foreach ($project in $restorationProjects) {
+    Write-Output "PHASE restore-back-$($project.name)"
+    Navigate '/'
+    Wait-For '!document.documentElement.classList.contains("loader-pending")'
+    $null = Evaluate 'sessionStorage.removeItem("ahmad-project-return-state-v1");sessionStorage.removeItem("ahmad-project-return-intent-v1");sessionStorage.removeItem("ahmad-project-return-fallback-v1");history.replaceState({},"",location.pathname);true'
+    $rowSelector = $project.row | ConvertTo-Json -Compress
+    $linkSelector = $project.selector | ConvertTo-Json -Compress
+    $null = Evaluate "(()=>{const row=document.querySelector($rowSelector);scrollTo(0,row.getBoundingClientRect().top+scrollY-innerHeight*.28);return true})()"
+    $beforeBack = Get-Json "(()=>{const r=document.querySelector($rowSelector).getBoundingClientRect();return{scrollY,top:r.top}})()"
+    $null = Evaluate "document.querySelector($linkSelector).click();true"
+    Wait-For "location.pathname === '$($project.path)'"
+    $null = Evaluate 'history.back();true'
+    Wait-For 'location.pathname === "/"'
+    Wait-For 'document.documentElement.dataset.routeRestoration === "complete" && !document.documentElement.classList.contains("route-restoration-pending")'
+    $afterBack = Get-Json "(()=>{const r=document.querySelector($rowSelector).getBoundingClientRect(),frames=window.__routeRestorationFrames||[],finalY=scrollY,lastPending=frames.reduce((last,f,i)=>f.pending?i:last,-1),routeFrames=frames.slice(Math.max(0,lastPending)).filter(f=>f.pending||f.state);return{scrollY:finalY,top:r.top,visible:r.bottom>0&&r.top<innerHeight,wrongVisibleFrames:routeFrames.filter(f=>f.visible&&Math.abs(f.scrollY-finalY)>3).length}})()"
+    Assert-State ([Math]::Abs([double]$afterBack.top - [double]$beforeBack.top) -le 3 -and $afterBack.visible -and $afterBack.wrongVisibleFrames -eq 0) "Browser Back restores $($project.name) without a visible jump" ([ordered]@{ before = $beforeBack; after = $afterBack })
+  }
+
+  Write-Output 'PHASE restore-forward'
+  $null = Evaluate 'history.forward();true'
+  Wait-For 'location.pathname === "/projects/protocol-port/"'
+  $forwardRestore = Get-Json '({pending:document.documentElement.classList.contains("route-restoration-pending"),routeState:document.documentElement.dataset.routeRestoration||"",loaderCount:document.querySelectorAll(".loader").length})'
+  Assert-State (-not $forwardRestore.pending -and $forwardRestore.loaderCount -eq 0) 'Browser Forward reopens the project without a homepage restoration layer' $forwardRestore
+
+  Write-Output 'PHASE restore-orientation-change'
+  Set-Viewport 390 844 $true
+  Navigate '/'
+  Wait-For '!document.documentElement.classList.contains("loader-pending")'
+  $null = Evaluate 'sessionStorage.clear();const row=document.querySelector("#manmatic-project");scrollTo(0,row.getBoundingClientRect().top+scrollY-innerHeight*.24);row.querySelector(".project-row__link").click();true'
+  Wait-For 'location.pathname === "/projects/manmatic/"'
+  Set-Viewport 844 390 $true
+  Click '.site-header__name'
+  Wait-For 'location.pathname === "/"'
+  Wait-For 'document.documentElement.dataset.routeRestoration === "complete"'
+  $orientationRestore = Get-Json '(()=>{const r=document.querySelector("#manmatic-project").getBoundingClientRect();return{top:r.top,bottom:r.bottom,visible:r.bottom>0&&r.top<innerHeight,pending:document.documentElement.classList.contains("route-restoration-pending")}})()'
+  Assert-State ($orientationRestore.visible -and -not $orientationRestore.pending) 'Orientation change inside a project returns to the original project row' $orientationRestore
+
+  Write-Output 'PHASE restore-refresh-fallback'
+  Set-Viewport 390 844 $true
+  Navigate '/'
+  Wait-For '!document.documentElement.classList.contains("loader-pending")'
+  $null = Evaluate 'sessionStorage.clear();const row=document.querySelector("#dabouq-project");scrollTo(0,row.getBoundingClientRect().top+scrollY-innerHeight*.2);row.querySelector(".project-row__link").click();true'
+  Wait-For 'location.pathname === "/projects/dabouq/"'
+  $null = Invoke-Cdp 'Page.reload'
+  Wait-For 'document.readyState === "complete"'
+  Click '.site-header__name'
+  Wait-For 'location.pathname === "/"'
+  Wait-For 'document.documentElement.dataset.routeRestoration === "complete"'
+  $refreshFallback = Get-Json '(()=>{const r=document.querySelector("#dabouq-project").getBoundingClientRect();return{hash:location.hash,visible:r.bottom>0&&r.top<innerHeight,staleState:Boolean(sessionStorage.getItem("ahmad-project-return-state-v1"))}})()'
+  Assert-State ($refreshFallback.hash -eq '#dabouq-project' -and $refreshFallback.visible -and -not $refreshFallback.staleState) 'Refreshing inside a project uses its anchor instead of stale absolute scroll data' $refreshFallback
+
+  foreach ($project in $restorationProjects) {
+    Write-Output "PHASE restore-direct-$($project.name)"
+    $null = Evaluate 'sessionStorage.clear();true'
+    Navigate $project.path
+    Click '.site-header__name'
+    Wait-For 'location.pathname === "/"'
+    Wait-For 'document.documentElement.dataset.routeRestoration === "complete"'
+    $rowSelector = $project.row | ConvertTo-Json -Compress
+    $expectedHash = ($project.row -replace '^#', '#')
+    $directFallback = Get-Json "(()=>{const r=document.querySelector($rowSelector).getBoundingClientRect();return{hash:location.hash,visible:r.bottom>0&&r.top<innerHeight,pending:document.documentElement.classList.contains('route-restoration-pending')}})()"
+    Assert-State ($directFallback.hash -eq $expectedHash -and $directFallback.visible -and -not $directFallback.pending) "Direct $($project.name) exit returns to its homepage anchor" $directFallback
+  }
+
+  Write-Output 'PHASE restore-project-sequence'
+  Navigate '/'
+  Wait-For '!document.documentElement.classList.contains("loader-pending")'
+  $null = Evaluate 'sessionStorage.clear();const row=document.querySelector("#shila-project");scrollTo(0,row.getBoundingClientRect().top+scrollY-innerHeight*.22);row.querySelector(".project-row__link").click();true'
+  Wait-For 'location.pathname === "/projects/shila/"'
+  Click 'a[href="/projects/manmatic/"]'
+  Wait-For 'location.pathname === "/projects/manmatic/"'
+  Click '.site-header__name'
+  Wait-For 'location.pathname === "/"'
+  Wait-For 'document.documentElement.dataset.routeRestoration === "complete"'
+  $sequenceRestore = Get-Json '(()=>{const r=document.querySelector("#shila-project").getBoundingClientRect();return{visible:r.bottom>0&&r.top<innerHeight,activePath:JSON.parse(sessionStorage.getItem("ahmad-project-return-state-v1")||"null")?.projectPath||""}})()'
+  Assert-State ($sequenceRestore.visible -and $sequenceRestore.activePath -eq '/projects/shila') 'Project-to-project navigation preserves the originally selected homepage project' $sequenceRestore
 
   $detailRoutes = @(
     '/projects/manmatic/',
@@ -335,8 +479,11 @@ try {
   foreach ($route in $detailRoutes) {
     Write-Output "PHASE direct-$route"
     Navigate $route
+    if ($route -eq '/projects/manmatic/') {
+      Wait-For '!document.documentElement.classList.contains("loader-pending")'
+    }
     $direct = Get-Json '({loaderCount:document.querySelectorAll(".loader").length,pending:document.documentElement.classList.contains("loader-pending"),visible:Boolean(document.querySelector("main"))})'
-    Assert-State ($direct.loaderCount -eq 0 -and -not $direct.pending -and $direct.visible) "Direct route is loader-free: $route" $direct
+    Assert-State ($direct.loaderCount -eq 0 -and -not $direct.pending -and $direct.visible) "Direct route settles without a leftover loader: $route" $direct
   }
 
   $viewports = @(
@@ -374,6 +521,7 @@ try {
     Write-Output "PHASE manmatic-$($viewport.width)"
     Set-Viewport $viewport.width $viewport.height $viewport.mobile
     Navigate '/projects/manmatic/'
+    Wait-For '!document.documentElement.classList.contains("loader-pending")'
     $null = Evaluate 'document.querySelector(".mm-diagram--wide").scrollIntoView({block:"center"});document.querySelectorAll("[data-image-reveal]").forEach(n=>n.classList.add("is-visible"));true'
     Wait-For 'document.querySelector(".mm-diagram--wide img").complete'
     Start-Sleep -Milliseconds 850

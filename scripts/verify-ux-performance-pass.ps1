@@ -171,18 +171,21 @@ try {
   $workShot = Screenshot '04-selected-work-desktop.png' $true
 
   Navigate 'http://127.0.0.1:4173/projects/manmatic/'
+  Wait-For '!document.documentElement.classList.contains("loader-pending")'
   $null = Evaluate 'new Promise(async resolve=>{for(const image of document.querySelectorAll("main img")){image.scrollIntoView({block:"center"});await new Promise(done=>setTimeout(done,120));if(image.decode){try{await image.decode()}catch(error){}}}document.querySelectorAll("[data-image-reveal]").forEach(node=>node.classList.add("is-visible"));document.querySelectorAll(".heading-motion").forEach(node=>node.classList.add("is-heading-visible","is-heading-settled"));if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();scrollTo(0,0);setTimeout(resolve,400);})'
   $manmaticDesktop = Screenshot '05-manmatic-desktop-full.png' $true
 
   Set-Viewport 820 1180 $true
   Navigate 'http://127.0.0.1:4173/projects/manmatic/'
+  Wait-For '!document.documentElement.classList.contains("loader-pending")'
   $null = Evaluate 'new Promise(async resolve=>{for(const image of document.querySelectorAll("main img")){image.scrollIntoView({block:"center"});await new Promise(done=>setTimeout(done,120));if(image.decode){try{await image.decode()}catch(error){}}}document.querySelectorAll("[data-image-reveal]").forEach(node=>node.classList.add("is-visible"));document.querySelectorAll(".heading-motion").forEach(node=>node.classList.add("is-heading-visible","is-heading-settled"));if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();scrollTo(0,0);setTimeout(resolve,400);})'
   $manmaticTablet = Screenshot '06-manmatic-tablet-full.png' $true
 
   Set-Viewport 390 844 $true
   Navigate 'about:blank'
   Navigate 'http://127.0.0.1:4173/projects/manmatic/?verification=field-hash#the-manmatic-field'
-  Start-Sleep -Milliseconds 2100
+  Wait-For '!document.documentElement.classList.contains("loader-pending")'
+  Start-Sleep -Milliseconds 180
   $hashShot = Screenshot '07-field-hash-mobile.png'
   $hashState = Evaluate 'JSON.stringify({top:document.querySelector("#the-manmatic-field").getBoundingClientRect().top,label:document.querySelector("#the-manmatic-field .mm-index").innerText,title:document.querySelector("#the-manmatic-field h2").innerText,overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth})'
 

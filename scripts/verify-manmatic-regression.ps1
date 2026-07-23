@@ -372,20 +372,14 @@ try {
   if (
     $tabletManmatic.theme -ne 'manmatic' -or
     $tabletManmatic.bodyBackground -ne 'rgb(39, 39, 39)' -or
-    $tabletManmatic.ambientDisplay -ne 'block' -or
-    $tabletManmatic.ambientPattern -eq 'none' -or
-    $tabletManmatic.materialDisplay -ne 'block' -or
-    [double]$tabletManmatic.materialOpacity -lt 0.13 -or
-    $tabletManmatic.materialPattern -eq 'none' -or
+    $tabletManmatic.ambientDisplay -ne 'none' -or
+    $tabletManmatic.materialDisplay -ne 'none' -or
     $tabletManmatic.overflow -or
     $tabletManmatic.transitionLayers -ne 0 -or
     $mobileManmatic.theme -ne 'manmatic' -or
     $mobileManmatic.bodyBackground -ne 'rgb(39, 39, 39)' -or
-    $mobileManmatic.ambientDisplay -ne 'block' -or
-    $mobileManmatic.ambientPattern -eq 'none' -or
-    $mobileManmatic.materialDisplay -ne 'block' -or
-    [double]$mobileManmatic.materialOpacity -lt 0.13 -or
-    $mobileManmatic.materialPattern -eq 'none' -or
+    $mobileManmatic.ambientDisplay -ne 'none' -or
+    $mobileManmatic.materialDisplay -ne 'none' -or
     $mobileManmatic.overflow -or
     $mobileManmatic.transitionLayers -ne 0
   ) {
@@ -393,7 +387,7 @@ try {
       tablet = $tabletManmatic
       mobile = $mobileManmatic
     } | ConvertTo-Json -Depth 5 -Compress
-    throw "The ManMaTIC dark route or reused background pattern failed on tablet or mobile. $responsiveDiagnostics"
+    throw "The ManMaTIC dark route or mobile paint-safety state failed on tablet or mobile. $responsiveDiagnostics"
   }
   $mobileScroll = Evaluate 'new Promise(resolve=>{const gaps=[];let start=performance.now(),last=start;function step(now){gaps.push(now-last);last=now;scrollBy(0,56);if(now-start<1200){requestAnimationFrame(step)}else{resolve(JSON.stringify({frames:gaps.length,maxFrameGap:Math.max(...gaps),averageFrameGap:gaps.reduce((sum,value)=>sum+value,0)/gaps.length,scrollY}))}}requestAnimationFrame(step)})'
   $errors = Evaluate 'JSON.stringify(window.__verificationErrors)'

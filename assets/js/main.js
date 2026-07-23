@@ -3,6 +3,10 @@
 
   const root = document.documentElement;
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const coarsePointer = window.matchMedia("(hover: none) and (pointer: coarse)");
+  const projectReturnStateKey = "ahmad-project-return-state-v1";
+  const projectReturnIntentKey = "ahmad-project-return-intent-v1";
+  const projectFallbackKey = "ahmad-project-return-fallback-v1";
   const scrambleCharacters = "[]{}<>/\\_+-=01";
   const animatedScrambles = new WeakSet();
   const dynamicScrambles = new WeakMap();
@@ -49,6 +53,10 @@
   let computationVideoController = null;
   let protectedMediaListenersBound = false;
   let protectedMediaObserver = null;
+  let scrollEffectsBound = false;
+  let homeDepartureArmed = false;
+  let homeRestorationFrame = 0;
+  let homeRestorationPending = false;
   const documentScrollLocks = new Set();
   let savedRootOverflow = "";
   let savedBodyOverflow = "";
@@ -551,6 +559,7 @@
       if (loader) {
         loader.hidden = true;
         loader.setAttribute("aria-hidden", "true");
+        loader.remove();
       }
       root.classList.remove("loader-pending");
       root.classList.add("loader-complete");
@@ -571,7 +580,7 @@
     const startedAt = performance.now();
     const minimumDuration = reducedMotion.matches ? 180 : 1280;
     const maximumDuration = reducedMotion.matches ? 340 : 2100;
-    const exitDuration = reducedMotion.matches ? 30 : 380;
+    const exitDuration = reducedMotion.matches ? 30 : 220;
     const timers = new Set();
     let frameRequest = 0;
     let assetsReady = false;
@@ -579,9 +588,6 @@
     let settled = false;
     let resolveBoot;
     let currentProgress = 0;
-    let signalStage = 0;
-    const blackFlashPoints = [35, 82];
-    const completedBlackFlashes = new Set();
 
     function schedule(callback, delay) {
       const timer = window.setTimeout(function () {
@@ -678,38 +684,6 @@
       if (state) state.textContent = stateText;
       if (phase) phase.textContent = phaseText;
 
-      if (!reducedMotion.matches) {
-        blackFlashPoints.forEach(function (point) {
-          if (currentProgress < point || completedBlackFlashes.has(point)) return;
-          completedBlackFlashes.add(point);
-          loader.classList.add("is-black-flash");
-          schedule(function () {
-            loader.classList.remove("is-black-flash");
-          }, 90);
-        });
-      }
-
-      const nextSignalStage = currentProgress >= 100
-        ? 4
-        : currentProgress >= 91
-          ? 3
-          : currentProgress >= 61
-            ? 2
-            : currentProgress >= 26
-              ? 1
-              : 0;
-      if (nextSignalStage !== signalStage) {
-        signalStage = nextSignalStage;
-        const shouldGlitch = signalStage > 0;
-        if (!reducedMotion.matches && shouldGlitch) {
-          loader.classList.remove("is-glitching");
-          void loader.offsetWidth;
-          loader.classList.add("is-glitching");
-          schedule(function () {
-            loader.classList.remove("is-glitching");
-          }, 210);
-        }
-      }
     }
 
     function targetProgress(elapsed) {
@@ -736,8 +710,9 @@
       }
       loader.hidden = true;
       loader.setAttribute("aria-hidden", "true");
-      const binaryLayer = loader.querySelector(".loader__binary");
-      if (binaryLayer) binaryLayer.remove();
+      loader.remove();
+      root.classList.remove("loader-pending");
+      root.classList.add("loader-complete");
       finishMonitorBoot = null;
       document.dispatchEvent(new CustomEvent("portfolio:ready"));
       if (resolveBoot) resolveBoot();
@@ -754,8 +729,6 @@
       schedule(function () {
         loader.classList.add("is-complete");
         loader.setAttribute("aria-hidden", "true");
-        root.classList.remove("loader-pending");
-        root.classList.add("loader-complete");
         schedule(settle, exitDuration);
       }, reducedMotion.matches ? 20 : 100);
     }
@@ -2148,6 +2121,357 @@
     manmaticObserver.observe(manmaticTarget);
   }
 
+  function safeSessionRead(key) {
+    try {
+      const value = window.sessionStorage.getItem(key);
+      return value ? JSON.parse(value) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function safeSessionWrite(key, value) {
+    try {
+      window.sessionStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {}
+  }
+
+  function safeSessionRemove(key) {
+    try {
+      window.sessionStorage.removeItem(key);
+    } catch (error) {}
+  }
+
+  function normalizedRoute(pathname) {
+    const normalized = String(pathname || "/")
+      .replace(/\/index\.html$/i, "/")
+      .replace(/\/+$/, "");
+    return normalized || "/";
+  }
+
+  function navigationType() {
+    const entry = window.performance &&
+      performance.getEntriesByType &&
+      performance.getEntriesByType("navigation")[0];
+    return entry ? entry.type : "navigate";
+  }
+
+  function isHomeRoute(pathname) {
+    return normalizedRoute(pathname) === "/";
+  }
+
+  function isProjectRoute(pathname) {
+    return /^\/projects\/[^/]+$/i.test(normalizedRoute(pathname));
+  }
+
+  function projectHomeAnchor(pathname) {
+    switch (normalizedRoute(pathname)) {
+      case "/projects/shila":
+        return "shila-project";
+      case "/projects/dabouq":
+        return "dabouq-project";
+      case "/projects/concrete-fatigue":
+        return "concrete-fatigue-project";
+      case "/projects/manmatic":
+      case "/projects/protocol-port":
+        return "manmatic-project";
+      default:
+        return "work";
+    }
+  }
+
+  function projectRowForRoute(pathname) {
+    const route = normalizedRoute(pathname);
+    const links = Array.from(document.querySelectorAll(".project-row a[href]"));
+    const matchingLink = links.find(function (link) {
+      try {
+        return normalizedRoute(new URL(link.href, window.location.href).pathname) === route;
+      } catch (error) {
+        return false;
+      }
+    });
+    if (matchingLink) return matchingLink.closest(".project-row");
+    return document.getElementById(projectHomeAnchor(route));
+  }
+
+  function createNavigationToken() {
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+      return window.crypto.randomUUID();
+    }
+    return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+  }
+
+  function currentReturnCandidate() {
+    const state = safeSessionRead(projectReturnStateKey);
+    const intent = safeSessionRead(projectReturnIntentKey);
+    const fallback = safeSessionRead(projectFallbackKey);
+    const historyToken = window.history.state &&
+      window.history.state.portfolioHomeReturnToken;
+    const isHistoryReturn = navigationType() === "back_forward" ||
+      root.classList.contains("route-restoration-pending");
+
+    if (
+      state &&
+      state.token &&
+      (
+        (intent && intent.kind === "saved" && intent.token === state.token) ||
+        (isHistoryReturn && historyToken === state.token)
+      )
+    ) {
+      return { kind: "saved", state: state };
+    }
+
+    if (
+      fallback &&
+      fallback.projectPath &&
+      (
+        (intent && intent.kind === "fallback") ||
+        (isHistoryReturn && historyToken && !state)
+      )
+    ) {
+      return { kind: "fallback", state: fallback };
+    }
+
+    return null;
+  }
+
+  function restoreHomepageProjectPosition() {
+    if (!document.body.classList.contains("home-page") || homeRestorationPending) {
+      return false;
+    }
+
+    const candidate = currentReturnCandidate();
+    if (!candidate) {
+      root.classList.remove("route-restoration-pending", "route-restoring");
+      delete root.dataset.routeRestoration;
+      return false;
+    }
+
+    const saved = candidate.state;
+    const target = saved.rowId
+      ? document.getElementById(saved.rowId)
+      : projectRowForRoute(saved.projectPath);
+    const resolvedTarget = target || projectRowForRoute(saved.projectPath);
+    if (!resolvedTarget) {
+      root.classList.remove("route-restoration-pending", "route-restoring");
+      safeSessionRemove(projectReturnIntentKey);
+      return false;
+    }
+
+    homeRestorationPending = true;
+    root.classList.add("route-restoration-pending");
+    root.dataset.routeRestoration = "pending";
+
+    const fontsReady = document.fonts && document.fonts.ready
+      ? document.fonts.ready.catch(function () {})
+      : Promise.resolve();
+
+    fontsReady.then(function () {
+      homeRestorationFrame = window.requestAnimationFrame(function () {
+        homeRestorationFrame = 0;
+        root.classList.add("route-restoring");
+
+        const previousRootBehavior = root.style.scrollBehavior;
+        const previousBodyBehavior = document.body.style.scrollBehavior;
+        root.style.scrollBehavior = "auto";
+        document.body.style.scrollBehavior = "auto";
+
+        const bounds = resolvedTarget.getBoundingClientRect();
+        const documentTop = bounds.top + window.scrollY;
+        const desiredTop = candidate.kind === "saved" &&
+          Number.isFinite(Number(saved.rowViewportTop))
+          ? documentTop - Number(saved.rowViewportTop)
+          : documentTop - Math.max(72, window.innerHeight * 0.12);
+        const maximumTop = Math.max(
+          0,
+          document.documentElement.scrollHeight - window.innerHeight
+        );
+        const fallbackTop = Number.isFinite(Number(saved.scrollY))
+          ? Number(saved.scrollY)
+          : documentTop;
+        const restoredTop = clamp(
+          Number.isFinite(desiredTop) ? desiredTop : fallbackTop,
+          0,
+          maximumTop
+        );
+
+        window.scrollTo({ top: restoredTop, left: 0, behavior: "auto" });
+        root.style.scrollBehavior = previousRootBehavior;
+        document.body.style.scrollBehavior = previousBodyBehavior;
+
+        const nextHistoryState = Object.assign({}, window.history.state || {});
+        if (candidate.kind === "saved") {
+          nextHistoryState.portfolioHomeReturnToken = saved.token;
+        } else {
+          nextHistoryState.portfolioHomeFallback = normalizedRoute(saved.projectPath);
+        }
+        window.history.replaceState(
+          nextHistoryState,
+          "",
+          window.location.pathname + window.location.search + window.location.hash
+        );
+
+        homeRestorationFrame = window.requestAnimationFrame(function () {
+          homeRestorationFrame = 0;
+          homeRestorationPending = false;
+          root.classList.remove("route-restoration-pending", "route-restoring");
+          root.dataset.routeRestoration = "complete";
+          safeSessionRemove(projectReturnIntentKey);
+          updateHeaderState();
+          updateActiveSectionFromGeometry();
+          requestScrollEffects();
+        });
+      });
+    });
+
+    return true;
+  }
+
+  function rememberHomepageProject(destination) {
+    const row = projectRowForRoute(destination.pathname);
+    if (!row) return;
+
+    const token = createNavigationToken();
+    const bounds = row.getBoundingClientRect();
+    const state = {
+      token: token,
+      projectPath: normalizedRoute(destination.pathname),
+      rowId: row.id || "",
+      projectId: row.dataset.projectId || "",
+      projectIndex: row.dataset.projectIndex || "",
+      scrollY: window.scrollY,
+      rowViewportTop: bounds.top,
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
+      savedAt: Date.now()
+    };
+
+    const nextHistoryState = Object.assign({}, window.history.state || {}, {
+      portfolioHomeReturnToken: token
+    });
+    window.history.replaceState(
+      nextHistoryState,
+      "",
+      window.location.pathname + window.location.search + window.location.hash
+    );
+    safeSessionWrite(projectReturnStateKey, state);
+    safeSessionRemove(projectReturnIntentKey);
+    homeDepartureArmed = true;
+    root.dataset.projectDeparture = token;
+  }
+
+  function prepareProjectReturnContext() {
+    const currentPath = normalizedRoute(window.location.pathname);
+    const activeState = safeSessionRead(projectReturnStateKey);
+    const type = navigationType();
+    let sameSiteReferrerPath = "";
+
+    try {
+      const referrer = document.referrer && new URL(document.referrer);
+      if (referrer && referrer.origin === window.location.origin) {
+        sameSiteReferrerPath = normalizedRoute(referrer.pathname);
+      }
+    } catch (error) {}
+
+    const hasValidSource = activeState && (
+      (
+        isHomeRoute(sameSiteReferrerPath) &&
+        normalizedRoute(activeState.projectPath) === currentPath
+      ) ||
+      isProjectRoute(sameSiteReferrerPath) ||
+      type === "back_forward"
+    );
+    if (type === "reload" || !hasValidSource) {
+      safeSessionRemove(projectReturnStateKey);
+    }
+
+    safeSessionWrite(projectFallbackKey, {
+      projectPath: currentPath,
+      rowId: projectHomeAnchor(currentPath),
+      savedAt: Date.now()
+    });
+  }
+
+  function initProjectScrollRestoration() {
+    try {
+      window.history.scrollRestoration = "manual";
+    } catch (error) {}
+
+    const isHome = document.body.classList.contains("home-page");
+    if (!isHome) prepareProjectReturnContext();
+
+    document.addEventListener("click", function (event) {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) return;
+
+      const anchor = event.target.closest("a[href]");
+      if (!anchor || anchor.target === "_blank" || anchor.hasAttribute("download")) {
+        return;
+      }
+
+      let destination;
+      try {
+        destination = new URL(anchor.href, window.location.href);
+      } catch (error) {
+        return;
+      }
+      if (destination.origin !== window.location.origin) return;
+
+      if (isHome && isProjectRoute(destination.pathname)) {
+        rememberHomepageProject(destination);
+        return;
+      }
+
+      if (!isHome && isHomeRoute(destination.pathname)) {
+        const activeState = safeSessionRead(projectReturnStateKey);
+        const currentPath = normalizedRoute(window.location.pathname);
+        if (activeState && activeState.token) {
+          safeSessionWrite(projectReturnIntentKey, {
+            kind: "saved",
+            token: activeState.token,
+            projectPath: currentPath,
+            savedAt: Date.now()
+          });
+          anchor.setAttribute("href", "/");
+        } else {
+          safeSessionWrite(projectReturnIntentKey, {
+            kind: "fallback",
+            projectPath: currentPath,
+            savedAt: Date.now()
+          });
+          anchor.setAttribute("href", "/#" + projectHomeAnchor(currentPath));
+        }
+      }
+    }, true);
+
+    if (isHome) {
+      window.addEventListener("pagehide", function () {
+        const activeState = safeSessionRead(projectReturnStateKey);
+        const historyToken = window.history.state &&
+          window.history.state.portfolioHomeReturnToken;
+        if (
+          homeDepartureArmed ||
+          (activeState && activeState.token === historyToken)
+        ) {
+          root.classList.add("route-restoration-pending");
+          root.dataset.routeRestoration = "pending";
+        }
+        homeDepartureArmed = false;
+      });
+      window.addEventListener("pageshow", function (event) {
+        if (event.persisted) restoreHomepageProjectPosition();
+      });
+    }
+
+    return isHome ? restoreHomepageProjectPosition() : false;
+  }
+
   function initManmaticRouteTransitions() {
     if (root.dataset.manmaticRouteReady === "true") return;
     root.dataset.manmaticRouteReady = "true";
@@ -2632,6 +2956,7 @@
   }
 
   function updateViewportReveals() {
+    if ("IntersectionObserver" in window) return;
     const viewportHeight = Math.max(window.innerHeight, 1);
     document
       .querySelectorAll(".reveal-item.is-reveal-ready:not(.is-revealed)")
@@ -2654,6 +2979,7 @@
   }
 
   function updateParallax() {
+    if (coarsePointer.matches) return;
     const images = document.querySelectorAll("[data-parallax]");
     if (reducedMotion.matches || window.innerWidth <= 560) {
       images.forEach(function (image) {
@@ -2680,9 +3006,9 @@
   function updateScrollEffects() {
     scrollFrame = 0;
     updateHeaderState();
-    updateReadingProgress();
-    updateParallax();
-    updateManmaticTheme();
+    if (readingGroups.length) updateReadingProgress();
+    if (!coarsePointer.matches) updateParallax();
+    if (manmaticTarget) updateManmaticTheme();
     updateViewportReveals();
     if (sectionObserverFallback) updateActiveSectionFromGeometry();
     if (projectObserverFallback) updateActiveProjectFromGeometry();
@@ -2695,6 +3021,8 @@
   }
 
   function initScrollEffects() {
+    if (scrollEffectsBound) return;
+    scrollEffectsBound = true;
     window.addEventListener("scroll", requestScrollEffects, { passive: true });
     window.addEventListener("resize", requestScrollEffects);
     window.addEventListener("orientationchange", requestScrollEffects);
@@ -3192,9 +3520,10 @@
     respectReducedMotion();
     initAmbientMotion();
     initMobileNavigation();
-    initManmaticRouteTransitions();
     normalizeProjectArchiveOrder();
-    stabilizeInitialHashPosition();
+    const restoringProjectPosition = initProjectScrollRestoration();
+    initManmaticRouteTransitions();
+    if (!restoringProjectPosition) stabilizeInitialHashPosition();
     hydrateContentMedia();
     initRunningHeader();
     initProtectedMedia(document);
