@@ -116,13 +116,13 @@ try {
 
   $null = Evaluate 'document.querySelector(".project-row--shila > a").click();true'
   Start-Sleep -Milliseconds 500
-  $entryState = Evaluate 'JSON.stringify({path:location.pathname,loaderCount:document.querySelectorAll(".loader").length,contentVisible:getComputedStyle(document.querySelector("main")).visibility!=="hidden",glitchActive:document.querySelector(".manmatic-transition")?.classList.contains("is-route-glitch")||false,glitchBackground:getComputedStyle(document.querySelector(".manmatic-transition")).backgroundColor})'
+  $entryState = Evaluate 'JSON.stringify({path:location.pathname,loaderCount:document.querySelectorAll(".loader").length,contentVisible:getComputedStyle(document.querySelector("main")).visibility!=="hidden",transitionLayers:document.querySelectorAll(".manmatic-transition").length})'
   $entryShot = Screenshot '01-project-entry.png'
   $entryResolvedShot = Screenshot '02-project-entry-resolved.png'
 
   $null = Evaluate 'document.querySelector(".site-header__name").click();true'
   Start-Sleep -Milliseconds 90
-  $exitState = Evaluate 'JSON.stringify({path:location.pathname,loaderCount:document.querySelectorAll(".loader").length,homeVisible:Boolean(document.querySelector("main")),glitchBackground:getComputedStyle(document.querySelector(".manmatic-transition")).backgroundColor})'
+  $exitState = Evaluate 'JSON.stringify({path:location.pathname,loaderCount:document.querySelectorAll(".loader").length,homeVisible:Boolean(document.querySelector("main")),transitionLayers:document.querySelectorAll(".manmatic-transition").length})'
   $exitShot = Screenshot '03-project-exit-glitch.png'
   Wait-For 'location.pathname === "/"'
 
@@ -130,23 +130,23 @@ try {
   Wait-For 'location.pathname === "/projects/concrete-fatigue/"'
   $null = Evaluate 'history.back();true'
   Wait-For 'location.pathname === "/"'
-  $backState = Evaluate 'JSON.stringify({path:location.pathname,loaderCount:document.querySelectorAll(".loader").length,routeGlitch:document.querySelector(".manmatic-transition")?.classList.contains("is-route-glitch")||false,projectListeners:document.documentElement.dataset.projectNavigationReady})'
+  $backState = Evaluate 'JSON.stringify({path:location.pathname,loaderCount:document.querySelectorAll(".loader").length,transitionLayers:document.querySelectorAll(".manmatic-transition").length,transientState:document.documentElement.classList.contains("is-system-switching")})'
   $null = Evaluate 'history.forward();true'
   Wait-For 'location.pathname === "/projects/concrete-fatigue/"'
-  $forwardState = Evaluate 'JSON.stringify({path:location.pathname,loaderCount:document.querySelectorAll(".loader").length,routeGlitch:document.querySelector(".manmatic-transition")?.classList.contains("is-route-glitch")||false})'
+  $forwardState = Evaluate 'JSON.stringify({path:location.pathname,loaderCount:document.querySelectorAll(".loader").length,transitionLayers:document.querySelectorAll(".manmatic-transition").length})'
 
   Navigate 'http://127.0.0.1:4173/projects/shila/'
   $directState = Evaluate 'JSON.stringify({loaderCount:document.querySelectorAll(".loader").length,pending:document.documentElement.classList.contains("loader-pending"),contentVisible:getComputedStyle(document.querySelector("main")).visibility!=="hidden"})'
   $null = Evaluate 'document.querySelector("a[href=\"/projects/manmatic/\"]").click();true'
   Wait-For 'location.pathname === "/projects/manmatic/"'
   Start-Sleep -Milliseconds 350
-  $projectToProjectState = Evaluate 'JSON.stringify({path:location.pathname,loaderCount:document.querySelectorAll(".loader").length,pending:document.documentElement.classList.contains("loader-pending"),glitchBackground:getComputedStyle(document.querySelector(".manmatic-transition")).backgroundColor})'
+  $projectToProjectState = Evaluate 'JSON.stringify({path:location.pathname,loaderCount:document.querySelectorAll(".loader").length,pending:document.documentElement.classList.contains("loader-pending"),transitionLayers:document.querySelectorAll(".manmatic-transition").length})'
 
   $null = Invoke-Cdp 'Emulation.setEmulatedMedia' @{ features = @(@{ name = 'prefers-reduced-motion'; value = 'reduce' }) }
   Navigate 'http://127.0.0.1:4173/'
-  $null = Evaluate 'sessionStorage.setItem("ahmad-portfolio-loader-complete","1");document.querySelector(".project-row--elma > a").click();true'
+  $null = Evaluate 'document.querySelector(".project-row--elma > a").click();true'
   Wait-For 'location.pathname === "/projects/concrete-fatigue/"'
-  $reducedMotionState = Evaluate 'JSON.stringify({pending:document.documentElement.classList.contains("loader-pending"),loaderCount:document.querySelectorAll(".loader").length,routeGlitch:document.querySelector(".manmatic-transition")?.classList.contains("is-route-glitch")||false})'
+  $reducedMotionState = Evaluate 'JSON.stringify({pending:document.documentElement.classList.contains("loader-pending"),loaderCount:document.querySelectorAll(".loader").length,transitionLayers:document.querySelectorAll(".manmatic-transition").length})'
   $null = Invoke-Cdp 'Emulation.setEmulatedMedia' @{ features = @() }
 
   $viewports = @(

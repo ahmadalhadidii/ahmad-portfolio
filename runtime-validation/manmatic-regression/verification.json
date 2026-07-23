@@ -1,24 +1,24 @@
 ﻿{
-    "beforeScrambleText":  "MAN.MA.11]1{",
+    "beforeScrambleText":  "MAN.MA=\\}[[=",
     "settledTitle":  "MAN.MA.T.I.C",
     "scrambleTargetCount":  1,
     "loader":  {
                    "background":  "rgb(255, 255, 255)",
-                   "pending":  false,
+                   "pending":  true,
                    "hidden":  false
                },
-    "thresholdSurface":  "rgb(39, 39, 39)",
+    "thresholdSurface":  "rgb(255, 255, 255)",
     "fieldWindow":  {
                         "bar":  "MANMATIC.INSTITUTE / FIELD INTERFACE\nLIVE / ACTIVE",
                         "iframeCount":  1,
                         "rect":  {
                                      "x":  607.828125,
-                                     "y":  210.953125,
+                                     "y":  210.09375,
                                      "width":  792.65625,
                                      "height":  478.734375,
-                                     "top":  210.953125,
+                                     "top":  210.09375,
                                      "right":  1400.484375,
-                                     "bottom":  689.6875,
+                                     "bottom":  688.828125,
                                      "left":  607.828125
                                  },
                         "href":  "/projects/manmatic/#the-manmatic-field",
@@ -37,14 +37,14 @@
                                                 "height":  1366,
                                                 "iframeCount":  1,
                                                 "rect":  {
-                                                             "x":  682.515625,
-                                                             "y":  579.453125,
-                                                             "width":  309.984375,
-                                                             "height":  207.234375,
-                                                             "top":  579.453125,
+                                                             "x":  16.5,
+                                                             "y":  392.34375,
+                                                             "width":  976,
+                                                             "height":  581.875,
+                                                             "top":  392.34375,
                                                              "right":  992.5,
-                                                             "bottom":  786.6875,
-                                                             "left":  682.515625
+                                                             "bottom":  974.21875,
+                                                             "left":  16.5
                                                          },
                                                 "overflow":  false
                                             },
@@ -69,14 +69,14 @@
                                                "height":  1180,
                                                "iframeCount":  1,
                                                "rect":  {
-                                                            "x":  478.515625,
-                                                            "y":  486.96875,
-                                                            "width":  309.984375,
-                                                            "height":  207.234375,
-                                                            "top":  486.96875,
+                                                            "x":  16.5,
+                                                            "y":  356.25,
+                                                            "width":  772,
+                                                            "height":  467.125,
+                                                            "top":  356.25,
                                                             "right":  788.5,
-                                                            "bottom":  694.203125,
-                                                            "left":  478.515625
+                                                            "bottom":  823.375,
+                                                            "left":  16.5
                                                         },
                                                "overflow":  false
                                            }
@@ -94,8 +94,8 @@
                        },
     "mobileFastScroll":  {
                              "frames":  74,
-                             "maxFrameGap":  16.799999999999955,
-                             "averageFrameGap":  16.301351351391624,
+                             "maxFrameGap":  16.800000000000182,
+                             "averageFrameGap":  16.402702702702705,
                              "scrollY":  219
                          },
     "consoleErrors":  {

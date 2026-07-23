@@ -41,35 +41,42 @@
                   },
     "projectEntry":  {
                          "path":  "/projects/shila/",
-                         "pending":  true,
-                         "glitching":  true,
-                         "hidden":  false
+                         "loaderCount":  0,
+                         "contentVisible":  true,
+                         "transitionLayers":  0
                      },
     "projectExit":  {
-                        "path":  "/projects/shila/",
-                        "active":  true,
-                        "glitching":  true,
-                        "hidden":  false
+                        "path":  "/",
+                        "loaderCount":  1,
+                        "homeVisible":  true,
+                        "transitionLayers":  0
                     },
     "browserBack":  {
                         "path":  "/",
-                        "transitionActive":  false,
-                        "projectListeners":  "true"
+                        "loaderCount":  1,
+                        "transitionLayers":  0,
+                        "transientState":  false
                     },
     "browserForward":  {
                            "path":  "/projects/concrete-fatigue/",
-                           "transitionActive":  false,
-                           "loaderHidden":  true
+                           "loaderCount":  0,
+                           "transitionLayers":  0
                        },
     "directProject":  {
-                          "skipped":  true,
+                          "loaderCount":  0,
                           "pending":  false,
-                          "hidden":  true
+                          "contentVisible":  true
                       },
+    "projectToProject":  {
+                             "path":  "/projects/manmatic/",
+                             "loaderCount":  0,
+                             "pending":  false,
+                             "transitionLayers":  0
+                         },
     "reducedMotion":  {
                           "pending":  false,
-                          "skipped":  true,
-                          "transitionActive":  false
+                          "loaderCount":  0,
+                          "transitionLayers":  0
                       },
     "viewports":  [
                       {
@@ -128,7 +135,7 @@
                           "Count":  0
                       },
     "screenshots":  [
-                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\ux-performance-pass\\01-project-entry-glitch.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\ux-performance-pass\\01-project-entry.png",
                         "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\ux-performance-pass\\02-project-entry-resolved.png",
                         "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\ux-performance-pass\\03-project-exit-glitch.png",
                         "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\ux-performance-pass\\04-selected-work-desktop.png",

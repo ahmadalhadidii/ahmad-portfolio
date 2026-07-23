@@ -1948,13 +1948,13 @@ body[data-project="dabouq-residential-building"] .project-hero__media img {
 .manmatic-category__record figcaption, .project-record-media figcaption { padding-top: 8px; color: var(--text-secondary); font: 400 .62rem/1.35 var(--font-mono); }
 .manmatic-category__record:nth-child(2) figcaption { text-align: right; }
 .manmatic-category__record > a { display: inline-block; margin-top: 18px; padding-bottom: 4px; border-bottom: 1px solid currentColor; }
-.manmatic-threshold { position: relative; left: 50%; width: 100vw; height: clamp(220px, 28vh, 340px); min-height: 0; margin: 0 0 0 -50vw; display: grid; place-items: center; overflow: hidden; color: #fff; background-color: var(--surface-dark); background-image: linear-gradient(rgb(255 255 255 / .025) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / .025) 1px, transparent 1px); background-size: 8.333vw 64px; }
-.manmatic-threshold > p { position: absolute; left: 50%; bottom: clamp(22px, 4vh, 38px); width: max-content; max-width: calc(100vw - 36px); color: rgba(255,255,255,.46); font: 500 .56rem/1.2 var(--font-mono); letter-spacing: .07em; text-align: center; white-space: nowrap; transform: translateX(-50%); }
+.manmatic-threshold { position: relative; left: 50%; width: 100vw; height: clamp(220px, 28vh, 340px); min-height: 0; margin: 0 0 0 -50vw; display: grid; place-items: center; overflow: hidden; color: #111; background: #fff; }
+.manmatic-threshold > p { position: absolute; left: 50%; bottom: clamp(22px, 4vh, 38px); width: max-content; max-width: calc(100vw - 36px); color: #727272; font: 500 .56rem/1.2 var(--font-mono); letter-spacing: .07em; text-align: center; white-space: nowrap; transform: translateX(-50%); }
 .manmatic-threshold__mark { display: block; width: clamp(250px, 22vw, 300px); height: auto; overflow: visible; transform: translateY(-1%); }
-.manmatic-threshold__mark g { fill: none; stroke: #fff; stroke-width: 1.15; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.manmatic-threshold__mark g { fill: none; stroke: #111; stroke-width: 1.15; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
 .manmatic-threshold__mark path, .manmatic-threshold__mark line, .manmatic-threshold__mark circle { stroke-dasharray: 420; stroke-dashoffset: 420; }
 .manmatic-threshold__mark .threshold-mark__ghost { opacity: .34; stroke-width: .62; }
-.manmatic-threshold__mark text { fill: #fff; stroke: none; font: 500 8px/1 var(--font-mono); letter-spacing: .05em; }
+.manmatic-threshold__mark text { fill: #111; stroke: none; font: 500 8px/1 var(--font-mono); letter-spacing: .05em; }
 .project-row--manmatic.is-field-active .threshold-mark__axis { animation: threshold-mark-show .25s .05s ease-out forwards; }
 .project-row--manmatic.is-field-active .threshold-mark__axis path { animation: threshold-mark-draw .35s .05s ease-out forwards; }
 .project-row--manmatic.is-field-active .threshold-mark__arcs { animation: threshold-mark-show .3s .3s ease-out forwards, threshold-mark-settle .55s .3s ease-out both; transform-box: fill-box; transform-origin: center; }
@@ -2827,127 +2827,33 @@ html.loader-complete .home-page .monitor__housing {
   transform: translate3d(0, 0, 0);
 }
 
-/* Shared ManMaTIC and route glitch: the page stays visible beneath clipped bands. */
-
-.manmatic-transition {
-  --glitch-primary: rgba(17, 17, 17, 0.92);
-  --glitch-secondary: rgba(216, 102, 50, 0.76);
-  position: fixed;
-  inset: 0;
-  z-index: 230;
-  visibility: hidden;
-  overflow: hidden;
-  opacity: 0;
-  background: transparent;
-  pointer-events: none;
-  isolation: isolate;
-  contain: paint;
+/* The ManMaTIC signal disturbs the real content briefly without cover layers. */
+.project-row--manmatic.is-field-transitioning {
+  animation: manmatic-content-signal 340ms steps(4, end);
+  will-change: filter, transform;
 }
 
-.manmatic-transition.is-active {
-  visibility: visible;
-}
-
-.manmatic-transition.is-entering,
-.manmatic-transition.is-from-light {
-  --glitch-primary: rgba(247, 247, 244, 0.94);
-  --glitch-secondary: rgba(84, 84, 82, 0.62);
-}
-
-.manmatic-transition.is-exiting,
-.manmatic-transition.is-from-dark {
-  --glitch-primary: rgba(39, 39, 39, 0.96);
-  --glitch-secondary: rgba(216, 102, 50, 0.76);
-}
-
-.manmatic-transition::before,
-.manmatic-transition::after {
-  content: "";
-  position: absolute;
-  right: -10%;
-  left: -10%;
-  opacity: 0;
-  background: var(--glitch-primary);
-  pointer-events: none;
-  will-change: opacity, transform;
-}
-
-.manmatic-transition::before {
-  top: 7vh;
-  z-index: 1;
-  height: clamp(2px, 0.45vh, 6px);
-  box-shadow:
-    0 16vh 0 var(--glitch-secondary),
-    0 34vh 0 var(--glitch-primary),
-    0 53vh 0 var(--glitch-secondary),
-    0 76vh 0 var(--glitch-primary);
-}
-
-.manmatic-transition::after {
-  top: 21vh;
-  z-index: 2;
-  height: clamp(10px, 2.6vh, 28px);
-  box-shadow:
-    0 29vh 0 var(--glitch-secondary),
-    0 56vh 0 var(--glitch-primary);
-}
-
-.manmatic-transition.is-running {
-  opacity: 1;
-}
-
-.manmatic-transition.is-running::before {
-  animation: manmatic-viewport-slices 680ms steps(7, end) both;
-}
-
-.manmatic-transition.is-running::after {
-  animation: manmatic-fragment-bands 680ms steps(7, end) both;
-}
-
-.manmatic-transition.is-route-glitch.is-running {
-  animation: manmatic-route-lifetime 680ms linear both;
-}
-
-html.is-system-switching .site-shell {
-  animation: manmatic-interface-displace 680ms steps(8, end) both;
-}
-
-@keyframes manmatic-viewport-slices {
-  0%, 100% { opacity: 0; transform: translate3d(-8%, -12vh, 0) scaleX(0.18); }
-  18% { opacity: 0.72; transform: translate3d(5%, 4vh, 0) scaleX(0.58); }
-  36% { opacity: 0.28; transform: translate3d(-3%, 12vh, 0) scaleX(1); }
-  50% { opacity: 0.95; transform: translate3d(2%, 3vh, 0) scaleX(0.82); }
-  68% { opacity: 0.32; transform: translate3d(-2%, 16vh, 0) scaleX(0.66); }
-  84% { opacity: 0.58; transform: translate3d(4%, 27vh, 0) scaleX(0.34); }
-}
-
-@keyframes manmatic-fragment-bands {
-  0%, 100% { opacity: 0; transform: translate3d(9%, 10vh, 0) scaleX(0.22); }
-  24% { opacity: 0.58; transform: translate3d(-6%, -4vh, 0) scaleX(0.7); }
-  44% { opacity: 0.24; transform: translate3d(2%, 7vh, 0) scaleX(0.42); }
-  62% { opacity: 0.82; transform: translate3d(-3%, -8vh, 0) scaleX(0.88); }
-  82% { opacity: 0.3; transform: translate3d(5%, 13vh, 0) scaleX(0.3); }
-}
-
-@keyframes manmatic-interface-displace {
-  0%, 100% { transform: translate3d(0, 0, 0); filter: none; }
-  14% { transform: translate3d(2px, 0, 0); filter: contrast(1.04); }
-  28% { transform: translate3d(-3px, 0, 0); filter: contrast(1.1); }
-  42% { transform: translate3d(4px, 0, 0); filter: contrast(1.16); }
-  56% { transform: translate3d(-2px, 0, 0); filter: contrast(1.1); }
-  76% { transform: translate3d(1px, 0, 0); filter: contrast(1.04); }
-}
-
-@keyframes manmatic-route-lifetime {
-  from, to { opacity: 1; }
-}
-
-.manmatic-transition__readout {
-  display: none;
-}
-
-.manmatic-transition.is-exiting .manmatic-transition__readout {
-  color: #242424;
+@keyframes manmatic-content-signal {
+  0%, 100% {
+    filter: none;
+    transform: translate3d(0, 0, 0);
+  }
+  22% {
+    filter: grayscale(1) contrast(1.08);
+    transform: translate3d(2px, 0, 0);
+  }
+  42% {
+    filter: invert(1) grayscale(1) contrast(1.1);
+    transform: translate3d(-3px, 0, 0);
+  }
+  58% {
+    filter: grayscale(1) contrast(1.18) drop-shadow(3px 0 0 rgba(216, 102, 50, .42));
+    transform: translate3d(3px, 0, 0);
+  }
+  76% {
+    filter: invert(1) grayscale(1) contrast(1.06);
+    transform: translate3d(-1px, 0, 0);
+  }
 }
 
 
@@ -5811,8 +5717,7 @@ body[data-project="manmatic-field"] .project-hero img, body[data-project="manmat
   .visual-slider__signal,
   .visual-slide__scan,
   .pixel-portrait__grid,
-  .profile-portrait__scan,
-  .manmatic-transition {
+  .profile-portrait__scan {
     display: none !important;
   }
 
@@ -6051,8 +5956,7 @@ figcaption,
 
 @media print {
   .ambient-signal,
-  .material-texture,
-  .manmatic-transition {
+  .material-texture {
     display: none !important;
   }
 
@@ -6120,15 +6024,7 @@ figcaption,
   }
 }
 
-/* Controlled 2026 correction pass: shared surfaces, hierarchy, motion and actions. */
-html[data-site-theme="manmatic"],
-html[data-initial-theme="manmatic"]:not([data-site-theme]),
-html[data-site-theme="manmatic"] body,
-html[data-site-theme="manmatic"] main,
-.project-row--manmatic {
-  --theme-bg: var(--surface-dark);
-  background-color: var(--surface-dark);
-}
+/* Controlled 2026 correction pass: hierarchy, motion and actions. */
 
 .cv-group > h3,
 .support-group > h3 {
@@ -6174,11 +6070,13 @@ a.mm-action {
 .project-row--manmatic,
 .project-row--manmatic .manmatic-category,
 .project-row--manmatic .manmatic-category__record {
-  --text-primary: #f2f2f2;
-  --text-secondary: #bdbdbd;
-  --line: rgba(242, 242, 242, 0.28);
+  --theme-bg: #ffffff;
+  --text-primary: #111111;
+  --text-secondary: #727272;
+  --text-muted: #666662;
+  --line: #d8d8d8;
   color: var(--text-primary);
-  background-color: var(--surface-dark);
+  background-color: #ffffff;
 }
 
 .project-row--manmatic .project-row__link,
@@ -6198,11 +6096,36 @@ a.mm-action {
     grid-column: 1;
   }
 
+  .manmatic-branch > p,
+  .manmatic-branch > h4,
+  .manmatic-branch > span,
+  .manmatic-branch > dl,
+  .manmatic-branch figure,
+  .manmatic-field-window {
+    grid-column: 1;
+    grid-row: auto;
+    min-width: 0;
+  }
+
+  .manmatic-branch figure,
+  .manmatic-field-window {
+    width: 100%;
+    margin-top: clamp(12px, 2vw, 18px);
+  }
+
+  .manmatic-branch h4 {
+    margin-top: clamp(18px, 2.8vw, 26px);
+  }
+
+  .manmatic-branch > p:nth-of-type(3) {
+    width: 100%;
+    max-width: 68ch;
+  }
+
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .project-row__link:hover,
-  .manmatic-branch:hover {
+  .project-row:not(.project-row--manmatic) > .project-row__link:hover {
     background: color-mix(in srgb, currentColor 3%, transparent);
   }
 }

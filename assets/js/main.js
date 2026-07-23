@@ -30,10 +30,8 @@
   let manmaticTarget = null;
   let manmaticActive = false;
   let manmaticDesiredActive = false;
-  let manmaticTransitionElement = null;
   let manmaticTransitionTimer = 0;
   let manmaticCommitTimer = 0;
-  let manmaticGlitchTimer = 0;
   let manmaticTransitionToken = 0;
   let projectObserver = null;
   let projectObserverFallback = false;
@@ -1932,7 +1930,8 @@
   }
 
   function setSiteTheme(theme) {
-    const nextTheme = theme === "manmatic" ? "manmatic" : "light";
+    const homePage = document.body && document.body.classList.contains("home-page");
+    const nextTheme = !homePage && theme === "manmatic" ? "manmatic" : "light";
     const changed = root.dataset.siteTheme !== nextTheme;
     root.dataset.siteTheme = nextTheme;
     if (changed) {
@@ -1951,44 +1950,20 @@
     }
   }
 
-  function applyThemeBehindTransition(active) {
-    root.classList.add("theme-swap-instant");
-    setSiteTheme(active ? "manmatic" : "light");
-    void root.offsetWidth;
-    window.requestAnimationFrame(function () {
-      root.classList.remove("theme-swap-instant");
-    });
-  }
-
   function commitManmaticState(active, token) {
     if (token !== manmaticTransitionToken) return;
     manmaticActive = active;
-    applyThemeBehindTransition(active);
     if (manmaticTarget) manmaticTarget.classList.toggle("is-field-active", active);
 
-    if (manmaticGlitchTimer) {
-      window.clearTimeout(manmaticGlitchTimer);
-      manmaticGlitchTimer = 0;
-    }
     if (active && manmaticTarget) {
       activateHeading(manmaticTarget);
-      if (!reducedMotion.matches) {
-        manmaticTarget.classList.add("is-screen-glitching");
-        manmaticGlitchTimer = window.setTimeout(function () {
-          if (manmaticTarget) manmaticTarget.classList.remove("is-screen-glitching");
-          manmaticGlitchTimer = 0;
-        }, 300);
-      }
-    } else if (manmaticTarget) {
-      manmaticTarget.classList.remove("is-screen-glitching");
     }
     updateReadingProgress();
     updateRunningHeader();
   }
 
   function clearManmaticTransition(token) {
-    if (token !== manmaticTransitionToken || !manmaticTransitionElement) return;
-    manmaticTransitionElement.className = "manmatic-transition";
+    if (token !== manmaticTransitionToken) return;
     if (manmaticTarget) manmaticTarget.classList.remove("is-field-transitioning");
     root.classList.remove("is-system-switching");
     delete root.dataset.systemSwitch;
@@ -2006,7 +1981,7 @@
       manmaticCommitTimer = 0;
     }
 
-    if (reducedMotion.matches || !manmaticTransitionElement) {
+    if (reducedMotion.matches) {
       commitManmaticState(active, token);
       clearManmaticTransition(token);
       return;
@@ -2015,21 +1990,14 @@
     if (manmaticTarget) manmaticTarget.classList.add("is-field-transitioning");
     root.classList.add("is-system-switching");
     root.dataset.systemSwitch = active ? "enter" : "exit";
-    manmaticTransitionElement.className = active
-      ? "manmatic-transition is-active is-entering"
-      : "manmatic-transition is-active is-exiting";
-    window.requestAnimationFrame(function () {
-      if (token !== manmaticTransitionToken) return;
-      manmaticTransitionElement.classList.add("is-running");
-    });
     manmaticCommitTimer = window.setTimeout(function () {
       commitManmaticState(active, token);
       manmaticCommitTimer = 0;
-    }, active ? 330 : 300);
+    }, active ? 150 : 140);
     manmaticTransitionTimer = window.setTimeout(function () {
       clearManmaticTransition(token);
       manmaticTransitionTimer = 0;
-    }, 690);
+    }, 340);
   }
 
   function setManmaticActive(active) {
@@ -2061,10 +2029,33 @@
   function initManmaticTheme() {
     if (!document.body.classList.contains("home-page")) return;
     manmaticTarget = document.querySelector("[data-manmatic-system]");
-    manmaticTransitionElement = document.querySelector("[data-manmatic-transition]");
+    setSiteTheme("light");
     if (!manmaticTarget) {
-      setSiteTheme("light");
       return;
+    }
+
+    if (root.dataset.manmaticCleanupReady !== "true") {
+      root.dataset.manmaticCleanupReady = "true";
+      const resetTransientState = function () {
+        manmaticTransitionToken += 1;
+        if (manmaticTransitionTimer) {
+          window.clearTimeout(manmaticTransitionTimer);
+          manmaticTransitionTimer = 0;
+        }
+        if (manmaticCommitTimer) {
+          window.clearTimeout(manmaticCommitTimer);
+          manmaticCommitTimer = 0;
+        }
+        manmaticTarget.classList.remove("is-field-transitioning");
+        root.classList.remove("is-system-switching", "theme-swap-instant");
+        delete root.dataset.systemSwitch;
+        setSiteTheme("light");
+      };
+      window.addEventListener("pagehide", resetTransientState);
+      window.addEventListener("pageshow", function () {
+        resetTransientState();
+        requestScrollEffects();
+      });
     }
 
     updateManmaticTheme();
@@ -2635,10 +2626,7 @@
     if (reducedMotion.matches) {
       if (finishMonitorBoot) finishMonitorBoot();
 
-      if (
-        manmaticTransitionElement &&
-        manmaticTransitionElement.classList.contains("is-active")
-      ) {
+      if (root.classList.contains("is-system-switching")) {
         manmaticTransitionToken += 1;
         if (manmaticTransitionTimer) {
           window.clearTimeout(manmaticTransitionTimer);
@@ -2748,176 +2736,6 @@
     });
   }
 
-  function initProjectNavigationTransitions() {
-    if (root.dataset.projectNavigationReady === "true") return;
-    root.dataset.projectNavigationReady = "true";
-
-    const transitionKey = "ahmad-route-glitch-v2";
-    const lastThemeKey = "ahmad-route-last-theme-v1";
-    const transitionDuration = 680;
-    let cleanupTimer = 0;
-    let transition = document.querySelector("[data-manmatic-transition]");
-
-    function currentTheme() {
-      return root.dataset.siteTheme === "manmatic" ||
-        root.dataset.initialTheme === "manmatic" ||
-        document.body.classList.contains("manmatic-page")
-        ? "dark"
-        : "light";
-    }
-
-    function readLastTheme() {
-      try {
-        return window.sessionStorage.getItem(lastThemeKey) === "dark" ? "dark" : "light";
-      } catch (error) {
-        return "light";
-      }
-    }
-
-    function rememberCurrentTheme() {
-      try {
-        window.sessionStorage.setItem(lastThemeKey, currentTheme());
-      } catch (error) {}
-    }
-
-    function clearRouteTransition() {
-      if (cleanupTimer) {
-        window.clearTimeout(cleanupTimer);
-        cleanupTimer = 0;
-      }
-      if (!transition) return;
-      transition.removeEventListener("animationend", handleAnimationEnd);
-      transition.classList.remove(
-        "is-active",
-        "is-running",
-        "is-route-glitch",
-        "is-from-dark",
-        "is-from-light"
-      );
-    }
-
-    function handleAnimationEnd(event) {
-      if (event.target !== transition) return;
-      clearRouteTransition();
-    }
-
-    function ensureTransition() {
-      if (transition) return transition;
-      transition = element("div", "manmatic-transition");
-      transition.dataset.manmaticTransition = "";
-      transition.setAttribute("aria-hidden", "true");
-      document.body.appendChild(transition);
-      return transition;
-    }
-
-    function storeTransition(target) {
-      try {
-        window.sessionStorage.setItem(transitionKey, JSON.stringify({
-          target: target || "*",
-          sourceTheme: currentTheme(),
-          startedAt: Date.now()
-        }));
-      } catch (error) {}
-    }
-
-    function readTransition() {
-      let request = null;
-      try {
-        request = JSON.parse(window.sessionStorage.getItem(transitionKey) || "null");
-        window.sessionStorage.removeItem(transitionKey);
-      } catch (error) {
-        request = null;
-      }
-      if (
-        !request ||
-        Date.now() - Number(request.startedAt || 0) > 5000 ||
-        (request.target !== "*" &&
-          request.target !== window.location.pathname + window.location.search)
-      ) return null;
-      return request;
-    }
-
-    function playTransition(request) {
-      if (!request || reducedMotion.matches) return;
-      const layer = ensureTransition();
-      clearRouteTransition();
-      layer.classList.add(
-        "is-active",
-        "is-route-glitch",
-        request.sourceTheme === "dark" ? "is-from-dark" : "is-from-light"
-      );
-      layer.addEventListener("animationend", handleAnimationEnd);
-      window.requestAnimationFrame(function () {
-        window.requestAnimationFrame(function () {
-          layer.classList.add("is-running");
-        });
-      });
-      cleanupTimer = window.setTimeout(clearRouteTransition, transitionDuration + 100);
-    }
-
-    document.addEventListener("click", function (event) {
-      if (
-        event.defaultPrevented ||
-        event.button !== 0 ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.altKey
-      ) return;
-
-      const anchor = event.target.closest("a[href]");
-      if (!anchor || anchor.hasAttribute("download") || anchor.target === "_blank") return;
-
-      let destination;
-      try {
-        destination = new URL(anchor.href, window.location.href);
-      } catch (error) {
-        return;
-      }
-      if (destination.origin !== window.location.origin) return;
-
-      const sameDocument = destination.pathname === window.location.pathname &&
-        destination.search === window.location.search;
-      if (sameDocument && destination.hash) return;
-      if (sameDocument || reducedMotion.matches) return;
-      storeTransition(destination.pathname + destination.search);
-    });
-
-    window.addEventListener("pageshow", function (event) {
-      const request = readTransition();
-      if (request) {
-        playTransition(request);
-      } else if (event.persisted) {
-        playTransition({ sourceTheme: readLastTheme() });
-      }
-      rememberCurrentTheme();
-    });
-
-    window.addEventListener("pagehide", function () {
-      let existing = null;
-      try {
-        existing = JSON.parse(window.sessionStorage.getItem(transitionKey) || "null");
-      } catch (error) {}
-      if (!existing || Date.now() - Number(existing.startedAt || 0) > 1000) {
-        storeTransition("*");
-      }
-      clearRouteTransition();
-    });
-
-    const initialRequest = readTransition();
-    if (initialRequest) {
-      playTransition(initialRequest);
-    } else {
-      const navigationEntry = window.performance &&
-        performance.getEntriesByType &&
-        performance.getEntriesByType("navigation")[0];
-      if (navigationEntry && navigationEntry.type === "back_forward") {
-        playTransition({ sourceTheme: readLastTheme() });
-      }
-    }
-    rememberCurrentTheme();
-  }
-
   function initDeferredEnhancements() {
     const home = document.body.classList.contains("home-page");
     if (!home) {
@@ -2985,7 +2803,6 @@
     respectReducedMotion();
     initAmbientMotion();
     initMobileNavigation();
-    initProjectNavigationTransitions();
     normalizeProjectArchiveOrder();
     stabilizeInitialHashPosition();
     hydrateContentMedia();

@@ -86,21 +86,22 @@
       root.classList.remove("no-js");
       root.classList.add("js");
 
-      var loaderSessionKey = "ahmad-portfolio-loader-complete";
-      var loaderSeen = false;
+      var navigationEntry = window.performance && performance.getEntriesByType
+        ? performance.getEntriesByType("navigation")[0]
+        : null;
+      var sameSiteReferrer = false;
       try {
-        loaderSeen = window.sessionStorage.getItem(loaderSessionKey) === "1";
+        sameSiteReferrer = Boolean(document.referrer) &&
+          new URL(document.referrer).origin === window.location.origin;
       } catch (error) {
-        loaderSeen = false;
+        sameSiteReferrer = false;
       }
+      var showLoader = !navigationEntry ||
+        navigationEntry.type === "reload" ||
+        (navigationEntry.type === "navigate" && !sameSiteReferrer);
 
-      if (loaderSeen) {
-        root.classList.add("loader-skipped", "loader-complete", "motion-ready");
-      } else {
+      if (showLoader) {
         root.classList.add("loader-pending");
-        try {
-          window.sessionStorage.setItem(loaderSessionKey, "1");
-        } catch (error) {}
         window.__portfolioLoaderFallback = window.setTimeout(function () {
           if (root.classList.contains("loader-pending")) {
             var loader = document.getElementById("loader");
@@ -112,6 +113,8 @@
             }
           }
         }, 3200);
+      } else {
+        root.classList.add("loader-skipped", "loader-complete", "motion-ready");
       }
     })();
   </script>
@@ -127,10 +130,10 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
   <link rel="preload" href="assets/images/architecture-of-elsewhere-800.webp" as="image" imagesrcset="assets/images/architecture-of-elsewhere-800.webp 800w, assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" imagesizes="(max-width: 960px) 100vw, min(1360px, 86vw)">
-  <link rel="stylesheet" href="assets/css/style.css?v=20260723-regression-repair-01">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260723-manmatic-tablet-01">
 
   <script src="content.js?v=20260718-elma-correction-02" defer></script>
-  <script src="assets/js/main.js?v=20260723-regression-repair-01" defer></script>
+  <script src="assets/js/main.js?v=20260723-manmatic-tablet-01" defer></script>
 </head>
 <body class="home-page">
   <div class="loader" id="loader" role="status" aria-label="Initializing Ahmad Alhadidii portfolio field">
@@ -192,10 +195,6 @@
 
   <div class="ambient-signal" aria-hidden="true"></div>
   <div class="material-texture" aria-hidden="true"></div>
-  <div class="manmatic-transition" data-manmatic-transition aria-hidden="true">
-    <span class="manmatic-transition__readout">MANMATIC / SYSTEM SWITCH</span>
-  </div>
-
   <div class="site-shell" id="site-shell">
     <header class="site-header" id="site-header">
       <div class="site-header__inner page-width">

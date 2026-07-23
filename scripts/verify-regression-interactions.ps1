@@ -268,8 +268,8 @@ try {
     if ($i -eq 2) { $transitionShot = Screenshot '01-manmatic-to-white-home.png' }
     Start-Sleep -Milliseconds 65
   }
-  $exitState = Get-Json '(()=>{const t=document.querySelector(".manmatic-transition");return{homeBackground:getComputedStyle(document.body).backgroundColor,loaderDisplay:getComputedStyle(document.querySelector(".loader")).display,transitionBackground:getComputedStyle(t).backgroundColor,active:t.classList.contains("is-route-glitch"),beforeHeight:getComputedStyle(t,"::before").height,afterHeight:getComputedStyle(t,"::after").height}})()'
-  Assert-State ($exitState.homeBackground -eq 'rgb(255, 255, 255)' -and $exitState.loaderDisplay -eq 'none' -and $exitState.transitionBackground -eq 'rgba(0, 0, 0, 0)') 'ManMaTIC exit reveals the white homepage under transparent glitch bands' $exitState
+  $exitState = Get-Json '({homeBackground:getComputedStyle(document.body).backgroundColor,loaderDisplay:getComputedStyle(document.querySelector(".loader")).display,transitionLayers:document.querySelectorAll(".manmatic-transition").length,transientState:document.documentElement.classList.contains("is-system-switching"),theme:document.documentElement.dataset.siteTheme})'
+  Assert-State ($exitState.homeBackground -eq 'rgb(255, 255, 255)' -and $exitState.loaderDisplay -eq 'none' -and $exitState.transitionLayers -eq 0 -and -not $exitState.transientState -and $exitState.theme -eq 'light') 'ManMaTIC exit restores the clean white homepage without transition layers' $exitState
 
   $navigationCases = @(
     @{ name = 'Shila'; selector = '.project-row--shila > .project-row__link'; path = '/projects/shila/' },
@@ -301,13 +301,13 @@ try {
   $null = Evaluate 'history.back();true'
   Wait-For 'location.pathname === "/"'
   Start-Sleep -Milliseconds 120
-  $back = Get-Json '({routeGlitch:document.querySelector(".manmatic-transition")?.classList.contains("is-route-glitch")||false,listenerReady:document.documentElement.dataset.projectNavigationReady,loaderDisplay:getComputedStyle(document.querySelector(".loader")).display})'
+  $back = Get-Json '({transitionLayers:document.querySelectorAll(".manmatic-transition").length,transientState:document.documentElement.classList.contains("is-system-switching"),theme:document.documentElement.dataset.siteTheme,loaderDisplay:getComputedStyle(document.querySelector(".loader")).display})'
   $null = Evaluate 'history.forward();true'
   Wait-For 'location.pathname === "/projects/concrete-fatigue/"'
   Start-Sleep -Milliseconds 120
-  $forward = Get-Json '({routeGlitch:document.querySelector(".manmatic-transition")?.classList.contains("is-route-glitch")||false,listenerReady:document.documentElement.dataset.projectNavigationReady,loaderCount:document.querySelectorAll(".loader").length})'
-  Assert-State ($back.routeGlitch -and $back.listenerReady -eq 'true' -and $back.loaderDisplay -eq 'none') 'Browser Back restores one clean homepage transition' $back
-  Assert-State ($forward.routeGlitch -and $forward.listenerReady -eq 'true' -and $forward.loaderCount -eq 0) 'Browser Forward restores one clean project transition' $forward
+  $forward = Get-Json '({transitionLayers:document.querySelectorAll(".manmatic-transition").length,transientState:document.documentElement.classList.contains("is-system-switching"),loaderCount:document.querySelectorAll(".loader").length})'
+  Assert-State ($back.transitionLayers -eq 0 -and -not $back.transientState -and $back.theme -eq 'light' -and $back.loaderDisplay -eq 'none') 'Browser Back restores the clean white homepage without a route layer' $back
+  Assert-State ($forward.transitionLayers -eq 0 -and -not $forward.transientState -and $forward.loaderCount -eq 0) 'Browser Forward restores the project without a route layer' $forward
 
   $detailRoutes = @(
     '/projects/manmatic/',
@@ -458,8 +458,8 @@ try {
   Navigate '/'
   Click '.project-row--manmatic > .project-row__link'
   Wait-For 'location.pathname === "/projects/manmatic/"'
-  $reduced = Get-Json '({loaderCount:document.querySelectorAll(".loader").length,routeGlitch:document.querySelector(".manmatic-transition")?.classList.contains("is-route-glitch")||false})'
-  Assert-State ($reduced.loaderCount -eq 0 -and -not $reduced.routeGlitch) 'Reduced motion skips internal route animation without adding a loader' $reduced
+  $reduced = Get-Json '({loaderCount:document.querySelectorAll(".loader").length,transitionLayers:document.querySelectorAll(".manmatic-transition").length})'
+  Assert-State ($reduced.loaderCount -eq 0 -and $reduced.transitionLayers -eq 0) 'Reduced motion keeps internal navigation free of route layers and extra loaders' $reduced
   $null = Invoke-Cdp 'Emulation.setEmulatedMedia' @{ features = @() }
 
   $errors = Get-Json 'window.__regressionErrors'
