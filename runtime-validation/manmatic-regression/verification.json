@@ -1,5 +1,5 @@
 ﻿{
-    "beforeScrambleText":  "MAN.MA=\\}[[=",
+    "beforeScrambleText":  "MAN.M-\u003c\u003e/[\\0",
     "settledTitle":  "MAN.MA.T.I.C",
     "scrambleTargetCount":  1,
     "loader":  {
@@ -7,18 +7,97 @@
                    "pending":  true,
                    "hidden":  false
                },
+    "routeTheme":  {
+                       "homeBeforeEntry":  {
+                                               "theme":  "light",
+                                               "bodyBackground":  "rgb(255, 255, 255)",
+                                               "previewBackground":  "rgb(255, 255, 255)",
+                                               "transitionLayers":  0
+                                           },
+                       "enterTransition":  {
+                                               "activeMotionFrameCount":  16,
+                                               "firstActiveFrame":  {
+                                                                        "elapsed":  2,
+                                                                        "active":  true,
+                                                                        "direction":  "enter",
+                                                                        "theme":  "manmatic",
+                                                                        "bodyBackground":  "rgb(39, 39, 39)",
+                                                                        "filter":  "grayscale(1) contrast(1.08)",
+                                                                        "transform":  "matrix(1, 0, 0, 1, 2, 0)",
+                                                                        "transitionLayers":  0
+                                                                    },
+                                               "finalFrame":  {
+                                                                  "elapsed":  452,
+                                                                  "active":  false,
+                                                                  "direction":  "",
+                                                                  "theme":  "manmatic",
+                                                                  "bodyBackground":  "rgb(39, 39, 39)",
+                                                                  "filter":  "none",
+                                                                  "transform":  "none",
+                                                                  "transitionLayers":  0
+                                                              }
+                                           },
+                       "manmaticAfterEntry":  {
+                                                  "path":  "/projects/manmatic/",
+                                                  "theme":  "manmatic",
+                                                  "bodyBackground":  "rgb(39, 39, 39)",
+                                                  "textColor":  "rgb(242, 241, 237)",
+                                                  "active":  false,
+                                                  "transitionLayers":  0
+                                              },
+                       "exitTransition":  {
+                                              "activeMotionFrameCount":  15,
+                                              "firstActiveFrame":  {
+                                                                       "elapsed":  -1,
+                                                                       "active":  true,
+                                                                       "direction":  "exit",
+                                                                       "theme":  "light",
+                                                                       "bodyBackground":  "rgb(255, 255, 255)",
+                                                                       "filter":  "grayscale(0.5) contrast(1.04)",
+                                                                       "transform":  "matrix(1, 0, 0, 1, 1, 0)",
+                                                                       "transitionLayers":  0
+                                                                   },
+                                              "finalFrame":  {
+                                                                 "elapsed":  449,
+                                                                 "active":  false,
+                                                                 "direction":  "",
+                                                                 "theme":  "light",
+                                                                 "bodyBackground":  "rgb(255, 255, 255)",
+                                                                 "filter":  "none",
+                                                                 "transform":  "none",
+                                                                 "transitionLayers":  0
+                                                             }
+                                          },
+                       "homeAfterExit":  {
+                                             "path":  "/",
+                                             "theme":  "light",
+                                             "bodyBackground":  "rgb(255, 255, 255)",
+                                             "previewBackground":  "rgb(255, 255, 255)",
+                                             "active":  false,
+                                             "transitionLayers":  0
+                                         },
+                       "protocolPort":  {
+                                            "path":  "/projects/protocol-port/",
+                                            "theme":  "light",
+                                            "initialTheme":  "light",
+                                            "bodyBackground":  "rgb(255, 255, 255)",
+                                            "textColor":  "rgb(17, 17, 17)",
+                                            "projectTheme":  "light",
+                                            "transitionLayers":  0
+                                        }
+                   },
     "thresholdSurface":  "rgb(255, 255, 255)",
     "fieldWindow":  {
                         "bar":  "MANMATIC.INSTITUTE / FIELD INTERFACE\nLIVE / ACTIVE",
                         "iframeCount":  1,
                         "rect":  {
                                      "x":  607.828125,
-                                     "y":  210.09375,
+                                     "y":  210.953125,
                                      "width":  792.65625,
                                      "height":  478.734375,
-                                     "top":  210.09375,
+                                     "top":  210.953125,
                                      "right":  1400.484375,
-                                     "bottom":  688.828125,
+                                     "bottom":  689.6875,
                                      "left":  607.828125
                                  },
                         "href":  "/projects/manmatic/#the-manmatic-field",
@@ -93,10 +172,10 @@
                            "scrambleTargets":  1
                        },
     "mobileFastScroll":  {
-                             "frames":  74,
+                             "frames":  73,
                              "maxFrameGap":  16.800000000000182,
-                             "averageFrameGap":  16.402702702702705,
-                             "scrollY":  219
+                             "averageFrameGap":  16.531506849315072,
+                             "scrollY":  135
                          },
     "consoleErrors":  {
                           "value":  [

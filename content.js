@@ -488,7 +488,7 @@ const siteContent = {
       role: "Architecture, research, systems thinking, visual communication",
       status: "UNDER MODIFICATION",
       statusNote: "STILL NEGOTIATING ITS FINAL FORM.",
-      theme: "manmatic",
+      theme: "light",
       systemMarker: "MANMATIC SYSTEM / PROTOCOL PORT",
       systemBack: "/projects/manmatic/",
       featured: false,

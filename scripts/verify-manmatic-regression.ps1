@@ -131,6 +131,61 @@ try {
 
   Navigate 'http://127.0.0.1:4173/'
   Start-Sleep -Milliseconds 2500
+  $homeThemeBeforeEntry = Evaluate 'JSON.stringify((()=>{const row=document.querySelector("[data-manmatic-system]");return{theme:document.documentElement.dataset.siteTheme,bodyBackground:getComputedStyle(document.body).backgroundColor,previewBackground:getComputedStyle(row).backgroundColor,transitionLayers:document.querySelectorAll(".manmatic-transition").length}})())' | ConvertFrom-Json
+  $null = Evaluate 'document.querySelector(".project-row--manmatic > .project-row__link").click();true'
+  Wait-ForReady
+  $manmaticRouteResult = Evaluate '(()=>{const samples=[],started=performance.now();return new Promise(resolve=>{function sample(now){const shell=document.querySelector(".site-shell"),style=getComputedStyle(shell);samples.push({elapsed:Math.round(now-started),active:shell.classList.contains("is-manmatic-route-transitioning"),direction:document.documentElement.dataset.manmaticRouteTransition||"",theme:document.documentElement.dataset.siteTheme,bodyBackground:getComputedStyle(document.body).backgroundColor,filter:style.filter,transform:style.transform,transitionLayers:document.querySelectorAll(".manmatic-transition").length});if(now-started<440){requestAnimationFrame(sample)}else{resolve(JSON.stringify({samples}))}}requestAnimationFrame(sample)})})()' | ConvertFrom-Json
+  $manmaticRouteSamples = @($manmaticRouteResult.samples)
+  $manmaticThemeAfterEntry = Evaluate 'JSON.stringify({path:location.pathname,theme:document.documentElement.dataset.siteTheme,bodyBackground:getComputedStyle(document.body).backgroundColor,textColor:getComputedStyle(document.body).color,active:document.querySelector(".site-shell").classList.contains("is-manmatic-route-transitioning"),transitionLayers:document.querySelectorAll(".manmatic-transition").length})' | ConvertFrom-Json
+  $null = Evaluate 'document.querySelector(".site-header__name").click();true'
+  Wait-ForReady
+  $homeRouteResult = Evaluate '(()=>{const samples=[],started=performance.now();return new Promise(resolve=>{function sample(now){const shell=document.querySelector(".site-shell"),style=getComputedStyle(shell);samples.push({elapsed:Math.round(now-started),active:shell.classList.contains("is-manmatic-route-transitioning"),direction:document.documentElement.dataset.manmaticRouteTransition||"",theme:document.documentElement.dataset.siteTheme,bodyBackground:getComputedStyle(document.body).backgroundColor,filter:style.filter,transform:style.transform,transitionLayers:document.querySelectorAll(".manmatic-transition").length});if(now-started<440){requestAnimationFrame(sample)}else{resolve(JSON.stringify({samples}))}}requestAnimationFrame(sample)})})()' | ConvertFrom-Json
+  $homeRouteSamples = @($homeRouteResult.samples)
+  $homeThemeAfterExit = Evaluate 'JSON.stringify((()=>{const row=document.querySelector("[data-manmatic-system]");return{path:location.pathname,theme:document.documentElement.dataset.siteTheme,bodyBackground:getComputedStyle(document.body).backgroundColor,previewBackground:getComputedStyle(row).backgroundColor,active:document.querySelector(".site-shell").classList.contains("is-manmatic-route-transitioning"),transitionLayers:document.querySelectorAll(".manmatic-transition").length}})())' | ConvertFrom-Json
+  Navigate 'http://127.0.0.1:4173/projects/protocol-port/'
+  Start-Sleep -Milliseconds 500
+  $protocolPortTheme = Evaluate 'JSON.stringify({path:location.pathname,theme:document.documentElement.dataset.siteTheme,initialTheme:document.documentElement.dataset.initialTheme,bodyBackground:getComputedStyle(document.body).backgroundColor,textColor:getComputedStyle(document.body).color,projectTheme:document.querySelector(".project-header").dataset.projectTheme,transitionLayers:document.querySelectorAll(".manmatic-transition").length})' | ConvertFrom-Json
+  $activeEnterFrames = @($manmaticRouteSamples | Where-Object {
+    $_.active -and $_.direction -eq 'enter' -and
+    ($_.filter -ne 'none' -or $_.transform -ne 'none')
+  })
+  $activeExitFrames = @($homeRouteSamples | Where-Object {
+    $_.active -and $_.direction -eq 'exit' -and
+    ($_.filter -ne 'none' -or $_.transform -ne 'none')
+  })
+  if (
+    $homeThemeBeforeEntry.theme -ne 'light' -or
+    $homeThemeBeforeEntry.bodyBackground -ne 'rgb(255, 255, 255)' -or
+    $homeThemeBeforeEntry.previewBackground -ne 'rgb(255, 255, 255)' -or
+    $homeThemeBeforeEntry.transitionLayers -ne 0 -or
+    $activeEnterFrames.Count -eq 0 -or
+    $manmaticThemeAfterEntry.theme -ne 'manmatic' -or
+    $manmaticThemeAfterEntry.bodyBackground -ne 'rgb(39, 39, 39)' -or
+    $manmaticThemeAfterEntry.active -or
+    $manmaticThemeAfterEntry.transitionLayers -ne 0 -or
+    $activeExitFrames.Count -eq 0 -or
+    $homeThemeAfterExit.theme -ne 'light' -or
+    $homeThemeAfterExit.bodyBackground -ne 'rgb(255, 255, 255)' -or
+    $homeThemeAfterExit.previewBackground -ne 'rgb(255, 255, 255)' -or
+    $homeThemeAfterExit.active -or
+    $homeThemeAfterExit.transitionLayers -ne 0 -or
+    $protocolPortTheme.theme -ne 'light' -or
+    $protocolPortTheme.bodyBackground -ne 'rgb(255, 255, 255)' -or
+    $protocolPortTheme.projectTheme -ne 'light' -or
+    $protocolPortTheme.transitionLayers -ne 0
+  ) {
+    $routeDiagnostics = [ordered]@{
+      homeBeforeEntry = $homeThemeBeforeEntry
+      activeEnterFrames = $activeEnterFrames.Count
+      manmaticAfterEntry = $manmaticThemeAfterEntry
+      activeExitFrames = $activeExitFrames.Count
+      homeAfterExit = $homeThemeAfterExit
+      protocolPort = $protocolPortTheme
+    } | ConvertTo-Json -Depth 5 -Compress
+    throw "The ManMaTIC route theme transition did not enter dark, remain dark, or restore light cleanly. $routeDiagnostics"
+  }
+  Navigate 'http://127.0.0.1:4173/'
+  Start-Sleep -Milliseconds 500
   $null = Evaluate 'document.documentElement.style.scrollBehavior="auto";const t=document.querySelector(".manmatic-threshold");window.scrollTo(0,t.getBoundingClientRect().top+scrollY-(innerHeight-t.offsetHeight)/2);true'
   Start-Sleep -Milliseconds 1000
   $threshold = Screenshot '03-threshold-connected.png'
@@ -192,6 +247,22 @@ try {
     settledTitle = $settledText
     scrambleTargetCount = $scrambleCount
     loader = $loaderState | ConvertFrom-Json
+    routeTheme = [ordered]@{
+      homeBeforeEntry = $homeThemeBeforeEntry
+      enterTransition = [ordered]@{
+        activeMotionFrameCount = $activeEnterFrames.Count
+        firstActiveFrame = $activeEnterFrames | Select-Object -First 1
+        finalFrame = $manmaticRouteSamples | Select-Object -Last 1
+      }
+      manmaticAfterEntry = $manmaticThemeAfterEntry
+      exitTransition = [ordered]@{
+        activeMotionFrameCount = $activeExitFrames.Count
+        firstActiveFrame = $activeExitFrames | Select-Object -First 1
+        finalFrame = $homeRouteSamples | Select-Object -Last 1
+      }
+      homeAfterExit = $homeThemeAfterExit
+      protocolPort = $protocolPortTheme
+    }
     thresholdSurface = $thresholdSurface
     fieldWindow = $fieldState | ConvertFrom-Json
     fieldResponsive = $fieldResponsive

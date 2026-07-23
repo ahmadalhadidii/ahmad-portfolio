@@ -2,7 +2,7 @@
 
 $Root = Split-Path -Parent $PSScriptRoot
 $CanonicalBase = 'https://www.ahmadalhadidii.manmatic.institute'
-$Build = '20260723-manmatic-tablet-01'
+$Build = '20260723-manmatic-route-theme-03'
 
 function ConvertTo-HtmlEscaped([object]$Value) {
   if ($null -eq $Value) { return '' }
@@ -37,7 +37,7 @@ $Projects = @(
 '@
   },
   @{
-    Slug='protocol-port'; Route='projects/protocol-port/'; Number='002.B'; Theme='manmatic';
+    Slug='protocol-port'; Route='projects/protocol-port/'; Number='002.B'; Theme='light';
     Title='PROTOCOL PORT'; Subtitle='HUMAN–MACHINE PROTOCOL ENVIRONMENT';
     SeoTitle='Protocol Port | Ahmad Alhadidii';
     Description='Protocol Port is a prospective human–machine protocol environment in Aqaba for logistics protocol development, human learning, and territorial impact.';

@@ -2070,6 +2070,187 @@
     manmaticObserver.observe(manmaticTarget);
   }
 
+  function initManmaticRouteTransitions() {
+    if (root.dataset.manmaticRouteReady === "true") return;
+    root.dataset.manmaticRouteReady = "true";
+
+    const transitionKey = "ahmad-manmatic-route-transition-v3";
+    const lastRouteKey = "ahmad-manmatic-last-route-v3";
+    const transitionDuration = 340;
+    let cleanupTimer = 0;
+    let activeShell = null;
+
+    function isManmaticRoute(pathname) {
+      return /^\/projects\/manmatic(?:\/index\.html)?\/?$/.test(pathname);
+    }
+
+    function currentRouteState() {
+      return isManmaticRoute(window.location.pathname) ? "manmatic" : "light";
+    }
+
+    function readLastRouteState() {
+      try {
+        return window.sessionStorage.getItem(lastRouteKey) === "manmatic"
+          ? "manmatic"
+          : "light";
+      } catch (error) {
+        return "light";
+      }
+    }
+
+    function rememberCurrentRoute() {
+      try {
+        window.sessionStorage.setItem(lastRouteKey, currentRouteState());
+      } catch (error) {}
+    }
+
+    function clearTransition() {
+      if (cleanupTimer) {
+        window.clearTimeout(cleanupTimer);
+        cleanupTimer = 0;
+      }
+      if (activeShell) {
+        activeShell.removeEventListener("animationend", handleAnimationEnd);
+        activeShell.classList.remove("is-manmatic-route-transitioning");
+      }
+      activeShell = null;
+      delete root.dataset.manmaticRouteTransition;
+    }
+
+    function handleAnimationEnd(event) {
+      if (
+        event.target !== activeShell ||
+        event.animationName !== "manmatic-content-signal"
+      ) return;
+      clearTransition();
+    }
+
+    function storeTransition(destination, direction) {
+      try {
+        window.sessionStorage.setItem(transitionKey, JSON.stringify({
+          target: destination,
+          direction: direction,
+          startedAt: Date.now()
+        }));
+      } catch (error) {}
+    }
+
+    function readTransition() {
+      let request = null;
+      try {
+        request = JSON.parse(
+          window.sessionStorage.getItem(transitionKey) || "null"
+        );
+        window.sessionStorage.removeItem(transitionKey);
+      } catch (error) {
+        request = null;
+      }
+
+      if (
+        !request ||
+        Date.now() - Number(request.startedAt || 0) > 5000 ||
+        request.target !== window.location.pathname + window.location.search
+      ) return null;
+      return request;
+    }
+
+    function playTransition(request) {
+      if (!request || reducedMotion.matches) return;
+      const shell = document.querySelector(".site-shell");
+      if (!shell) return;
+
+      clearTransition();
+      activeShell = shell;
+      root.dataset.manmaticRouteTransition =
+        request.direction === "exit" ? "exit" : "enter";
+      shell.addEventListener("animationend", handleAnimationEnd);
+      shell.classList.add("is-manmatic-route-transitioning");
+      cleanupTimer = window.setTimeout(
+        clearTransition,
+        transitionDuration + 100
+      );
+    }
+
+    document.addEventListener("click", function (event) {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) return;
+
+      const anchor = event.target.closest("a[href]");
+      if (
+        !anchor ||
+        anchor.hasAttribute("download") ||
+        anchor.target === "_blank"
+      ) return;
+
+      let destination;
+      try {
+        destination = new URL(anchor.href, window.location.href);
+      } catch (error) {
+        return;
+      }
+      if (destination.origin !== window.location.origin) return;
+
+      const sameDocument =
+        destination.pathname === window.location.pathname &&
+        destination.search === window.location.search;
+      if (sameDocument) return;
+
+      const sourceIsManmatic = isManmaticRoute(window.location.pathname);
+      const destinationIsManmatic = isManmaticRoute(destination.pathname);
+      if (sourceIsManmatic === destinationIsManmatic) return;
+
+      storeTransition(
+        destination.pathname + destination.search,
+        destinationIsManmatic ? "enter" : "exit"
+      );
+    });
+
+    window.addEventListener("pageshow", function (event) {
+      const request = readTransition();
+      if (request) {
+        playTransition(request);
+      } else if (event.persisted) {
+        const previousState = readLastRouteState();
+        const nextState = currentRouteState();
+        if (previousState !== nextState) {
+          playTransition({
+            direction: nextState === "manmatic" ? "enter" : "exit"
+          });
+        }
+      }
+      rememberCurrentRoute();
+    });
+    window.addEventListener("pagehide", function () {
+      clearTransition();
+      rememberCurrentRoute();
+    });
+
+    const initialRequest = readTransition();
+    if (initialRequest) {
+      playTransition(initialRequest);
+    } else {
+      const navigationEntry = window.performance &&
+        performance.getEntriesByType &&
+        performance.getEntriesByType("navigation")[0];
+      if (navigationEntry && navigationEntry.type === "back_forward") {
+        const previousState = readLastRouteState();
+        const nextState = currentRouteState();
+        if (previousState !== nextState) {
+          playTransition({
+            direction: nextState === "manmatic" ? "enter" : "exit"
+          });
+        }
+      }
+    }
+    rememberCurrentRoute();
+  }
+
   function projectAtReadingLine() {
     if (!projectRows.length) return null;
     const line = window.innerHeight * 0.5;
@@ -2803,6 +2984,7 @@
     respectReducedMotion();
     initAmbientMotion();
     initMobileNavigation();
+    initManmaticRouteTransitions();
     normalizeProjectArchiveOrder();
     stabilizeInitialHashPosition();
     hydrateContentMedia();

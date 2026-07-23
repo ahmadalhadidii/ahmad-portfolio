@@ -2833,6 +2833,11 @@ html.loader-complete .home-page .monitor__housing {
   will-change: filter, transform;
 }
 
+.site-shell.is-manmatic-route-transitioning {
+  animation: manmatic-content-signal 340ms steps(4, end);
+  will-change: filter, transform;
+}
+
 @keyframes manmatic-content-signal {
   0%, 100% {
     filter: none;
@@ -2855,7 +2860,6 @@ html.loader-complete .home-page .monitor__housing {
     transform: translate3d(-1px, 0, 0);
   }
 }
-
 
 .project-row--manmatic {
   --pointer-overlay: var(--reading-active);
