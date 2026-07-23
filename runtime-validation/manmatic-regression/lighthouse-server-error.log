@@ -1,0 +1,204 @@
+127.0.0.1 - - [23/Jul/2026 18:28:46] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:56] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:56] "GET /assets/images/architecture-of-elsewhere-800.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:56] "GET /assets/css/style.css?v=20260718-elma-correction-14 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:56] "GET /content.js?v=20260718-elma-correction-02 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:56] "GET /assets/media/lemniscate-of-bernoulli.mp4 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:56] "GET /site.webmanifest HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:56] "GET /assets/images/shilla-700.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:56] "GET /assets/js/main.js?v=20260718-elma-correction-07 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:56] "GET /assets/images/manmatic-field-interface-live-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:57] "GET /assets/images/stone-by-moonlight-700.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:57] "GET /assets/images/profile-480.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:57] "GET /assets/icons/ad-mark-v1-32.png HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:57] "GET /assets/icons/ad-mark-v1-192.png HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:59] "GET /assets/images/manmatic/protocol-port-001-1200.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:28:59] "GET /assets/images/drawn-out-of-red-mobile.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:01] "GET /assets/images/dabouq/dabouq-residential-preview.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:01] "GET /assets/images/elma/1.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:01] "GET /assets/images/computation/lemniscate/graph.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:01] "GET /assets/images/the-mechanics-of-becoming-1100.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:01] "GET /assets/images/computation/lemniscate/grasshopper-definition-full.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:01] "GET /assets/images/computation/lemniscate/architectural-output-1600.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:01] "GET /assets/images/the-last-room-before-tomorrow-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:02] "GET /robots.txt HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 61590)
+Traceback (most recent call last):
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 1325, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 675, in __init__
+    super().__init__(*args, **kwargs)
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\socketserver.py", line 755, in __init__
+    self.handle()
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 440, in handle
+    self.handle_one_request()
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 408, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+----------------------------------------
+127.0.0.1 - - [23/Jul/2026 18:29:26] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:26] "GET /assets/images/architecture-of-elsewhere-1400.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:26] "GET /assets/css/style.css?v=20260718-elma-correction-14 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:26] "GET /assets/images/shilla-1400.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:26] "GET /assets/images/architecture-of-elsewhere-800.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:26] "GET /content.js?v=20260718-elma-correction-02 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:26] "GET /assets/js/main.js?v=20260718-elma-correction-07 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:26] "GET /assets/media/lemniscate-of-bernoulli.mp4 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:26] "GET /site.webmanifest HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:27] "GET /assets/images/manmatic-field-interface-live-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:27] "GET /assets/images/profile.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:27] "GET /assets/images/architecture-of-elsewhere-2400.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:27] "GET /assets/images/drawn-out-of-red.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:27] "GET /assets/images/stone-by-moonlight.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:27] "GET /assets/icons/ad-mark-v1-32.png HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:27] "GET /assets/icons/ad-mark-v1-192.png HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:28] "GET /projects/manmatic/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:28] "GET /assets/css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:28] "GET /assets/images/manmatic/board/opening-collage-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:28] "GET /assets/css/manmatic-board.css HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:28] "GET /assets/images/manmatic/board/technology-evolution-1400.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:28] "GET /assets/js/main.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:28] "GET /assets/images/manmatic/board/theory-sketch-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:28] "GET /assets/images/manmatic/board/relational-field-1400.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:29] "GET /assets/images/the-mechanics-of-becoming-1100.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:29] "GET /assets/images/the-last-room-before-tomorrow-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:29] "GET /assets/images/manmatic/protocol-port-001-1200.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:33] "GET /assets/images/dabouq/dabouq-residential-preview.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:34] "GET /assets/images/manmatic/board/research-corpus-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:34] "GET /assets/images/manmatic/board/machine-behaviour-1400.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:34] "GET /assets/images/manmatic/board/field-icon-480.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:34] "GET /assets/images/manmatic/board/thesis-framework-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:34] "GET /assets/images/manmatic/board/evaluation-field-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:34] "GET /assets/images/manmatic/board/author-dialogue-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:36] "GET /assets/images/manmatic/board/opening-collage-480.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:29:36] "GET /assets/images/manmatic/board/technology-evolution-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:07] "GET /projects/manmatic/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:08] "GET /assets/images/manmatic/board/opening-collage-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:08] "GET /assets/css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:08] "GET /assets/css/manmatic-board.css HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:08] "GET /assets/images/manmatic/board/opening-collage-480.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:08] "GET /assets/images/manmatic/board/technology-evolution-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:08] "GET /assets/js/main.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:08] "GET /assets/images/manmatic/board/theory-sketch-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:08] "GET /assets/images/manmatic/board/relational-field-1400.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:08] "GET /assets/images/manmatic/board/machine-behaviour-1400.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:08] "GET /assets/images/manmatic/board/field-icon-480.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:08] "GET /assets/images/manmatic/board/research-corpus-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:08] "GET /assets/icons/ad-mark-v1-32.png HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:11] "GET /assets/images/manmatic/board/thesis-framework-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:11] "GET /assets/images/manmatic/board/evaluation-field-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:11] "GET /assets/images/manmatic/board/protocol-port-application-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:11] "GET /assets/images/manmatic/board/author-dialogue-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:30:12] "GET /robots.txt HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 61304)
+Traceback (most recent call last):
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 1325, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 675, in __init__
+    super().__init__(*args, **kwargs)
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\socketserver.py", line 755, in __init__
+    self.handle()
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 440, in handle
+    self.handle_one_request()
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 408, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+----------------------------------------
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET /assets/images/architecture-of-elsewhere-1400.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET /assets/css/style.css?v=20260718-elma-correction-14 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET /assets/images/architecture-of-elsewhere-800.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET /assets/images/shilla-1400.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET /content.js?v=20260718-elma-correction-02 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET /assets/js/main.js?v=20260718-elma-correction-07 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET /assets/media/lemniscate-of-bernoulli.mp4 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET /site.webmanifest HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET /assets/images/manmatic-field-interface-live-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET /assets/images/profile.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET /assets/images/architecture-of-elsewhere-2400.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET /assets/images/drawn-out-of-red.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:02] "GET /assets/images/stone-by-moonlight.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:03] "GET /assets/icons/ad-mark-v1-32.png HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:03] "GET /assets/icons/ad-mark-v1-192.png HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:03] "GET /projects/manmatic/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:03] "GET /assets/images/manmatic/board/opening-collage-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:03] "GET /assets/css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:03] "GET /assets/css/manmatic-board.css HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:03] "GET /assets/images/manmatic/board/technology-evolution-1400.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:03] "GET /assets/js/main.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:03] "GET /assets/images/manmatic/board/theory-sketch-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:03] "GET /assets/images/manmatic/board/relational-field-1400.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:04] "GET /assets/js/main.js?v=20260718-elma-correction-07 HTTP/1.1" 304 -
+127.0.0.1 - - [23/Jul/2026 18:32:05] "GET /assets/images/manmatic/protocol-port-001-1200.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:05] "GET /assets/images/the-mechanics-of-becoming-1100.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:05] "GET /assets/images/the-last-room-before-tomorrow-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:08] "GET /assets/images/dabouq/dabouq-residential-preview.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:09] "GET /projects/manmatic/ HTTP/1.1" 304 -
+127.0.0.1 - - [23/Jul/2026 18:32:09] "GET /assets/css/manmatic-board.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/Jul/2026 18:32:09] "GET /assets/js/main.js HTTP/1.1" 304 -
+127.0.0.1 - - [23/Jul/2026 18:32:09] "GET /assets/images/manmatic/board/machine-behaviour-1400.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:09] "GET /assets/images/manmatic/board/field-icon-480.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:09] "GET /assets/images/manmatic/board/research-corpus-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:09] "GET /assets/images/manmatic/board/thesis-framework-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:09] "GET /assets/images/manmatic/board/evaluation-field-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:09] "GET /assets/images/manmatic/board/author-dialogue-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:10] "GET /assets/js/main.js?v=20260718-elma-correction-07 HTTP/1.1" 304 -
+127.0.0.1 - - [23/Jul/2026 18:32:11] "GET /projects/manmatic/ HTTP/1.1" 304 -
+127.0.0.1 - - [23/Jul/2026 18:32:11] "GET /assets/images/manmatic/board/opening-collage-480.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:11] "GET /assets/css/manmatic-board.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/Jul/2026 18:32:11] "GET /assets/images/manmatic/board/technology-evolution-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:11] "GET /assets/js/main.js HTTP/1.1" 304 -
+127.0.0.1 - - [23/Jul/2026 18:32:27] "GET /projects/manmatic/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:27] "GET /assets/images/manmatic/board/opening-collage-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:27] "GET /assets/css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:27] "GET /assets/css/manmatic-board.css HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:27] "GET /assets/images/manmatic/board/opening-collage-480.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:27] "GET /assets/images/manmatic/board/technology-evolution-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:27] "GET /assets/js/main.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:27] "GET /assets/images/manmatic/board/theory-sketch-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:27] "GET /assets/images/manmatic/board/relational-field-1400.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:27] "GET /assets/images/manmatic/board/machine-behaviour-1400.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:27] "GET /assets/images/manmatic/board/field-icon-480.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:28] "GET /assets/icons/ad-mark-v1-32.png HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:28] "GET /assets/images/manmatic/board/research-corpus-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:30] "GET /assets/css/manmatic-board.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/Jul/2026 18:32:31] "GET /assets/images/manmatic/board/thesis-framework-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:31] "GET /assets/images/manmatic/board/evaluation-field-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:31] "GET /assets/images/manmatic/board/protocol-port-application-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:31] "GET /assets/images/manmatic/board/author-dialogue-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:32:31] "GET /robots.txt HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 62360)
+Traceback (most recent call last):
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 1325, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 675, in __init__
+    super().__init__(*args, **kwargs)
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\socketserver.py", line 755, in __init__
+    self.handle()
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 440, in handle
+    self.handle_one_request()
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 408, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+----------------------------------------

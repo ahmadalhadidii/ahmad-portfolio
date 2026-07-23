@@ -1,0 +1,139 @@
+﻿{
+    "semantics":  {
+                      "cards":  [
+                                    {
+                                        "id":  "project-05",
+                                        "anchors":  1,
+                                        "buttons":  0
+                                    },
+                                    {
+                                        "id":  "project-01",
+                                        "anchors":  1,
+                                        "buttons":  0
+                                    },
+                                    {
+                                        "id":  "dabouq-residential-building",
+                                        "anchors":  1,
+                                        "buttons":  0
+                                    },
+                                    {
+                                        "id":  "project-02",
+                                        "anchors":  1,
+                                        "buttons":  0
+                                    }
+                                ],
+                      "branches":  [
+                                       1,
+                                       1
+                                   ],
+                      "elma":  {
+                                   "natural":  [
+                                                   0,
+                                                   0
+                                               ],
+                                   "rendered":  [
+                                                    792.65625,
+                                                    487.25
+                                                ],
+                                   "ratio":  1.6267957927142125,
+                                   "src":  ""
+                               }
+                  },
+    "projectEntry":  {
+                         "path":  "/projects/shila/",
+                         "pending":  true,
+                         "glitching":  true,
+                         "hidden":  false
+                     },
+    "projectExit":  {
+                        "path":  "/projects/shila/",
+                        "active":  true,
+                        "glitching":  true,
+                        "hidden":  false
+                    },
+    "browserBack":  {
+                        "path":  "/",
+                        "transitionActive":  false,
+                        "projectListeners":  "true"
+                    },
+    "browserForward":  {
+                           "path":  "/projects/concrete-fatigue/",
+                           "transitionActive":  false,
+                           "loaderHidden":  true
+                       },
+    "directProject":  {
+                          "skipped":  true,
+                          "pending":  false,
+                          "hidden":  true
+                      },
+    "reducedMotion":  {
+                          "pending":  false,
+                          "skipped":  true,
+                          "transitionActive":  false
+                      },
+    "viewports":  [
+                      {
+                          "width":  360,
+                          "height":  800,
+                          "overflow":  false,
+                          "cardAnchors":  4,
+                          "elmaRatio":  1.626863329672054
+                      },
+                      {
+                          "width":  390,
+                          "height":  844,
+                          "overflow":  false,
+                          "cardAnchors":  4,
+                          "elmaRatio":  1.6268849633778544
+                      },
+                      {
+                          "width":  430,
+                          "height":  932,
+                          "overflow":  false,
+                          "cardAnchors":  4,
+                          "elmaRatio":  1.6268387096774193
+                      },
+                      {
+                          "width":  768,
+                          "height":  1024,
+                          "overflow":  false,
+                          "cardAnchors":  4,
+                          "elmaRatio":  1.6268314210061783
+                      },
+                      {
+                          "width":  820,
+                          "height":  1180,
+                          "overflow":  false,
+                          "cardAnchors":  4,
+                          "elmaRatio":  1.6268150538342498
+                      },
+                      {
+                          "width":  1440,
+                          "height":  900,
+                          "overflow":  false,
+                          "cardAnchors":  4,
+                          "elmaRatio":  1.6267957927142125
+                      }
+                  ],
+    "fieldHash":  {
+                      "top":  -3514.5625,
+                      "label":  "07 / FIELD",
+                      "title":  "THE MANMATIC FIELD",
+                      "overflow":  false
+                  },
+    "consoleErrors":  {
+                          "value":  [
+
+                                    ],
+                          "Count":  0
+                      },
+    "screenshots":  [
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\ux-performance-pass\\01-project-entry-glitch.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\ux-performance-pass\\02-project-entry-resolved.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\ux-performance-pass\\03-project-exit-glitch.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\ux-performance-pass\\04-selected-work-desktop.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\ux-performance-pass\\05-manmatic-desktop-full.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\ux-performance-pass\\06-manmatic-tablet-full.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\ux-performance-pass\\07-field-hash-mobile.png"
+                    ]
+}

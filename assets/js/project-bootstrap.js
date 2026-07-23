@@ -13,6 +13,23 @@
   });
   var theme = project && project.theme === "manmatic" ? "manmatic" : "light";
   var themeColor = document.querySelector('meta[name="theme-color"]');
+  var transitionKey = "ahmad-project-transition-v1";
+  var transitionRequest = null;
+  var shouldRunTransition = false;
+
+  try {
+    transitionRequest = JSON.parse(window.sessionStorage.getItem(transitionKey) || "null");
+    window.sessionStorage.removeItem(transitionKey);
+    shouldRunTransition = Boolean(
+      transitionRequest &&
+      transitionRequest.target === window.location.pathname &&
+      Date.now() - Number(transitionRequest.startedAt || 0) < 5000 &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  } catch (error) {
+    transitionRequest = null;
+    shouldRunTransition = false;
+  }
 
   window.__portfolioProjectLoaderData = project ? {
     number: /^(\d+)\.([a-z])$/i.test(String(project.number || ""))
@@ -36,16 +53,30 @@
       : "50% 50%"
   } : null;
 
-  root.classList.remove("no-js", "loader-pending");
-  root.classList.add("js", "loader-complete", "motion-ready");
+  root.classList.remove("no-js");
+  root.classList.add("js");
+  if (shouldRunTransition) {
+    root.classList.remove("loader-complete", "loader-skipped", "motion-ready");
+    root.classList.add("loader-pending");
+  } else {
+    root.classList.remove("loader-pending");
+    root.classList.add("loader-complete", "loader-skipped", "motion-ready");
+  }
   root.dataset.initialTheme = theme;
   root.dataset.siteTheme = theme;
   if (themeColor) {
     themeColor.setAttribute("content", theme === "manmatic" ? "#272727" : "#ffffff");
   }
-  var loader = document.getElementById("loader");
-  if (loader) {
-    loader.hidden = true;
-    loader.setAttribute("aria-hidden", "true");
+  if (shouldRunTransition) {
+    window.__portfolioLoaderFallback = window.setTimeout(function () {
+      if (!root.classList.contains("loader-pending")) return;
+      var loader = document.getElementById("loader");
+      root.classList.remove("loader-pending");
+      root.classList.add("loader-complete", "motion-ready");
+      if (loader) {
+        loader.hidden = true;
+        loader.setAttribute("aria-hidden", "true");
+      }
+    }, 3200);
   }
 })();

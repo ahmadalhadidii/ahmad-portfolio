@@ -1,0 +1,44 @@
+127.0.0.1 - - [23/Jul/2026 18:33:37] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:37] "GET /assets/images/architecture-of-elsewhere-800.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:37] "GET /assets/css/style.css?v=20260718-elma-correction-14 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:37] "GET /content.js?v=20260718-elma-correction-02 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:37] "GET /assets/media/lemniscate-of-bernoulli.mp4 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:37] "GET /site.webmanifest HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:37] "GET /assets/images/shilla-700.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:37] "GET /assets/js/main.js?v=20260718-elma-correction-07 HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:38] "GET /assets/images/manmatic-field-interface-live-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:38] "GET /assets/images/stone-by-moonlight-700.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:38] "GET /assets/images/profile-480.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:38] "GET /assets/icons/ad-mark-v1-32.png HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:38] "GET /assets/icons/ad-mark-v1-192.png HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:41] "GET /assets/images/manmatic/protocol-port-001-1200.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:41] "GET /assets/images/drawn-out-of-red-mobile.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:42] "GET /assets/images/dabouq/dabouq-residential-preview.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:42] "GET /assets/images/elma/1.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:42] "GET /assets/images/computation/lemniscate/grasshopper-definition-full.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:42] "GET /assets/images/the-mechanics-of-becoming-1100.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:42] "GET /assets/images/computation/lemniscate/graph.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:42] "GET /assets/images/computation/lemniscate/architectural-output-1600.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:42] "GET /assets/images/the-last-room-before-tomorrow-900.webp HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jul/2026 18:33:43] "GET /robots.txt HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 63909)
+Traceback (most recent call last):
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 1325, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 675, in __init__
+    super().__init__(*args, **kwargs)
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\socketserver.py", line 755, in __init__
+    self.handle()
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 440, in handle
+    self.handle_one_request()
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\http\server.py", line 408, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmad\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+----------------------------------------

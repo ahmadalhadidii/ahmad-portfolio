@@ -1,0 +1,213 @@
+$ErrorActionPreference = 'Stop'
+
+$chrome = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+$output = Join-Path (Resolve-Path '.').Path 'runtime-validation\manmatic-regression'
+$profile = Join-Path $env:TEMP ('manmatic-regression-' + (Get-Date -Format 'yyyyMMddHHmmssfff'))
+$process = $null
+$httpProcess = $null
+$socket = $null
+$script:messageId = 0
+
+New-Item -ItemType Directory -Force -Path $output | Out-Null
+
+function Receive-Message {
+  $buffer = New-Object byte[] 1048576
+  $stream = [System.IO.MemoryStream]::new()
+  do {
+    $segment = [System.ArraySegment[byte]]::new($buffer)
+    $received = $socket.ReceiveAsync($segment, [System.Threading.CancellationToken]::None).GetAwaiter().GetResult()
+    if ($received.Count -gt 0) { $stream.Write($buffer, 0, $received.Count) }
+  } until ($received.EndOfMessage)
+  $text = [System.Text.Encoding]::UTF8.GetString($stream.ToArray())
+  $stream.Dispose()
+  return $text
+}
+
+function Invoke-Cdp([string]$method, $params = $null) {
+  $script:messageId++
+  $id = $script:messageId
+  $payload = @{ id = $id; method = $method }
+  if ($null -ne $params) { $payload.params = $params }
+  $bytes = [System.Text.Encoding]::UTF8.GetBytes(($payload | ConvertTo-Json -Depth 30 -Compress))
+  $segment = [System.ArraySegment[byte]]::new($bytes)
+  $null = $socket.SendAsync($segment, [System.Net.WebSockets.WebSocketMessageType]::Text, $true, [System.Threading.CancellationToken]::None).GetAwaiter().GetResult()
+  do {
+    $response = (Receive-Message) | ConvertFrom-Json
+  } until ($response.id -eq $id)
+  if ($response.error) { throw "$method failed: $($response.error.message)" }
+  return $response.result
+}
+
+function Evaluate([string]$expression) {
+  $result = Invoke-Cdp 'Runtime.evaluate' @{ expression = $expression; returnByValue = $true; awaitPromise = $true }
+  return $result.result.value
+}
+
+function Wait-ForReady {
+  for ($i = 0; $i -lt 120; $i++) {
+    if ((Evaluate 'document.readyState') -eq 'complete') { return }
+    Start-Sleep -Milliseconds 50
+  }
+  throw 'Page load timed out.'
+}
+
+function Navigate([string]$url) {
+  $null = Invoke-Cdp 'Page.navigate' @{ url = $url }
+  Wait-ForReady
+}
+
+function Screenshot([string]$name) {
+  $result = Invoke-Cdp 'Page.captureScreenshot' @{ format = 'png'; fromSurface = $true }
+  $path = Join-Path $output $name
+  [System.IO.File]::WriteAllBytes($path, [Convert]::FromBase64String($result.data))
+  return $path
+}
+
+try {
+  try {
+    $null = Invoke-WebRequest -UseBasicParsing 'http://127.0.0.1:4173/' -TimeoutSec 1
+  } catch {
+    $serverOut = Join-Path $output 'verification-server.log'
+    $serverErr = Join-Path $output 'verification-server-error.log'
+    $httpProcess = Start-Process -FilePath python -ArgumentList @('-m','http.server','4173','--bind','127.0.0.1') -WorkingDirectory (Resolve-Path '.').Path -RedirectStandardOutput $serverOut -RedirectStandardError $serverErr -PassThru -WindowStyle Hidden
+    for ($i = 0; $i -lt 40; $i++) {
+      try {
+        $null = Invoke-WebRequest -UseBasicParsing 'http://127.0.0.1:4173/' -TimeoutSec 1
+        break
+      } catch {
+        Start-Sleep -Milliseconds 100
+      }
+    }
+  }
+
+  $process = Start-Process -FilePath $chrome -ArgumentList @(
+    '--headless=new',
+    '--disable-gpu',
+    '--disable-background-timer-throttling',
+    '--disable-backgrounding-occluded-windows',
+    '--disable-renderer-backgrounding',
+    '--no-first-run',
+    '--remote-debugging-port=0',
+    '--remote-allow-origins=*',
+    "--user-data-dir=$profile",
+    'about:blank'
+  ) -PassThru -WindowStyle Hidden
+
+  $portFile = Join-Path $profile 'DevToolsActivePort'
+  $deadline = (Get-Date).AddSeconds(15)
+  while (-not (Test-Path $portFile) -and (Get-Date) -lt $deadline) { Start-Sleep -Milliseconds 50 }
+  if (-not (Test-Path $portFile)) { throw 'Chrome DevTools endpoint did not start.' }
+
+  $port = [int](Get-Content $portFile | Select-Object -First 1)
+  $targets = Invoke-RestMethod "http://127.0.0.1:$port/json/list"
+  $target = $targets | Where-Object { $_.type -eq 'page' } | Select-Object -First 1
+  if (-not $target) { throw 'No page target was available.' }
+  $socket = [System.Net.WebSockets.ClientWebSocket]::new()
+  $null = $socket.ConnectAsync([Uri]$target.webSocketDebuggerUrl, [System.Threading.CancellationToken]::None).GetAwaiter().GetResult()
+
+  $null = Invoke-Cdp 'Page.enable'
+  $null = Invoke-Cdp 'Runtime.enable'
+  $null = Invoke-Cdp 'Emulation.setDeviceMetricsOverride' @{
+    width = 1440; height = 900; deviceScaleFactor = 1; mobile = $false
+    screenWidth = 1440; screenHeight = 900
+  }
+  $null = Invoke-Cdp 'Page.addScriptToEvaluateOnNewDocument' @{
+    source = 'window.__verificationErrors=[];addEventListener("error",e=>window.__verificationErrors.push(String(e.message||e.error)));addEventListener("unhandledrejection",e=>window.__verificationErrors.push(String(e.reason)));'
+  }
+
+  Navigate 'http://127.0.0.1:4173/'
+  Start-Sleep -Milliseconds 180
+  $loaderState = Evaluate 'JSON.stringify({background:getComputedStyle(document.querySelector("#loader")).backgroundColor,pending:document.documentElement.classList.contains("loader-pending"),hidden:document.querySelector("#loader").hidden})'
+  $loaderShot = Screenshot '00-white-initial-loader.png'
+
+  Navigate 'http://127.0.0.1:4173/projects/manmatic/'
+  Start-Sleep -Milliseconds 160
+  $before = Screenshot '01-opening-scramble.png'
+  $scrambleText = Evaluate 'document.querySelector(".mm-opening [data-scramble]").textContent'
+  Start-Sleep -Milliseconds 1000
+  $after = Screenshot '02-opening-resolved.png'
+  $settledText = Evaluate 'document.querySelector(".mm-opening [data-scramble]").textContent'
+  $scrambleCount = Evaluate 'document.querySelectorAll(".mm-opening [data-scramble]").length'
+
+  Navigate 'http://127.0.0.1:4173/'
+  Start-Sleep -Milliseconds 2500
+  $null = Evaluate 'document.documentElement.style.scrollBehavior="auto";const t=document.querySelector(".manmatic-threshold");window.scrollTo(0,t.getBoundingClientRect().top+scrollY-(innerHeight-t.offsetHeight)/2);true'
+  Start-Sleep -Milliseconds 1000
+  $threshold = Screenshot '03-threshold-connected.png'
+  $thresholdSurface = Evaluate 'getComputedStyle(document.querySelector(".manmatic-threshold")).backgroundColor'
+
+  $null = Evaluate 'const f=document.querySelector(".manmatic-field-window");window.scrollTo(0,f.getBoundingClientRect().top+scrollY-(innerHeight-f.offsetHeight)/2);true'
+  Start-Sleep -Milliseconds 3500
+  $field = Screenshot '04-field-window.png'
+  $fieldState = Evaluate 'JSON.stringify((()=>{const w=document.querySelector(".manmatic-field-window"),f=w.querySelector("iframe"),ws=getComputedStyle(w),fs=getComputedStyle(f),before=getComputedStyle(w,"::before"),after=getComputedStyle(w,"::after");return{bar:w.querySelector(".manmatic-field-window__bar").innerText,iframeCount:w.querySelectorAll("iframe").length,rect:w.getBoundingClientRect().toJSON(),href:w.closest("a").getAttribute("href"),styles:{windowOpacity:ws.opacity,windowFilter:ws.filter,iframeOpacity:fs.opacity,iframeFilter:fs.filter,beforeContent:before.content,afterContent:after.content}}})())'
+
+  $fieldResponsive = @{}
+  foreach ($viewport in @(
+    @{ Name = '1024-tablet'; Width = 1024; Height = 1366; Mobile = $false },
+    @{ Name = '820-tablet'; Width = 820; Height = 1180; Mobile = $false },
+    @{ Name = '390-mobile'; Width = 390; Height = 844; Mobile = $true }
+  )) {
+    $null = Invoke-Cdp 'Emulation.setDeviceMetricsOverride' @{
+      width = $viewport.Width; height = $viewport.Height; deviceScaleFactor = 1; mobile = $viewport.Mobile
+      screenWidth = $viewport.Width; screenHeight = $viewport.Height
+    }
+    Navigate 'http://127.0.0.1:4173/'
+    Start-Sleep -Milliseconds 500
+    $null = Evaluate 'document.documentElement.style.scrollBehavior="auto";const f=document.querySelector(".manmatic-field-window");window.scrollTo(0,f.getBoundingClientRect().top+scrollY-(innerHeight-f.offsetHeight)/2);true'
+    Start-Sleep -Milliseconds 3500
+    $fieldResponsive[$viewport.Name] = $fieldViewportState = Evaluate 'JSON.stringify({width:innerWidth,height:innerHeight,iframeCount:document.querySelectorAll(".manmatic-field-window iframe").length,rect:document.querySelector(".manmatic-field-window").getBoundingClientRect().toJSON(),overflow:document.documentElement.scrollWidth>innerWidth})' | ConvertFrom-Json
+    $null = Screenshot ("04-field-window-{0}.png" -f $viewport.Name)
+  }
+
+  $null = Invoke-Cdp 'Emulation.setDeviceMetricsOverride' @{
+    width = 1440; height = 900; deviceScaleFactor = 1; mobile = $false
+    screenWidth = 1440; screenHeight = 900
+  }
+
+  Navigate 'http://127.0.0.1:4173/'
+  $null = Evaluate 'document.querySelector(".manmatic-field-window").closest("a").click();true'
+  Start-Sleep -Milliseconds 200
+  Wait-ForReady
+  Start-Sleep -Milliseconds 700
+  $landing = Screenshot '05-field-hash-landing.png'
+  $landingState = Evaluate 'JSON.stringify({hash:location.hash,top:document.querySelector("#the-manmatic-field").getBoundingClientRect().top,label:document.querySelector("#the-manmatic-field .mm-index").innerText,title:document.querySelector("#the-manmatic-field h2").innerText})'
+
+  Navigate 'http://127.0.0.1:4173/#work'
+  $null = Evaluate 'history.back();true'
+  Start-Sleep -Milliseconds 900
+  $backState = Evaluate 'JSON.stringify({url:location.href,title:document.querySelector(".mm-opening [data-scramble]")?.textContent||"",scrambleTargets:document.querySelectorAll(".mm-opening [data-scramble]").length})'
+
+  $null = Invoke-Cdp 'Emulation.setDeviceMetricsOverride' @{
+    width = 390; height = 844; deviceScaleFactor = 1; mobile = $true
+    screenWidth = 390; screenHeight = 844
+  }
+  Navigate 'http://127.0.0.1:4173/projects/manmatic/'
+  Start-Sleep -Milliseconds 1100
+  $mobile = Screenshot '06-mobile-opening-resolved.png'
+  $mobileScroll = Evaluate 'new Promise(resolve=>{const gaps=[];let start=performance.now(),last=start;function step(now){gaps.push(now-last);last=now;scrollBy(0,56);if(now-start<1200){requestAnimationFrame(step)}else{resolve(JSON.stringify({frames:gaps.length,maxFrameGap:Math.max(...gaps),averageFrameGap:gaps.reduce((sum,value)=>sum+value,0)/gaps.length,scrollY}))}}requestAnimationFrame(step)})'
+  $errors = Evaluate 'JSON.stringify(window.__verificationErrors)'
+
+  [ordered]@{
+    beforeScrambleText = $scrambleText
+    settledTitle = $settledText
+    scrambleTargetCount = $scrambleCount
+    loader = $loaderState | ConvertFrom-Json
+    thresholdSurface = $thresholdSurface
+    fieldWindow = $fieldState | ConvertFrom-Json
+    fieldResponsive = $fieldResponsive
+    hashLanding = $landingState | ConvertFrom-Json
+    backNavigation = $backState | ConvertFrom-Json
+    mobileFastScroll = $mobileScroll | ConvertFrom-Json
+    consoleErrors = $errors | ConvertFrom-Json
+    screenshots = @($loaderShot, $before, $after, $threshold, $field, $landing, $mobile)
+  } | ConvertTo-Json -Depth 8 | Set-Content -Encoding utf8 (Join-Path $output 'verification.json')
+
+  Get-Content (Join-Path $output 'verification.json')
+} finally {
+  if ($socket) {
+    try { $null = Invoke-Cdp 'Browser.close' } catch {}
+    $socket.Dispose()
+  }
+  if ($process -and -not $process.HasExited) { Stop-Process -Id $process.Id -Force }
+  if ($httpProcess -and -not $httpProcess.HasExited) { Stop-Process -Id $httpProcess.Id }
+}

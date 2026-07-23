@@ -6,7 +6,7 @@
 const sharedPortfolioVisual = {
   src: "assets/images/architecture-of-elsewhere-2400.jpg",
   srcset:
-    "assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w",
+    "assets/images/architecture-of-elsewhere-800.webp 800w, assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w",
   width: 2400,
   height: 1293,
   orientation: "wide",
@@ -28,8 +28,8 @@ const siteContent = {
     displayName: "AHMAD ALHADIDII",
     location: "As-Salt, Jordan",
     portrait: {
-      src: "assets/images/profile.webp",
-      srcset: "",
+      src: "assets/images/profile-800.webp",
+      srcset: "assets/images/profile-480.webp 480w, assets/images/profile-800.webp 800w, assets/images/profile.webp 1200w",
       width: 1200,
       height: 1500,
       orientation: "portrait",
@@ -62,7 +62,7 @@ const siteContent = {
       accent: "#9b5b35",
       src: "assets/images/architecture-of-elsewhere-2400.jpg",
       srcset:
-        "assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w",
+        "assets/images/architecture-of-elsewhere-800.webp 800w, assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w",
       width: 2400,
       height: 1293,
       orientation: "wide",
@@ -117,7 +117,7 @@ const siteContent = {
       accent: "#8b603d",
       src: "assets/images/stone-by-moonlight.webp",
       srcset:
-        "assets/images/stone-by-moonlight-1400.webp 1400w, assets/images/stone-by-moonlight.webp 2400w",
+        "assets/images/stone-by-moonlight-700.webp 700w, assets/images/stone-by-moonlight-1400.webp 1400w, assets/images/stone-by-moonlight.webp 2400w",
       width: 2400,
       height: 1293,
       orientation: "wide",
@@ -322,7 +322,7 @@ const siteContent = {
       hero: {
         src: "assets/images/shilla.webp",
         srcset:
-          "assets/images/shilla-1400.webp 1400w, assets/images/shilla.webp 2400w",
+          "assets/images/shilla-700.webp 700w, assets/images/shilla-1400.webp 1400w, assets/images/shilla.webp 2400w",
         width: 2400,
         height: 1293,
         orientation: "wide",
@@ -380,9 +380,9 @@ const siteContent = {
         }
       ],
       hero: {
-        src: "assets/images/manmatic-field-interface-live.png",
-        width: 1600,
-        height: 1000,
+        src: "assets/images/manmatic-field-interface-live-900.webp",
+        width: 900,
+        height: 563,
         orientation: "wide",
         fit: "contain",
         mediaClass: "media--wide media--screen",
@@ -420,11 +420,11 @@ const siteContent = {
         { code: "04", title: "FROM THESIS TO EVOLUTION CRITERIA", text: "Thesis claims become evaluation criteria that can be compared, questioned, refined, and revised as technological and architectural conditions evolve." },
         { code: "05", title: "FROM CRITERIA TO ORION OPERATING FIELD", text: "Criteria enter an operating field where evidence, proposals, discussion, and architectural decisions can be examined together rather than hidden behind a single output." },
         { code: "06", title: "AUTHOR-LED DESIGN DIALOGUE", text: "The architect remains the author who frames the problem, directs the dialogue, evaluates proposals, contests unsuitable responses, and selects the decisions carried into the project." },
-        { code: "07", title: "FIELD INTERFACE", text: "The interface makes the relationships between research nodes, criteria, evidence, dialogue, drawings, systems, and outputs readable.", media: { src: "assets/images/manmatic-field-interface-live.png", width: 1600, height: 1000, alt: "The live ManMaTIC Field interface showing evidence nodes, process links, labels, and project records.", caption: "FIELD INTERFACE / KNOWLEDGE + DESIGN OPERATING ENVIRONMENT" } },
+        { code: "07", title: "FIELD INTERFACE", text: "The interface makes the relationships between research nodes, criteria, evidence, dialogue, drawings, systems, and outputs readable.", media: { src: "assets/images/manmatic-field-interface-live-900.webp", width: 900, height: 563, alt: "The live ManMaTIC Field interface showing evidence nodes, process links, labels, and project records.", caption: "FIELD INTERFACE / KNOWLEDGE + DESIGN OPERATING ENVIRONMENT" } },
         { code: "08", title: "FIELD DATA STRUCTURE", text: "Search, connections, and selected-node reading logic allow each item to be read individually and as part of the wider project network." },
         { code: "09", title: "MANMATIC FIELD AS AN ADAPTIVE DESIGN FRAMEWORK", text: "New evidence can update the field without separating research from the continuing design process. The framework transfers changing knowledge into criteria, dialogue, and project decisions.", links: [["ENTER LIVE MANMATIC FIELD ↗", "https://www.manmatic.institute/"]] }
       ],
-      hero: { src: "assets/images/manmatic-field-interface-live.png", width: 1600, height: 1000, orientation: "wide", fit: "contain", mediaClass: "media--wide media--screen", alt: "Live ManMaTIC Field interface with evidence, criteria, knowledge links, and selected project nodes.", caption: "MANMATIC SYSTEM / THE FIELD" }
+      hero: { src: "assets/images/manmatic-field-interface-live-900.webp", width: 900, height: 563, orientation: "wide", fit: "contain", mediaClass: "media--wide media--screen", alt: "Live ManMaTIC Field interface with evidence, criteria, knowledge links, and selected project nodes.", caption: "MANMATIC SYSTEM / THE FIELD" }
     },
     {
       id: "project-02",
@@ -456,7 +456,8 @@ const siteContent = {
       featured: true,
       displayOrder: 4,
       hero: {
-        src: "assets/images/elma/1.webp",
+        src: "assets/images/elma/1-1200.webp",
+        srcset: "assets/images/elma/1-700.webp 700w, assets/images/elma/1-1200.webp 1200w, assets/images/elma/1-1800.webp 1800w, assets/images/elma/1.webp 3657w",
         width: 3657,
         height: 2248,
         orientation: "wide",

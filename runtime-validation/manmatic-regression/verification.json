@@ -1,0 +1,116 @@
+﻿{
+    "beforeScrambleText":  "MAN.MA.11]1{",
+    "settledTitle":  "MAN.MA.T.I.C",
+    "scrambleTargetCount":  1,
+    "loader":  {
+                   "background":  "rgb(255, 255, 255)",
+                   "pending":  false,
+                   "hidden":  false
+               },
+    "thresholdSurface":  "rgb(39, 39, 39)",
+    "fieldWindow":  {
+                        "bar":  "MANMATIC.INSTITUTE / FIELD INTERFACE\nLIVE / ACTIVE",
+                        "iframeCount":  1,
+                        "rect":  {
+                                     "x":  607.828125,
+                                     "y":  210.953125,
+                                     "width":  792.65625,
+                                     "height":  478.734375,
+                                     "top":  210.953125,
+                                     "right":  1400.484375,
+                                     "bottom":  689.6875,
+                                     "left":  607.828125
+                                 },
+                        "href":  "/projects/manmatic/#the-manmatic-field",
+                        "styles":  {
+                                       "windowOpacity":  "1",
+                                       "windowFilter":  "none",
+                                       "iframeOpacity":  "1",
+                                       "iframeFilter":  "none",
+                                       "beforeContent":  "none",
+                                       "afterContent":  "none"
+                                   }
+                    },
+    "fieldResponsive":  {
+                            "1024-tablet":  {
+                                                "width":  1024,
+                                                "height":  1366,
+                                                "iframeCount":  1,
+                                                "rect":  {
+                                                             "x":  682.515625,
+                                                             "y":  579.453125,
+                                                             "width":  309.984375,
+                                                             "height":  207.234375,
+                                                             "top":  579.453125,
+                                                             "right":  992.5,
+                                                             "bottom":  786.6875,
+                                                             "left":  682.515625
+                                                         },
+                                                "overflow":  false
+                                            },
+                            "390-mobile":  {
+                                               "width":  390,
+                                               "height":  844,
+                                               "iframeCount":  1,
+                                               "rect":  {
+                                                            "x":  18,
+                                                            "y":  305.828125,
+                                                            "width":  354,
+                                                            "height":  232,
+                                                            "top":  305.828125,
+                                                            "right":  372,
+                                                            "bottom":  537.828125,
+                                                            "left":  18
+                                                        },
+                                               "overflow":  false
+                                           },
+                            "820-tablet":  {
+                                               "width":  820,
+                                               "height":  1180,
+                                               "iframeCount":  1,
+                                               "rect":  {
+                                                            "x":  478.515625,
+                                                            "y":  486.96875,
+                                                            "width":  309.984375,
+                                                            "height":  207.234375,
+                                                            "top":  486.96875,
+                                                            "right":  788.5,
+                                                            "bottom":  694.203125,
+                                                            "left":  478.515625
+                                                        },
+                                               "overflow":  false
+                                           }
+                        },
+    "hashLanding":  {
+                        "hash":  "#the-manmatic-field",
+                        "top":  73.5,
+                        "label":  "07 / FIELD",
+                        "title":  "THE MANMATIC FIELD"
+                    },
+    "backNavigation":  {
+                           "url":  "http://127.0.0.1:4173/projects/manmatic/#the-manmatic-field",
+                           "title":  "MAN.MA.T.I.C",
+                           "scrambleTargets":  1
+                       },
+    "mobileFastScroll":  {
+                             "frames":  74,
+                             "maxFrameGap":  16.799999999999955,
+                             "averageFrameGap":  16.301351351391624,
+                             "scrollY":  219
+                         },
+    "consoleErrors":  {
+                          "value":  [
+
+                                    ],
+                          "Count":  0
+                      },
+    "screenshots":  [
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\manmatic-regression\\00-white-initial-loader.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\manmatic-regression\\01-opening-scramble.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\manmatic-regression\\02-opening-resolved.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\manmatic-regression\\03-threshold-connected.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\manmatic-regression\\04-field-window.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\manmatic-regression\\05-field-hash-landing.png",
+                        "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\manmatic-regression\\06-mobile-opening-resolved.png"
+                    ]
+}

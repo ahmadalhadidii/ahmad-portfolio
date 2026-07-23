@@ -86,31 +86,48 @@
       root.classList.remove("no-js");
       root.classList.add("js");
 
-      root.classList.add("loader-pending");
-      window.__portfolioLoaderFallback = window.setTimeout(function () {
-        if (root.classList.contains("loader-pending")) {
-          var loader = document.getElementById("loader");
-          root.classList.remove("loader-pending");
-          root.classList.add("loader-complete", "motion-ready");
-          if (loader) {
-            loader.hidden = true;
-            loader.setAttribute("aria-hidden", "true");
+      var loaderSessionKey = "ahmad-portfolio-loader-complete";
+      var loaderSeen = false;
+      try {
+        loaderSeen = window.sessionStorage.getItem(loaderSessionKey) === "1";
+      } catch (error) {
+        loaderSeen = false;
+      }
+
+      if (loaderSeen) {
+        root.classList.add("loader-skipped", "loader-complete", "motion-ready");
+      } else {
+        root.classList.add("loader-pending");
+        try {
+          window.sessionStorage.setItem(loaderSessionKey, "1");
+        } catch (error) {}
+        window.__portfolioLoaderFallback = window.setTimeout(function () {
+          if (root.classList.contains("loader-pending")) {
+            var loader = document.getElementById("loader");
+            root.classList.remove("loader-pending");
+            root.classList.add("loader-complete", "motion-ready");
+            if (loader) {
+              loader.hidden = true;
+              loader.setAttribute("aria-hidden", "true");
+            }
           }
-        }
-      }, 3200);
+        }, 3200);
+      }
     })();
   </script>
 
   <style>
     html, body { background: #ffffff; }
     .no-js .loader { display: none; }
+    .loader-skipped .loader { display: none; }
   </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="preload" href="assets/images/architecture-of-elsewhere-1400.jpg" as="image" imagesrcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" imagesizes="(max-width: 960px) 100vw, min(1360px, 86vw)">
-  <link rel="stylesheet" href="assets/css/style.css?v=20260718-elma-correction-14">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+  <link rel="preload" href="assets/images/architecture-of-elsewhere-800.webp" as="image" imagesrcset="assets/images/architecture-of-elsewhere-800.webp 800w, assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" imagesizes="(max-width: 960px) 100vw, min(1360px, 86vw)">
+  <link rel="stylesheet" href="assets/css/style.min.css?v=20260723-ux-performance-01">
 
   <script src="content.js?v=20260718-elma-correction-02" defer></script>
   <script src="assets/js/main.js?v=20260718-elma-correction-07" defer></script>
@@ -139,7 +156,7 @@
       <div class="loader__field">
         <figure class="loader__preview">
           <div class="loader__preview-image">
-            <img data-loader-preview src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="">
+            <img data-loader-preview src="assets/images/architecture-of-elsewhere-800.webp" srcset="assets/images/architecture-of-elsewhere-800.webp 800w, assets/images/architecture-of-elsewhere-1400.jpg 1400w" sizes="(max-width: 960px) 100vw, min(700px, 48vw)" width="800" height="430" alt="">
             <span class="loader__preview-scan"></span>
             <span class="loader__preview-slice loader__preview-slice--one"></span>
             <span class="loader__preview-slice loader__preview-slice--two"></span>
@@ -201,7 +218,7 @@
           <a href="#computation" data-section-link="computation"><span data-scramble>COMPUTATION</span></a>
           <a href="#visual-studies" data-section-link="visual"><span data-scramble>VISUALS</span></a>
           <a href="#contact" data-section-link="contact"><span data-scramble>CONTACT</span></a>
-          <a class="site-nav__external" href="https://www.manmatic.institute/" target="_blank" rel="noopener noreferrer" aria-label="Open the ManMaTIC Institute field website in a new tab">MANMATIC FIELD <span aria-hidden="true">↗</span></a>
+          <a class="site-nav__external" href="https://www.manmatic.institute/" target="_blank" rel="noopener noreferrer">MANMATIC FIELD <span aria-hidden="true">↗</span></a>
         </nav>
       </div>
     </header>
@@ -242,26 +259,26 @@
                   <p>AHMAD ALHADIDII</p><strong>ARCHITECT</strong><span>DESIGN RESEARCHER / COMPUTATIONAL DESIGNER</span>
                 </div>
                 <div class="showreel__slide showreel__slide--image" data-showreel-slide data-frame="02" aria-hidden="true">
-                  <img data-opening-board src="assets/images/shilla.webp" srcset="assets/images/shilla-1400.webp 1400w, assets/images/shilla.webp 2400w" sizes="(max-width: 760px) calc(100vw - 68px), min(1360px, 86vw)" width="2400" height="1293" alt="Pale architectural drawing of Shila Museum around a reflective quarry pool." fetchpriority="high" decoding="async">
+                  <img data-opening-board data-src="assets/images/shilla-700.webp" data-srcset="assets/images/shilla-700.webp 700w, assets/images/shilla-1400.webp 1400w, assets/images/shilla.webp 2400w" sizes="(max-width: 760px) calc(100vw - 68px), min(1360px, 86vw)" width="2400" height="1293" alt="Pale architectural drawing of Shila Museum around a reflective quarry pool." decoding="async">
                   <div class="showreel__project-card"><p>PROJECT FILE 01</p><strong>SHILA MUSEUM</strong><span>THE QUARRY THAT FOLDS INWARD</span></div>
                 </div>
                 <div class="showreel__slide showreel__slide--image" data-showreel-slide data-frame="03" aria-hidden="true">
-                  <img src="assets/images/manmatic/protocol-port-001-1200.jpg" width="1200" height="743" alt="Protocol Port axonometric drawing across Aqaba's industrial logistics landscape." loading="lazy" decoding="async">
+                  <img data-src="assets/images/manmatic/protocol-port-001-1200.jpg" width="1200" height="743" alt="Protocol Port axonometric drawing across Aqaba's industrial logistics landscape." decoding="async">
                   <div class="showreel__project-card"><p>PROJECT SYSTEM 02.B</p><strong>PROTOCOL PORT</strong><span>HUMAN–MACHINE COLLABORATION INSTITUTE / AQABA</span></div>
                 </div>
                 <div class="showreel__slide showreel__slide--image" data-showreel-slide data-frame="04" aria-hidden="true">
-                  <img src="assets/images/architecture-of-elsewhere-2400.jpg" srcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" width="2400" height="1293" alt="Architecture of Elsewhere, a finished visual artwork by Ahmad Alhadidii." loading="lazy" decoding="async">
+                  <img data-src="assets/images/architecture-of-elsewhere-800.webp" data-srcset="assets/images/architecture-of-elsewhere-800.webp 800w, assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" width="2400" height="1293" alt="Architecture of Elsewhere, a finished visual artwork by Ahmad Alhadidii." decoding="async">
                   <div class="showreel__project-card"><p>VISUAL NARRATIVE</p><strong>ARCHITECTURE OF ELSEWHERE</strong><span>CONCEPTUAL ARCHITECTURE</span></div>
                 </div>
                 <div class="showreel__slide showreel__slide--image" data-showreel-slide data-frame="05" aria-hidden="true">
                   <picture class="responsive-picture">
-                    <source media="(max-width: 767px)" srcset="assets/images/drawn-out-of-red-mobile.webp">
-                    <img src="assets/images/drawn-out-of-red.webp" srcset="assets/images/drawn-out-of-red-1400.webp 1400w, assets/images/drawn-out-of-red.webp 2400w" width="2400" height="1293" alt="Drawn Out of Red, a red and black architectural visual traced with luminous lines." loading="lazy" decoding="async">
+                    <source media="(max-width: 767px)" data-srcset="assets/images/drawn-out-of-red-mobile.webp">
+                    <img data-src="assets/images/drawn-out-of-red-1400.webp" data-srcset="assets/images/drawn-out-of-red-1400.webp 1400w, assets/images/drawn-out-of-red.webp 2400w" width="2400" height="1293" alt="Drawn Out of Red, a red and black architectural visual traced with luminous lines." decoding="async">
                   </picture>
                   <div class="showreel__project-card"><p>VISUAL NARRATIVE</p><strong>DRAWN OUT OF RED</strong><span>ATMOSPHERIC STUDY</span></div>
                 </div>
                 <div class="showreel__slide showreel__slide--image" data-showreel-slide data-frame="06" aria-hidden="true">
-                  <img src="assets/images/stone-by-moonlight.webp" srcset="assets/images/stone-by-moonlight-1400.webp 1400w, assets/images/stone-by-moonlight.webp 2400w" width="2400" height="1293" alt="Stone by Moonlight, a luminous architectural collage beneath a grayscale moon." loading="lazy" decoding="async">
+                  <img data-src="assets/images/stone-by-moonlight-700.webp" data-srcset="assets/images/stone-by-moonlight-700.webp 700w, assets/images/stone-by-moonlight-1400.webp 1400w, assets/images/stone-by-moonlight.webp 2400w" width="2400" height="1293" alt="Stone by Moonlight, a luminous architectural collage beneath a grayscale moon." decoding="async">
                   <div class="showreel__project-card"><p>VISUAL NARRATIVE</p><strong>STONE BY MOONLIGHT</strong><span>MATERIAL AND LIGHT STUDY</span></div>
                 </div>
               </div>
@@ -306,7 +323,7 @@
               <span class="profile-portrait__axis profile-portrait__axis--y" aria-hidden="true"></span>
               <span class="profile-portrait__coordinate profile-portrait__coordinate--top" aria-hidden="true">AX / 31.08.03 / 32.0392° N</span>
               <span class="profile-portrait__coordinate profile-portrait__coordinate--side" aria-hidden="true">SUBJECT 001 / REG. A</span>
-              <img class="profile-portrait__image" data-pixel-image src="assets/images/profile.webp" sizes="(max-width: 760px) calc(100vw - 36px), 34vw" width="1200" height="1500" alt="Portrait of architect and design researcher Ahmad Alhadidii." loading="lazy" decoding="async">
+              <img class="profile-portrait__image" data-pixel-image src="assets/images/profile-800.webp" srcset="assets/images/profile-480.webp 480w, assets/images/profile-800.webp 800w, assets/images/profile.webp 1200w" sizes="(max-width: 760px) calc(100vw - 36px), 34vw" width="1200" height="1500" alt="Portrait of architect and design researcher Ahmad Alhadidii." loading="lazy" decoding="async">
               <span class="pixel-portrait__grid" data-pixel-grid aria-hidden="true"></span>
               <span class="profile-portrait__scan" aria-hidden="true"></span>
               <span class="profile-portrait__registration" aria-hidden="true">+ &nbsp; 001 &nbsp; +</span>
@@ -475,7 +492,7 @@
 
         <div class="project-index" aria-label="Selected projects">
           <article class="project-row project-row--shila" data-project-index="01" data-project-order="1" data-project-id="project-05">
-            <a class="project-row__link" href="/projects/shila/" aria-label="Project file 01, Shila Stone Museum, The Quarry That Folds Inward">
+            <a class="project-row__link" href="/projects/shila/">
               <p class="project-row__number" data-scramble aria-hidden="true">001</p>
               <div class="project-row__copy">
                 <p class="project-row__file">PROJECT FILE 01</p>
@@ -484,10 +501,9 @@
                 <dl><div><dt>YEAR</dt><dd>2025</dd></div><div><dt>LOCATION</dt><dd>Sadahalli Quarry / Bengaluru, India</dd></div><div><dt>TYPE</dt><dd>Museum of Geology / Quarry Intervention</dd></div></dl>
               </div>
               <figure class="project-row__media image-frame image-reveal media--contain media--drawing" data-image-reveal data-project-media>
-                <div class="image-frame__crop"><img src="assets/images/shilla.webp" srcset="assets/images/shilla-1400.webp 1400w, assets/images/shilla.webp 2400w" sizes="(max-width: 960px) calc(100vw - 48px), 48vw" width="2400" height="1293" alt="Pale hand-drawn study of Shila Museum arranged around a reflective quarry pool." loading="lazy" decoding="async"></div>
+                <div class="image-frame__crop"><img src="assets/images/shilla.webp" srcset="assets/images/shilla-700.webp 700w, assets/images/shilla-1400.webp 1400w, assets/images/shilla.webp 2400w" sizes="(max-width: 960px) calc(100vw - 48px), 48vw" width="2400" height="1293" alt="Pale hand-drawn study of Shila Museum arranged around a reflective quarry pool." loading="lazy" decoding="async"></div>
                 <figcaption><span>SHILA MUSEUM / PRINCIPAL STUDY</span></figcaption>
               </figure>
-              <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
             </a>
           </article>
 
@@ -496,7 +512,7 @@
               <svg class="manmatic-threshold__mark" viewBox="0 0 340 88" role="presentation"><g class="threshold-mark__axis"><path d="M20 39.4C59.8 37.8 110.6 40.7 169.7 38.5C230.8 37.2 279.1 40.4 320 38.4M170.4 13C168.5 24.3 171.8 43.1 169.2 60"/><path class="threshold-mark__ghost" d="M21 40.2C63 39 108 41.1 169 39.5C231 38.2 276 40.8 319 39.2"/></g><g class="threshold-mark__arcs"><path d="M116 39.2C121.4 23.1 138.2 16.9 169.6 15.4C199.2 14.8 220.1 25.3 224 38.7M136 39.3C139.1 29.1 149.2 24.9 169.8 23.7C188.1 23.3 202.4 30.4 204 39.1"/><path class="threshold-mark__ghost" d="M117 38.2C122 24.5 140 17.7 169 16.5C199 16 218 25 223 39"/></g><g class="threshold-mark__terminals"><path d="M20.4 30C18.6 34.8 21.5 43.1 19.5 48M36.2 33C34.8 36.5 37.1 41.1 35.3 45M320.3 29.8C318.4 34 321.5 43.8 319.4 48M304.1 32.7C302.8 36.2 305.1 40.8 303.4 45.2"/></g><g class="threshold-mark__datum"><circle cx="170" cy="39" r="3.5"/><path d="M162.7 32.8C167.6 35.8 173.1 42.7 177.2 45.4M177.5 32C172.7 36.5 167.4 41.7 162.8 46.2"/></g><g class="threshold-mark__scale"><path d="M76 68.4C122 66.5 216 69.7 264 67.5M76.4 62.9L75.8 73M107.2 65L106.7 72.4M139.1 64.7L138.6 72.1M170.2 62.7L169.7 73.2M201.1 65.4L200.7 72.1M233.2 64.2L232.6 72.4M264.3 62.7L263.7 73"/><path class="threshold-mark__ghost" d="M77 69.2C125 68.2 217 70 263 68.4"/><text x="72" y="85">00</text><text x="164" y="85">05</text><text x="256" y="85">10</text></g><path class="threshold-mark__scan" d="M26.2 14C24.5 28.6 27.5 46.4 25.5 62"/></svg>
               <p>MANMATIC / OPERATING THRESHOLD / DATUM LOCKED</p>
             </div>
-            <a class="project-row__link" href="/projects/manmatic/" aria-label="Project file 02, ManMaTIC, Field to Application">
+            <a class="project-row__link" href="/projects/manmatic/">
               <p class="project-row__number" data-scramble aria-hidden="true">002</p>
               <div class="project-row__copy">
                 <p class="project-row__file">PROJECT SYSTEM 02</p>
@@ -504,15 +520,14 @@
                 <p>ManMaTIC is a prospective architectural framework for a place where humans and intelligent systems work together. It explores how a building can operate as a machine rooted in its ground — reading site conditions, processing them through human–machine collaboration, and translating them into architectural, technological, and social impact. The project treats the institution as a living system that learns from the site, improves what operates on it, and produces value for both the community and the logistics landscape.</p>
                 <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>TYPE</dt><dd>Prospective Human–Machine Institute</dd></div><div><dt>DOMAIN</dt><dd>Human–Machine Collaboration</dd></div><div><dt>STRUCTURE</dt><dd>Field → Design → Application</dd></div><div><dt>STATUS</dt><dd>Graduation Project</dd></div></dl>
               </div>
-              <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
             </a>
             <div class="manmatic-category" aria-label="ManMaTIC field and architectural application records">
               <article class="manmatic-category__record">
-                <a class="manmatic-branch" href="/projects/manmatic/#the-manmatic-field" aria-label="Enter the ManMaTIC Field">
+                <a class="manmatic-branch" href="/projects/manmatic/#the-manmatic-field">
                   <p>002.A / THE MANMATIC FIELD</p>
                   <div class="manmatic-field-window" aria-label="Live ManMaTIC Field website preview">
                     <div class="manmatic-field-window__bar"><span>MANMATIC.INSTITUTE / FIELD INTERFACE</span><span>LIVE / ACTIVE</span></div>
-                    <div class="manmatic-field-window__viewport"><img src="assets/images/manmatic-field-interface-live.png" width="1600" height="1000" alt="Static preview of the ManMaTIC Field interface." loading="lazy" decoding="async"></div>
+                    <div class="manmatic-field-window__viewport"><iframe src="https://www.manmatic.institute/" title="Live ManMaTIC Field interface" loading="lazy" tabindex="-1"></iframe></div>
                   </div>
                   <h4>THE MANMATIC FIELD</h4>
                   <p>A PROSPECTIVE KNOWLEDGE ENGINE FOR TESTING AND EXPANDING HUMAN–MACHINE INTEGRATION</p>
@@ -522,7 +537,7 @@
                 </a>
               </article>
               <article class="manmatic-category__record">
-                <a class="manmatic-branch" href="/projects/protocol-port/" aria-label="Enter Protocol Port">
+                <a class="manmatic-branch" href="/projects/protocol-port/">
                   <p>002.B / PROTOCOL PORT</p>
                   <figure><img src="assets/images/manmatic/protocol-port-001-1200.jpg" width="1200" height="743" loading="lazy" decoding="async" alt="Axonometric drawing of Protocol Port across an industrial logistics landscape."><figcaption>PROTOCOL PORT</figcaption></figure>
                   <h4>PROTOCOL PORT</h4>
@@ -535,8 +550,8 @@
             </div>
           </article>
 
-          <article class="project-row" data-project-index="04" data-project-order="4" data-project-id="project-02">
-            <a class="project-row__link" href="/projects/concrete-fatigue/" aria-label="Project file 04, ELMA — Environmental Legacy Makers Award, award-winning group project">
+          <article class="project-row project-row--elma" data-project-index="04" data-project-order="4" data-project-id="project-02">
+            <a class="project-row__link" href="/projects/concrete-fatigue/">
               <p class="project-row__number" data-scramble aria-hidden="true">004</p>
               <div class="project-row__copy">
                 <p class="project-row__file">PROJECT FILE 04</p>
@@ -544,16 +559,15 @@
                 <p>A staircase transformation proposal turning daily urban infrastructure into environmental and social value.</p>
                 <dl><div><dt>YEAR</dt><dd>2026</dd></div><div><dt>LOCATION</dt><dd>Amman, Jordan</dd></div><div><dt>AWARD</dt><dd>1st Place — Environmental Legacy Makers Award</dd></div><div><dt>TYPE</dt><dd>Urban and Environmental Intervention</dd></div><div><dt>CONTEXT</dt><dd>Award-Winning Group Project</dd></div></dl>
               </div>
-              <figure class="project-row__media image-frame image-reveal media--cover media--wide" data-image-reveal data-project-media>
-                <div class="image-frame__crop"><img src="assets/images/elma/1.webp" sizes="(max-width: 760px) calc(100vw - 36px), 48vw" width="3657" height="2248" alt="Tree Unit canopies, planting, and stepped seating integrated into the Jabal Al-Zuhour staircase." loading="lazy" decoding="async"></div>
+              <figure class="project-row__media image-frame image-reveal" data-image-reveal data-project-media>
+                <div class="image-frame__crop"><img src="assets/images/elma/1-1200.webp" srcset="assets/images/elma/1-700.webp 700w, assets/images/elma/1-1200.webp 1200w, assets/images/elma/1-1800.webp 1800w, assets/images/elma/1.webp 3657w" sizes="(max-width: 1024px) calc(100vw - 48px), 48vw" width="3657" height="2248" alt="Tree Unit canopies, planting, and stepped seating integrated into the Jabal Al-Zuhour staircase." loading="lazy" decoding="async"></div>
                 <figcaption><span>ELMA / TREE UNIT / JABAL AL-ZUHOUR</span></figcaption>
               </figure>
-              <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
             </a>
           </article>
 
           <article class="project-row project-row--dabouq" data-project-index="03" data-project-order="3" data-project-id="dabouq-residential-building">
-            <a class="project-row__link" href="/projects/dabouq/" aria-label="Project file 03, Dabouq Residential Building, professional training at BIM Lab">
+            <a class="project-row__link" href="/projects/dabouq/">
               <p class="project-row__number" aria-hidden="true">003</p>
               <div class="project-row__copy">
                 <p class="project-row__file">PROJECT FILE 03</p>
@@ -565,7 +579,6 @@
                 <div class="image-frame__crop"><img src="assets/images/dabouq/dabouq-residential-preview.jpg" sizes="(max-width: 760px) calc(100vw - 36px), 48vw" width="1600" height="1600" alt="Architectural presentation drawing of a residential building developed during professional training at BIM Lab in Dabouq, Amman." loading="lazy" decoding="async"></div>
                 <figcaption><span>RESIDENTIAL PROJECT</span><span>PROFESSIONAL TRAINING AT BIM LAB</span></figcaption>
               </figure>
-              <span class="project-row__action">VIEW PROJECT <span aria-hidden="true">↗</span></span>
             </a>
           </article>
 
@@ -628,8 +641,8 @@
                 </figure>
                 <figure class="computational-process__video">
                   <div class="computational-panel__media computational-panel__media--video">
-                    <video data-computation-video data-equation-video muted loop playsinline preload="metadata" disablepictureinpicture aria-label="Animated Lemniscate geometry study" draggable="false">
-                      <source src="assets/media/lemniscate-of-bernoulli.mp4" type="video/mp4">
+                    <video data-computation-video data-equation-video muted loop playsinline preload="none" disablepictureinpicture aria-label="Animated Lemniscate geometry study" draggable="false">
+                      <source data-src="assets/media/lemniscate-of-bernoulli.mp4" type="video/mp4">
                     </video>
                   </div>
                   <figcaption class="computational-panel__label">GEOMETRY DEVELOPMENT</figcaption>
@@ -658,7 +671,7 @@
                   <a class="visual-slide__open" href="/visuals/architecture-of-elsewhere/">OPEN VISUAL <span aria-hidden="true">↗</span></a>
                 </div>
                 <figure class="visual-slide__media">
-                  <img src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="Architecture of Elsewhere collage combining a white architectural field, planetary studies, technical drawings, and a dark research surface." loading="lazy" decoding="async">
+                  <img src="assets/images/architecture-of-elsewhere-1400.jpg" srcset="assets/images/architecture-of-elsewhere-800.webp 800w, assets/images/architecture-of-elsewhere-1400.jpg 1400w" sizes="(max-width: 960px) calc(100vw - 48px), 62vw" width="1400" height="754" alt="Architecture of Elsewhere collage combining a white architectural field, planetary studies, technical drawings, and a dark research surface." loading="lazy" decoding="async">
                   <figcaption>ARCHITECTURE OF ELSEWHERE / 2026</figcaption>
                 </figure>
               </article>
@@ -711,13 +724,13 @@
               </span>
             </div>
             <a href="https://www.linkedin.com/in/ahmad-alhadidii-97b796290/" target="_blank" rel="noopener noreferrer"><span>LINKEDIN</span><span>Ahmad Alhadidii ↗</span></a>
-            <a href="https://www.instagram.com/ahmad.alhadidii/" target="_blank" rel="noopener noreferrer" aria-label="Instagram profile for Ahmad Alhadidii"><span>INSTAGRAM</span><span>@ahmad.alhadidii ↗</span></a>
+            <a href="https://www.instagram.com/ahmad.alhadidii/" target="_blank" rel="noopener noreferrer"><span>INSTAGRAM</span><span>@ahmad.alhadidii ↗</span></a>
           </address>
         </div>
       </section>
     </main>
 
-    <div class="closing-identity page-width" aria-label="Ahmad Alhadidii">
+    <div class="closing-identity page-width">
       <p class="pointer-scan" data-heading data-pointer-scan data-pointer-text="AHMAD ALHADIDII" data-scramble aria-hidden="true">AHMAD ALHADIDII</p>
     </div>
 
