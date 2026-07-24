@@ -559,7 +559,6 @@
       if (loader) {
         loader.hidden = true;
         loader.setAttribute("aria-hidden", "true");
-        loader.remove();
       }
       root.classList.remove("loader-pending");
       root.classList.add("loader-complete");
@@ -580,7 +579,7 @@
     const startedAt = performance.now();
     const minimumDuration = reducedMotion.matches ? 180 : 1280;
     const maximumDuration = reducedMotion.matches ? 340 : 2100;
-    const exitDuration = reducedMotion.matches ? 30 : 220;
+    const exitDuration = reducedMotion.matches ? 30 : 380;
     const timers = new Set();
     let frameRequest = 0;
     let assetsReady = false;
@@ -588,6 +587,9 @@
     let settled = false;
     let resolveBoot;
     let currentProgress = 0;
+    let signalStage = 0;
+    const blackFlashPoints = [35, 82];
+    const completedBlackFlashes = new Set();
 
     function schedule(callback, delay) {
       const timer = window.setTimeout(function () {
@@ -684,6 +686,39 @@
       if (state) state.textContent = stateText;
       if (phase) phase.textContent = phaseText;
 
+      if (!reducedMotion.matches) {
+        blackFlashPoints.forEach(function (point) {
+          if (currentProgress < point || completedBlackFlashes.has(point)) return;
+          completedBlackFlashes.add(point);
+          loader.classList.add("is-black-flash");
+          schedule(function () {
+            loader.classList.remove("is-black-flash");
+          }, 90);
+        });
+      }
+
+      const nextSignalStage = currentProgress >= 100
+        ? 4
+        : currentProgress >= 91
+          ? 3
+          : currentProgress >= 61
+            ? 2
+            : currentProgress >= 26
+              ? 1
+              : 0;
+      if (nextSignalStage !== signalStage) {
+        signalStage = nextSignalStage;
+        const shouldGlitch = signalStage > 0;
+        if (!reducedMotion.matches && shouldGlitch) {
+          loader.classList.remove("is-glitching");
+          void loader.offsetWidth;
+          loader.classList.add("is-glitching");
+          schedule(function () {
+            loader.classList.remove("is-glitching");
+          }, 210);
+        }
+      }
+
     }
 
     function targetProgress(elapsed) {
@@ -710,9 +745,8 @@
       }
       loader.hidden = true;
       loader.setAttribute("aria-hidden", "true");
-      loader.remove();
-      root.classList.remove("loader-pending");
-      root.classList.add("loader-complete");
+      const binaryLayer = loader.querySelector(".loader__binary");
+      if (binaryLayer) binaryLayer.remove();
       finishMonitorBoot = null;
       document.dispatchEvent(new CustomEvent("portfolio:ready"));
       if (resolveBoot) resolveBoot();
@@ -729,6 +763,8 @@
       schedule(function () {
         loader.classList.add("is-complete");
         loader.setAttribute("aria-hidden", "true");
+        root.classList.remove("loader-pending");
+        root.classList.add("loader-complete");
         schedule(settle, exitDuration);
       }, reducedMotion.matches ? 20 : 100);
     }
@@ -786,13 +822,18 @@
 
     function hydrateSlide(slide) {
       if (!slide || slide.dataset.mediaHydrated === "true") return;
+      const shouldDefer = window.matchMedia("(max-width: 820px)").matches;
       slide.querySelectorAll("[data-srcset]").forEach(function (source) {
-        source.srcset = source.dataset.srcset;
-        source.removeAttribute("data-srcset");
+        if (!shouldDefer || source.getAttribute("data-srcset")) {
+          source.srcset = source.dataset.srcset;
+          source.removeAttribute("data-srcset");
+        }
       });
       slide.querySelectorAll("img[data-src]").forEach(function (image) {
-        image.src = image.dataset.src;
-        image.removeAttribute("data-src");
+        if (!shouldDefer || image.dataset.src) {
+          image.src = image.dataset.src;
+          image.removeAttribute("data-src");
+        }
       });
       slide.dataset.mediaHydrated = "true";
     }
@@ -956,6 +997,7 @@
 
     function updateControls() {
       const playing = isPlaying();
+      const compactViewport = window.matchMedia("(max-width: 820px)").matches;
       if (statusReadout) {
         statusReadout.textContent = reducedMotion.matches
           ? "STATIC / REDUCED MOTION"
@@ -981,6 +1023,7 @@
 
     function activateFallback() {
       videoAttempt += 1;
+      const compactViewport = window.matchMedia("(max-width: 820px)").matches;
       mode = "fallback";
       monitor.classList.remove("is-video-active");
       monitor.classList.add("is-fallback-active");

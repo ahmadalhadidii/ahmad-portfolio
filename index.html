@@ -123,50 +123,30 @@
       root.classList.remove("no-js");
       root.classList.add("js");
 
-      var navigationEntry = window.performance && performance.getEntriesByType
-        ? performance.getEntriesByType("navigation")[0]
-        : null;
-      var sameSiteReferrer = false;
-      try {
-        sameSiteReferrer = Boolean(document.referrer) &&
-          new URL(document.referrer).origin === window.location.origin;
-      } catch (error) {
-        sameSiteReferrer = false;
-      }
-      var showLoader = !navigationEntry ||
-        navigationEntry.type === "reload" ||
-        (navigationEntry.type === "navigate" && !sameSiteReferrer);
-
-      if (showLoader) {
-        root.classList.add("loader-pending");
-        window.__portfolioLoaderFallback = window.setTimeout(function () {
-          if (root.classList.contains("loader-pending")) {
-            var loader = document.getElementById("loader");
-            root.classList.remove("loader-pending");
-            root.classList.add("loader-complete", "motion-ready");
-            if (loader) {
-              loader.hidden = true;
-              loader.setAttribute("aria-hidden", "true");
-            }
+      root.classList.add("loader-pending");
+      window.__portfolioLoaderFallback = window.setTimeout(function () {
+        if (root.classList.contains("loader-pending")) {
+          var loader = document.getElementById("loader");
+          root.classList.remove("loader-pending");
+          root.classList.add("loader-complete", "motion-ready");
+          if (loader) {
+            loader.hidden = true;
+            loader.setAttribute("aria-hidden", "true");
           }
-        }, 3200);
-      } else {
-        root.classList.add("loader-skipped", "loader-complete", "motion-ready");
-      }
+        }
+      }, 3200);
     })();
   </script>
 
   <style>
     html, body { background: #ffffff; }
     .no-js .loader { display: none; }
-    .loader-skipped .loader { display: none; }
   </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
-  <link rel="preload" href="assets/images/architecture-of-elsewhere-800.webp" as="image" imagesrcset="assets/images/architecture-of-elsewhere-800.webp 800w, assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" imagesizes="(max-width: 960px) 100vw, min(1360px, 86vw)">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" href="assets/images/architecture-of-elsewhere-1400.jpg" as="image" imagesrcset="assets/images/architecture-of-elsewhere-1400.jpg 1400w, assets/images/architecture-of-elsewhere-2400.jpg 2400w" imagesizes="(max-width: 960px) 100vw, min(1360px, 86vw)">
   <link rel="stylesheet" href="assets/css/style.css?v=20260723-route-restoration-07">
 
   <script src="content.js?v=20260718-elma-correction-02" defer></script>
@@ -175,7 +155,49 @@
 <body class="home-page">
   <div class="loader" id="loader" role="status" aria-label="Initializing Ahmad Alhadidii portfolio field">
     <p class="visually-hidden" id="loader-announcement" aria-live="polite">Portfolio field initialization in progress.</p>
-    <div class="loader__counter" aria-hidden="true"><span id="loader-progress">000</span></div>
+    <div class="loader__binary" aria-hidden="true">
+      <span class="loader__binary-stream loader__binary-stream--one">01001001 00110001 01000001 00110110 01001000 00110010</span>
+      <span class="loader__binary-stream loader__binary-stream--two">101001 011010 001101 110010 010110 100101</span>
+      <span class="loader__binary-stream loader__binary-stream--three">0011 0101 1001 0110 1100 0010</span>
+    </div>
+    <div class="loader__grid" aria-hidden="true">
+      <header class="loader__header">
+        <div>
+          <p class="loader__name" id="loader-name">AHMAD ALHADIDII</p>
+          <p>PORTFOLIO FIELD</p>
+        </div>
+        <dl>
+          <div><dt>STATE</dt><dd id="loader-state">SYSTEM INITIALIZATION</dd></div>
+          <div><dt>FRAME</dt><dd id="loader-frame">01 / 06</dd></div>
+          <div><dt>SIGNAL</dt><dd id="loader-signal">000.000</dd></div>
+        </dl>
+      </header>
+
+      <div class="loader__field">
+        <figure class="loader__preview">
+          <div class="loader__preview-image">
+            <img data-loader-preview src="assets/images/architecture-of-elsewhere-1400.jpg" width="1400" height="754" alt="">
+            <span class="loader__preview-scan"></span>
+            <span class="loader__preview-slice loader__preview-slice--one"></span>
+            <span class="loader__preview-slice loader__preview-slice--two"></span>
+          </div>
+          <figcaption><span>VISUAL FIELD / A-H26</span><span>IMAGE BUFFER</span></figcaption>
+        </figure>
+        <div class="loader__counter">
+          <span id="loader-progress">000</span><small>/ 100</small>
+        </div>
+        <p class="loader__active-binary" id="loader-active-binary">00000000 / 00000000</p>
+      </div>
+
+      <footer class="loader__footer">
+        <div class="loader__progress-track"><span id="loader-progress-bar"></span></div>
+        <div class="loader__footer-meta">
+          <p>ARCHITECTURE / RESEARCH / COMPUTATION</p>
+          <p id="loader-phase">ARCHIVE ACCESS</p>
+          <p><span id="loader-progress-secondary">000</span> / 100</p>
+        </div>
+      </footer>
+    </div>
   </div>
 
   <noscript>
