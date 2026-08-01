@@ -1,0 +1,40 @@
+﻿{
+    "passed":  true,
+    "assertions":  56,
+    "url":  "http://127.0.0.1:4173/projects/protocol-port/",
+    "viewports":  [
+                      {
+                          "viewport":  "desktop",
+                          "width":  1440,
+                          "height":  900,
+                          "scrollWidth":  1440,
+                          "images":  17,
+                          "topScreenshot":  "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\protocol-port\\20260801-174159948-desktop-top-1440-x-900.png"
+                      },
+                      {
+                          "viewport":  "tablet-landscape",
+                          "width":  1024,
+                          "height":  768,
+                          "scrollWidth":  1024,
+                          "images":  17,
+                          "topScreenshot":  "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\protocol-port\\20260801-174159948-tablet-landscape-top-1024-x-768.png"
+                      },
+                      {
+                          "viewport":  "tablet-portrait",
+                          "width":  768,
+                          "height":  1024,
+                          "scrollWidth":  768,
+                          "images":  17,
+                          "topScreenshot":  "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\protocol-port\\20260801-174159948-tablet-portrait-top-768-x-1024.png"
+                      },
+                      {
+                          "viewport":  "mobile",
+                          "width":  390,
+                          "height":  844,
+                          "scrollWidth":  390,
+                          "images":  17,
+                          "topScreenshot":  "C:\\Users\\ahmad\\OneDrive - Balqa Applied University\\Desktop\\ahmad-portfolio\\runtime-validation\\protocol-port\\20260801-174159948-mobile-top-390-x-844.png"
+                      }
+                  ],
+    "consoleErrors":  0
+}

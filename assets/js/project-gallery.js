@@ -70,7 +70,10 @@
         slide.setAttribute("aria-hidden", index === logicalIndex ? "false" : "true");
       });
       const active = slides[logicalIndex];
-      if (counter) counter.textContent = `IMAGE ${pad(logicalIndex + 1)} / ${pad(slideCount)}`;
+      if (counter) {
+        const value = `${pad(logicalIndex + 1)} / ${pad(slideCount)}`;
+        counter.textContent = gallery.dataset.galleryCounterFormat === "bare" ? value : `IMAGE ${value}`;
+      }
       if (title) title.textContent = active.dataset.title || "";
       if (description) description.textContent = active.dataset.description || "";
       if (progress) Array.from(progress.children).forEach(function (mark, index) {

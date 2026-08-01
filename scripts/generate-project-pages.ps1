@@ -75,6 +75,11 @@ $Projects = @(
 $Primary = @('shila','manmatic','dabouq','concrete-fatigue')
 
 foreach ($Project in $Projects) {
+  # Protocol Port is a hand-composed board page and must not be replaced by the generic project template.
+  if ($Project.Slug -eq 'protocol-port') {
+    Write-Output 'Preserved projects/protocol-port/index.html (custom board page)'
+    continue
+  }
   if ($Project.Extra) {
     $Project.Extra = $Project.Extra.Replace('HUMAN–MACHINE PROTOCOL ENVIRONMENT<br>AQABA, JORDAN', 'HUMAN–MACHINE PROTOCOL ENVIRONMENT')
   }

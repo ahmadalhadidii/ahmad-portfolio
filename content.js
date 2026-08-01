@@ -366,17 +366,17 @@ const siteContent = {
         },
         {
           code: "02",
-          title: "PROTOCOL PORT",
+          title: "THE PROTOCOL PORT",
           text: "Protocol Port is a prospective human–machine collaboration environment in Aqaba, where students, developers, researchers, and logistics actors work with intelligent systems to study site conditions, develop operational protocols, and test their deployment within the logistics landscape. The project uses the site itself as an active source of data and action, transforming local conditions into protocols that can support logistics performance, guide human learning, and generate impact for the port, the community, and the wider territory.",
           facts: [["YEAR", "2026"], ["SITE", "AQABA, JORDAN"], ["TYPE", "HUMAN–MACHINE PROTOCOL ENVIRONMENT"], ["FUNCTION", "HUMAN–MACHINE COLLABORATION FOR LOGISTICS PROTOCOL DEVELOPMENT"], ["USERS", "STUDENTS, DEVELOPERS, RESEARCHERS, AND LOGISTICS ACTORS"]],
           media: {
             src: "assets/images/manmatic/protocol-port-001-1200.jpg",
             width: 1200,
             height: 743,
-            alt: "Axonometric drawing of Protocol Port extending across an industrial and logistics landscape with controlled orange elements.",
-            caption: "PROTOCOL PORT / MAIN AXONOMETRIC"
+            alt: "Axonometric drawing of THE PROTOCOL PORT extending across an industrial and logistics landscape with controlled orange elements.",
+            caption: "THE PROTOCOL PORT / MAIN AXONOMETRIC"
           },
-          links: [["ENTER PROTOCOL PORT →", "/projects/protocol-port/"]]
+          links: [["ENTER THE PROTOCOL PORT →", "/projects/protocol-port/"]]
         }
       ],
       hero: {
@@ -472,24 +472,22 @@ const siteContent = {
       id: "project-protocol-port",
       slug: "protocol-port",
       route: "projects/protocol-port/",
-      seoTitle: "Protocol Port | Ahmad Alhadidii",
+      seoTitle: "THE PROTOCOL PORT | Ahmad Alhadidii",
       metaDescription: "Protocol Port is a prospective human–machine protocol environment in Aqaba for logistics protocol development, human learning, and territorial impact.",
       number: "002.B",
-      archiveTitle: "PROTOCOL PORT",
-      archiveSubtitle: "HUMAN–MACHINE PROTOCOL ENVIRONMENT",
-      navigationTitle: "Protocol Port — Human–Machine Protocol Environment",
-      title: "Protocol Port",
-      definition: "Human–Machine Protocol Environment",
+      archiveTitle: "THE PROTOCOL PORT",
+      archiveSubtitle: "A Thermodynamic Protocol Port for Algorithmic Logistics in Aqaba",
+      navigationTitle: "THE PROTOCOL PORT — A Thermodynamic Protocol Port for Algorithmic Logistics in Aqaba",
+      title: "THE PROTOCOL PORT",
+      definition: "A Thermodynamic Protocol Port for Algorithmic Logistics in Aqaba",
       overview: "Protocol Port is a prospective human–machine collaboration environment in Aqaba, where students, developers, researchers, and logistics actors work with intelligent systems to study site conditions, develop operational protocols, and test their deployment within the logistics landscape. The project uses the site itself as an active source of data and action, transforming local conditions into protocols that can support logistics performance, guide human learning, and generate impact for the port, the community, and the wider territory.",
       year: "2026",
       location: "Aqaba, Jordan",
       category: "Human–Machine Protocol Environment",
       type: "Human–Machine Protocol Environment",
       role: "Architecture, research, systems thinking, visual communication",
-      status: "UNDER MODIFICATION",
-      statusNote: "STILL NEGOTIATING ITS FINAL FORM.",
       theme: "light",
-      systemMarker: "MANMATIC SYSTEM / PROTOCOL PORT",
+      systemMarker: "MANMATIC SYSTEM / THE PROTOCOL PORT",
       systemBack: "/projects/manmatic/",
       featured: false,
       displayOrder: 98,
@@ -500,9 +498,9 @@ const siteContent = {
         { code: "04", title: "DESIGN DEVELOPMENT", text: "Hand drawing and iterative section studies record the author-led development of the project.", media: { src: "assets/images/manmatic/protocol-port-process-002-900.jpg", width: 506, height: 900, alt: "Protocol Port hand sketches arranged around a pen and laptop.", caption: "HAND-DRAWN DEVELOPMENT" } },
         { code: "05", title: "ARCHITECTURAL SYSTEM", text: "The developing system coordinates institutional programme, circulation, technical elements, and the project’s relationship to the logistics landscape." },
         { code: "06", title: "IMAGES AND DRAWINGS", text: "Section and elevation studies test the project’s vertical elements, long spatial sequence, and architectural thresholds.", media: { src: "assets/images/manmatic/protocol-port-process-003-900.jpg", width: 653, height: 900, alt: "Protocol Port section and elevation sketches surrounding a tablet drawing.", caption: "SECTION AND ELEVATION STUDIES" } },
-        { code: "07", title: "STATUS AND NEXT DEVELOPMENT", text: "The architectural application remains iterative while its institutional and spatial systems are refined.", status: "UNDER MODIFICATION", statusNote: "STILL NEGOTIATING ITS FINAL FORM." }
+        { code: "07", title: "ARCHITECTURAL APPLICATION", text: "The architectural application remains iterative while its institutional and spatial systems are refined." }
       ],
-      hero: { src: "assets/images/manmatic/protocol-port-001-1200.jpg", width: 1200, height: 743, orientation: "wide", fit: "contain", mediaClass: "media--wide media--drawing", alt: "Protocol Port axonometric drawing across Aqaba’s logistics landscape.", caption: "MANMATIC SYSTEM / PROTOCOL PORT / AQABA, JORDAN" }
+      hero: { src: "assets/images/protocol-port/1.webp", width: 4856, height: 2988, orientation: "wide", fit: "contain", mediaClass: "media--wide media--drawing", alt: "THE PROTOCOL PORT axonometric drawing across Aqaba’s logistics landscape.", caption: "MANMATIC SYSTEM / THE PROTOCOL PORT / AQABA, JORDAN" }
     },
     {
       id: "project-dabouq-residential",
