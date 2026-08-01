@@ -174,7 +174,7 @@ JSON.stringify((()=>{
     whySiteText:qs(".protocol-port-site__analysis section:last-child .protocol-port-copy p").textContent.trim(),
     siteCaptionText:qs(".protocol-port-site__caption p").textContent.trim(),
     thermodynamicText:qs(".protocol-port-thermodynamic > p").textContent.trim(),
-    bodyPresentationFailures:Array.from(document.querySelectorAll(".protocol-port-copy > p:not(.protocol-port-index),.protocol-port-methodology__summary")).filter(p=>{const s=getComputedStyle(p);return s.textAlign!=="justify"||s.hyphens!=="auto"||s.overflowWrap!=="break-word"}).length,
+    bodyPresentationFailures:Array.from(document.querySelectorAll(".protocol-port-copy > p:not(.protocol-port-index),.protocol-port-methodology__summary")).filter(p=>{const s=getComputedStyle(p);return s.textAlign!=="justify"||s.hyphens!=="none"||s.wordBreak!=="normal"||s.overflowWrap!=="normal"}).length,
     scrambleTargets:document.querySelectorAll(".protocol-port-board h1[data-scramble],.protocol-port-board h2[data-scramble],.protocol-port-site__analysis h3[data-scramble]").length,
     unresolvedScrambles:Array.from(document.querySelectorAll(".protocol-port-board [data-scramble]")).filter(el=>el.dataset.scrambleText&&el.textContent!==el.dataset.scrambleText).length,
     maskReveals:document.querySelectorAll('[data-shila-reveal-mode="mask"]').length,

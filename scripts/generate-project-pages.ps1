@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'
 
 $Root = Split-Path -Parent $PSScriptRoot
 $CanonicalBase = 'https://www.ahmadalhadidii.manmatic.institute'
-$Build = '20260723-route-restoration-07'
+$Build = '20260801-project-transition-01'
 
 function ConvertTo-HtmlEscaped([object]$Value) {
   if ($null -eq $Value) { return '' }

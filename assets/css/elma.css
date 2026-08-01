@@ -142,9 +142,11 @@ body.elma-page,
   -webkit-mask-image: none !important;
   mask-image: none !important;
   -webkit-hyphens: none;
+  -ms-hyphens: none;
   hyphens: none;
   word-break: normal;
   overflow-wrap: normal;
+  white-space: normal;
   text-wrap: pretty;
   animation: none !important;
   transform: none !important;
@@ -914,7 +916,8 @@ body.elma-page,
 
 @media (max-width: 480px) {
   .elma-transformation .elma-project-body-text {
-    text-align: left;
+    text-align: justify;
+    text-align-last: left;
     hyphens: none;
   }
 }

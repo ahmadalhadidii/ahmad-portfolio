@@ -1,0 +1,8 @@
+Exception calling "Write" with "3" argument(s): "The I/O operation has been aborted because of either a thread exit or 
+an application request"
+At C:\Users\ahmad\OneDrive - Balqa Applied University\Desktop\ahmad-portfolio\scripts\serve-static.ps1:39 char:5
++     $Context.Response.OutputStream.Write($Bytes, 0, $Bytes.Length)
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : HttpListenerException
+ 

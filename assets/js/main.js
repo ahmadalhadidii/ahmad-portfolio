@@ -2522,13 +2522,24 @@
     const lastRouteKey = "ahmad-manmatic-last-route-v4";
     const transitionDuration = 340;
     const themeSwapDelay = 150;
+    const lightTransitionDuration = 310;
+    const lightThemeSwapDelay = 120;
+    const reducedTransitionDuration = 80;
     let cleanupTimer = 0;
     let themeSwapTimer = 0;
     let activeShell = null;
+    let activeMedia = null;
+    let activeAnimationName = "";
+    let activeTransitionClasses = [];
     let transitionComplete = null;
+    let navigationPending = false;
 
     function isManmaticRoute(pathname) {
       return /^\/projects\/manmatic(?:\/index\.html)?\/?$/.test(pathname);
+    }
+
+    function isDedicatedProjectRoute(pathname) {
+      return /^\/projects\/[^/]+(?:\/index\.html)?\/?$/.test(pathname);
     }
 
     function currentRouteState() {
@@ -2555,7 +2566,6 @@
       if (instant) root.classList.add("theme-swap-instant");
       setSiteTheme(theme);
       if (instant) {
-        void document.body.offsetWidth;
         window.requestAnimationFrame(function () {
           root.classList.remove("theme-swap-instant");
         });
@@ -2573,10 +2583,19 @@
       }
       if (activeShell) {
         activeShell.removeEventListener("animationend", handleAnimationEnd);
-        activeShell.classList.remove("is-manmatic-route-transitioning");
+        activeTransitionClasses.forEach(function (className) {
+          activeShell.classList.remove(className);
+        });
+      }
+      if (activeMedia) {
+        activeMedia.classList.remove("is-project-route-media-transitioning");
       }
       activeShell = null;
+      activeMedia = null;
+      activeAnimationName = "";
+      activeTransitionClasses = [];
       delete root.dataset.manmaticRouteTransition;
+      delete root.dataset.projectRouteTransition;
       const completion = transitionComplete;
       transitionComplete = null;
       if (runCompletion && completion) completion();
@@ -2585,18 +2604,30 @@
     function handleAnimationEnd(event) {
       if (
         event.target !== activeShell ||
-        event.animationName !== "manmatic-content-signal"
+        event.animationName !== activeAnimationName
       ) return;
       clearTransition(true);
     }
 
-    function playTransition(direction, targetTheme, completion) {
+    function playTransition(variant, direction, targetTheme, completion, triggerAnchor) {
       const resolvedTheme = targetTheme === "manmatic" ? "manmatic" : "light";
-      if (reducedMotion.matches) {
-        applyTheme(resolvedTheme, true);
-        if (completion) completion();
-        return;
-      }
+      const useReducedProfile = reducedMotion.matches;
+      const useLightProfile = variant === "light" && !useReducedProfile;
+      const duration = useReducedProfile
+        ? reducedTransitionDuration
+        : useLightProfile
+          ? lightTransitionDuration
+          : transitionDuration;
+      const animationName = useReducedProfile
+        ? "project-route-reduced-signal"
+        : useLightProfile
+          ? "project-route-light-signal"
+          : "manmatic-content-signal";
+      const transitionClasses = useReducedProfile
+        ? ["is-project-route-transitioning", "transition--reduced"]
+        : useLightProfile
+          ? ["is-project-route-transitioning", "transition--light"]
+          : ["is-manmatic-route-transitioning"];
       const shell = document.querySelector(".site-shell");
       if (!shell) {
         applyTheme(resolvedTheme, true);
@@ -2606,18 +2637,35 @@
 
       clearTransition(false);
       activeShell = shell;
-      root.dataset.manmaticRouteTransition =
-        direction === "exit" ? "exit" : "enter";
+      activeAnimationName = animationName;
+      activeTransitionClasses = transitionClasses;
+      if (useLightProfile || useReducedProfile) {
+        root.dataset.projectRouteTransition = useReducedProfile ? "reduced" : "light";
+      } else {
+        root.dataset.manmaticRouteTransition =
+          direction === "exit" ? "exit" : "enter";
+      }
       transitionComplete = completion || null;
       shell.addEventListener("animationend", handleAnimationEnd);
-      shell.classList.add("is-manmatic-route-transitioning");
+      transitionClasses.forEach(function (className) {
+        shell.classList.add(className);
+      });
+      if (useLightProfile && triggerAnchor) {
+        const mediaScope = triggerAnchor.closest(
+          ".project-row, .manmatic-category__record, .mm-application"
+        );
+        activeMedia = mediaScope && mediaScope.querySelector("figure");
+        if (activeMedia) {
+          activeMedia.classList.add("is-project-route-media-transitioning");
+        }
+      }
       themeSwapTimer = window.setTimeout(function () {
         applyTheme(resolvedTheme, true);
         themeSwapTimer = 0;
-      }, themeSwapDelay);
+      }, useReducedProfile ? 0 : useLightProfile ? lightThemeSwapDelay : themeSwapDelay);
       cleanupTimer = window.setTimeout(
         function () { clearTransition(true); },
-        transitionDuration + 100
+        duration + 100
       );
     }
 
@@ -2633,6 +2681,7 @@
     ) {
       applyTheme(previousRouteState, true);
       playTransition(
+        "manmatic",
         initialRouteState === "manmatic" ? "enter" : "exit",
         initialRouteState
       );
@@ -2673,25 +2722,39 @@
 
       const sourceIsManmatic = isManmaticRoute(window.location.pathname);
       const destinationIsManmatic = isManmaticRoute(destination.pathname);
-      if (sourceIsManmatic === destinationIsManmatic) return;
+      const destinationIsProject = isDedicatedProjectRoute(destination.pathname);
+      const transitionVariant = destinationIsProject
+        ? destinationIsManmatic ? "manmatic" : "light"
+        : sourceIsManmatic && !destinationIsManmatic ? "manmatic" : "";
+      if (!transitionVariant) return;
+
+      if (navigationPending) {
+        event.preventDefault();
+        return;
+      }
 
       event.preventDefault();
+      navigationPending = true;
       playTransition(
+        transitionVariant,
         destinationIsManmatic ? "enter" : "exit",
         destinationIsManmatic ? "manmatic" : "light",
         function () {
           window.location.assign(destination.href);
-        }
+        },
+        anchor
       );
     });
 
     window.addEventListener("pageshow", function (event) {
+      navigationPending = false;
       if (event.persisted) {
         const previousState = readLastRouteState();
         const nextState = currentRouteState();
         if (previousState !== nextState) {
           applyTheme(previousState, true);
           playTransition(
+            "manmatic",
             nextState === "manmatic" ? "enter" : "exit",
             nextState
           );
