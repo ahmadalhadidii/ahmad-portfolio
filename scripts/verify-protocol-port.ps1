@@ -186,9 +186,9 @@ JSON.stringify((()=>{
 })())
 '@
 
-    Assert-State ($state.title -eq 'THE PROTOCOL PORT | Ahmad Alhadidii') "Title mismatch at $($viewport.Name)."
-    Assert-State ($state.h1 -eq 'THE PROTOCOL PORT') "H1 mismatch at $($viewport.Name)."
-    Assert-State ($state.subtitle -eq 'A Thermodynamic Protocol Port for Algorithmic Logistics in Aqaba') "Subtitle mismatch at $($viewport.Name)."
+    Assert-State ($state.title -eq 'ManMaTIC — Protocol Port: A Thermodynamic Framework for Algorithmic Logistics in Aqaba') "Title mismatch at $($viewport.Name)."
+    Assert-State ($state.h1 -eq 'ManMaTIC — Protocol Port:') "H1 mismatch at $($viewport.Name)."
+    Assert-State ($state.subtitle -eq 'A Thermodynamic Framework for Algorithmic Logistics in Aqaba') "Subtitle mismatch at $($viewport.Name)."
     Assert-State ($state.imageSources.Count -eq 17) "Expected 17 project images at $($viewport.Name), found $($state.imageSources.Count)."
     Assert-State (($state.imageSources -join '|') -eq '/assets/images/protocol-port/1.webp|/assets/images/protocol-port/2.webp|/assets/images/protocol-port/3.webp|/assets/images/protocol-port/4.webp|/assets/images/protocol-port/5.webp|/assets/images/protocol-port/6.webp|/assets/images/protocol-port/7.webp|/assets/images/protocol-port/8.webp|/assets/images/protocol-port/9.webp|/assets/images/protocol-port/10.1.webp|/assets/images/protocol-port/10.2.webp|/assets/images/protocol-port/11.webp|/assets/images/protocol-port/12.webp|/assets/images/protocol-port/13.1.webp|/assets/images/protocol-port/13.2.webp|/assets/images/protocol-port/13.3.webp|/assets/images/protocol-port/13.4.webp') "Project image order does not match NUM.jpg at $($viewport.Name)."
     Assert-State ($state.failedImages -eq 0) "Failed images remain at $($viewport.Name)."
