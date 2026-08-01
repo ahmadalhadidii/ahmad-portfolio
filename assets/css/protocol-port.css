@@ -109,23 +109,34 @@
 
 .protocol-port-section {
   padding-block: clamp(26px, 3.1vw, 42px);
-  border-bottom: 1px solid var(--protocol-line);
 }
 
 .protocol-port-copy h2,
 .protocol-port-figure-title h2,
 .protocol-port-thermodynamic h2 {
   margin: 0;
-  font: 600 clamp(1.05rem, 1.65vw, 1.72rem)/1.06 var(--font-sans);
-  letter-spacing: -0.035em;
+  color: var(--protocol-ink);
+  font: 650 clamp(1.08rem, 1.65vw, 1.72rem)/1.04 var(--font-sans);
+  letter-spacing: -0.03em;
 }
 
 .protocol-port-copy h3,
 .protocol-port-heading-row h3,
 .protocol-port-thermodynamic h3 {
   margin-top: 5px;
+  color: var(--protocol-ink);
+  font: 600 clamp(0.76rem, 0.92vw, 0.92rem)/1.25 var(--font-mono);
+  letter-spacing: -0.01em;
+}
+
+.protocol-port-copy .protocol-port-supporting-heading,
+.protocol-port-thermodynamic .protocol-port-supporting-heading,
+.protocol-port-methodology__reading h3 {
   color: var(--protocol-accent);
-  font: 600 clamp(0.7rem, 0.86vw, 0.86rem)/1.3 var(--font-mono);
+}
+
+.protocol-port-subheading {
+  max-width: 54ch;
 }
 
 .protocol-port-copy h4 {
@@ -145,6 +156,17 @@
   overflow-wrap: break-word;
 }
 
+.protocol-port-copy strong,
+.protocol-port-methodology__summary strong {
+  color: var(--protocol-ink);
+  font-weight: 650;
+}
+
+.protocol-port-copy .protocol-port-emphasis--orange,
+.protocol-port-methodology__summary .protocol-port-emphasis--orange {
+  color: var(--protocol-accent);
+}
+
 .protocol-port-overview {
   display: grid;
   grid-template-columns: minmax(250px, 46fr) minmax(0, 54fr);
@@ -154,8 +176,8 @@
 
 .protocol-port-site {
   display: grid;
-  grid-template-columns: minmax(0, 47fr) minmax(0, 53fr);
-  gap: clamp(24px, 3.3vw, 52px);
+  grid-template-columns: minmax(0, 49fr) minmax(0, 51fr);
+  gap: clamp(18px, 2vw, 28px);
   align-items: start;
   grid-template-areas:
     "map analysis"
@@ -167,14 +189,28 @@
 .protocol-port-site__analysis { grid-area: analysis; }
 
 .protocol-port-site__map,
-.protocol-port-site__analysis,
-.protocol-port-site__analysis > section {
+.protocol-port-site__analysis {
   display: grid;
   gap: clamp(14px, 1.8vw, 26px);
 }
 
 .protocol-port-site__analysis {
-  gap: clamp(18px, 2.5vw, 30px);
+  gap: clamp(12px, 1.5vw, 18px);
+}
+
+.protocol-port-site__analysis > section {
+  display: grid;
+  gap: clamp(5px, 0.65vw, 8px);
+}
+
+.protocol-port-site__analysis .protocol-port-copy h3 {
+  font-size: clamp(0.92rem, 1.25vw, 1.25rem);
+  line-height: 1.08;
+}
+
+.protocol-port-site__caption h4,
+.protocol-port-site__caption > p:last-child {
+  margin-top: 0;
 }
 
 .protocol-port-site__analysis .protocol-port-copy > p:last-child {
@@ -194,12 +230,31 @@
   margin: 0;
 }
 
+.protocol-port-title-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px clamp(12px, 2vw, 24px);
+}
+
+.protocol-port-title-line h3 {
+  margin-top: 0;
+}
+
+.protocol-port-methodology__introduction,
+.protocol-port-development__introduction {
+  margin-bottom: clamp(10px, 1.5vw, 18px);
+}
+
 .protocol-port-methodology__legend {
   width: min(82%, 800px);
   margin: 0 auto clamp(5px, 0.7vw, 9px);
 }
 
 .protocol-port-methodology__reading { margin-bottom: 5px; }
+.protocol-port-methodology__reading h3 {
+  font-size: clamp(0.9rem, 1.12vw, 1.1rem);
+}
 .protocol-port-methodology__reading p { max-width: 48ch; }
 .protocol-port-methodology__summary {
   margin: 8px 0 13px;
@@ -209,6 +264,7 @@
   text-align: justify;
   text-justify: inter-word;
   hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 .protocol-port-figure-title {
@@ -218,6 +274,22 @@
 .protocol-port-workflow .protocol-port-figure,
 .protocol-port-development .protocol-port-figure {
   width: 100%;
+}
+
+.protocol-port-methodology {
+  padding-bottom: clamp(14px, 2vw, 24px);
+}
+
+.protocol-port-workflow {
+  padding-block: clamp(8px, 1.2vw, 16px);
+}
+
+.protocol-port-development {
+  padding-block: clamp(12px, 1.8vw, 22px);
+}
+
+.protocol-port-plans {
+  padding-block: clamp(14px, 2vw, 26px);
 }
 
 .protocol-port-gallery {
@@ -306,43 +378,21 @@
 
 .protocol-port-thermodynamic {
   margin-top: clamp(16px, 2vw, 26px);
-  display: grid;
-  grid-template-columns: minmax(0, 7fr) minmax(260px, 5fr);
-  gap: 24px clamp(32px, 5vw, 76px);
-  align-items: baseline;
 }
 
 .protocol-port-thermodynamic h3 { margin: 0; }
-.protocol-port-thermodynamic > p { margin-top: 0; }
+.protocol-port-thermodynamic > p { margin-top: 8px; }
 
 .protocol-port-narrative {
   display: grid;
-  grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr);
-  gap: clamp(26px, 3.5vw, 54px);
+  grid-template-columns: minmax(0, 43fr) minmax(0, 57fr);
+  gap: clamp(18px, 2.4vw, 30px);
   align-items: end;
 }
 
 .protocol-port-narrative__statement {
   display: grid;
-  gap: clamp(18px, 2.4vw, 34px);
 }
-
-.protocol-port-source-record {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(26px, 4vw, 56px);
-}
-
-.protocol-port-source-record a {
-  display: inline-block;
-  margin-top: 12px;
-  border-bottom: 1px solid var(--protocol-ink);
-  font: 500 0.6rem/1.3 var(--font-mono);
-}
-
-.protocol-port-source-record dl { margin-top: 12px; border-top: 1px solid var(--protocol-line); }
-.protocol-port-source-record dl div { padding-block: 7px; display: grid; grid-template-columns: 76px 1fr; gap: 12px; border-bottom: 1px solid var(--protocol-line); font: 500 0.62rem/1.4 var(--font-mono); }
-.protocol-port-source-record dt { color: var(--protocol-muted); }
 
 .protocol-port-page .project-navigation {
   padding-block: clamp(60px, 7vw, 104px);
@@ -363,8 +413,8 @@
 
 .motion-ready .protocol-port-page.shila-motion [data-shila-reveal][data-shila-reveal-kind="mask"].shila-reveal-ready {
   opacity: 0.35;
-  clip-path: inset(0 100% 0 0);
-  transform: translate3d(10px, 0, 0);
+  clip-path: inset(0 0 100% 0);
+  transform: translate3d(0, 8px, 0);
   transition: opacity var(--motion-standard) var(--motion-easing), clip-path var(--motion-slow) var(--motion-easing), transform var(--motion-slow) var(--motion-easing);
   transition-delay: var(--shila-reveal-delay, 0ms);
 }
@@ -379,10 +429,8 @@
   .protocol-port-identity { grid-template-columns: 1fr; }
   .protocol-port-meta { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .protocol-port-overview { grid-template-columns: minmax(220px, 4fr) minmax(0, 6fr); gap: 32px; }
-  .protocol-port-site { grid-template-columns: minmax(0, 45fr) minmax(0, 55fr); gap: 24px; }
-  .protocol-port-heading-row { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); gap: 30px; }
+  .protocol-port-site { grid-template-columns: minmax(0, 48fr) minmax(0, 52fr); gap: 18px; }
   .protocol-port-gallery__footer > span { display: none; }
-  .protocol-port-thermodynamic { grid-template-columns: 1fr; }
   .protocol-port-narrative { gap: 24px; align-items: start; }
 }
 
@@ -394,25 +442,24 @@
   .protocol-port-identity h1 { font-size: clamp(2rem, 11vw, 3.4rem); }
   .protocol-port-meta { grid-template-columns: 1fr 1fr; }
   .protocol-port-meta div:last-child { grid-column: 1 / -1; }
-  .protocol-port-section { padding-block: clamp(36px, 12vw, 62px); }
+  .protocol-port-section { padding-block: clamp(24px, 8vw, 38px); }
   .protocol-port-overview,
   .protocol-port-site,
-  .protocol-port-heading-row,
   .protocol-port-narrative { grid-template-columns: 1fr; }
   .protocol-port-overview { gap: 22px; }
-  .protocol-port-site { gap: 38px; }
+  .protocol-port-site { gap: 24px; }
   .protocol-port-site { grid-template-areas: "lead" "map" "analysis"; }
-  .protocol-port-site__analysis { gap: 38px; }
-  .protocol-port-heading-row { gap: 14px; margin-bottom: 22px; }
+  .protocol-port-site__analysis { gap: 18px; }
+  .protocol-port-title-line { display: block; }
+  .protocol-port-title-line h3 { margin-top: 5px; }
   .protocol-port-copy > p:not(.protocol-port-index),
   .protocol-port-heading-row > p { font-size: 0.93rem; line-height: 1.5; }
   .protocol-port-gallery__footer { min-height: 45px; flex-wrap: wrap; }
   .protocol-port-gallery__footer > p { width: calc(100% - 124px); }
   .protocol-port-gallery .shila-gallery__controls button { width: 42px; height: 42px; }
   .protocol-port-gallery .shila-gallery__progress { bottom: 44px; }
-  .protocol-port-narrative { gap: 34px; }
+  .protocol-port-narrative { gap: 18px; }
   .protocol-port-system > .protocol-port-figure { width: 100%; }
-  .protocol-port-source-record { grid-template-columns: 1fr; }
   .protocol-port-page .project-navigation__top { align-items: flex-start; flex-direction: column; }
 }
 
