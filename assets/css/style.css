@@ -6204,6 +6204,55 @@ a.mm-action {
   cursor: pointer;
 }
 
+/* Reliable media states: image content remains visible by default; these are progressive states only. */
+figure[data-image-state],
+[data-image-container][data-image-state],
+.image-frame__crop[data-image-state],
+.visual-slide__image-frame[data-image-state] {
+  position: relative;
+  isolation: isolate;
+}
+
+[data-image-state="loading"] {
+  background-color: #f2f2ef;
+  background-color: color-mix(in srgb, currentColor 3.5%, transparent);
+}
+
+[data-image-state="loading"]::after,
+[data-image-state="failed"]::after {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  left: 10px;
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.88);
+  background: color-mix(in srgb, var(--surface, #fff) 88%, transparent);
+  color: var(--text-secondary, #666);
+  content: "LOADING IMAGE";
+  font: 500 0.56rem/1.2 var(--font-mono);
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+[data-image-state="failed"] {
+  min-height: 96px;
+  background: #eeeeeb;
+  background: color-mix(in srgb, currentColor 5%, transparent);
+}
+
+[data-image-state="failed"]::after {
+  content: "IMAGE UNAVAILABLE";
+}
+
+[data-image-state="failed"] > img,
+[data-image-state="failed"] > picture > img {
+  opacity: 0.12;
+}
+
+[data-image-state="loaded"]::after {
+  content: none;
+}
+
 .project-row--manmatic .project-row__copy > p:not(.project-row__file),
 .manmatic-branch > p:nth-of-type(3) {
   color: var(--text-secondary);

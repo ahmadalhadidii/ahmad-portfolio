@@ -36,6 +36,11 @@
   object-fit: contain;
 }
 
+.protocol-port-picture {
+  display: block;
+  width: 100%;
+}
+
 .protocol-port-identity {
   padding-block: clamp(18px, 2.2vw, 30px);
   display: grid;
@@ -343,6 +348,7 @@
 
 .protocol-port-gallery--plans .shila-gallery__slide { aspect-ratio: 4619 / 2474; }
 .protocol-port-gallery--narrative .shila-gallery__slide { aspect-ratio: 2550 / 2231; }
+.protocol-port-gallery .shila-gallery__slide .protocol-port-picture,
 .protocol-port-gallery .shila-gallery__slide img { width: 100%; height: 100%; object-fit: contain; }
 .protocol-port-gallery .shila-gallery__slide[data-gallery-clone] { pointer-events: none; }
 
@@ -431,6 +437,15 @@
   opacity: 1;
   clip-path: inset(0 0 0 0);
   transform: translate3d(0, 0, 0);
+}
+
+/* Project media is never hidden by optional reveal JavaScript. */
+.motion-ready .protocol-port-page.shila-motion figure[data-shila-reveal].shila-reveal-ready,
+.motion-ready .protocol-port-page.shila-motion figure[data-shila-reveal].shila-reveal-ready.is-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  clip-path: none !important;
+  transform: none !important;
 }
 
 @media (max-width: 960px) {

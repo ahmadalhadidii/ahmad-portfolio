@@ -28,7 +28,7 @@
         entry.target.classList.add("is-visible");
         observer.unobserve(entry.target);
       });
-    }, { rootMargin: "0px 0px -5%", threshold: 0.1 });
+    }, { rootMargin: "700px 0px", threshold: 0.01 });
 
     let revealFrame = 0;
     function revealVisibleItems() {
@@ -50,6 +50,11 @@
 
     window.addEventListener("scroll", scheduleRevealCheck, { passive: true });
     window.addEventListener("resize", scheduleRevealCheck, { passive: true });
+    window.addEventListener("orientationchange", scheduleRevealCheck, { passive: true });
+    window.addEventListener("pageshow", scheduleRevealCheck, { passive: true });
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) scheduleRevealCheck();
+    });
 
     items.forEach(function (item) {
       const bounds = item.getBoundingClientRect();

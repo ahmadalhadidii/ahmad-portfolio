@@ -471,6 +471,15 @@ body.shila-page,
   transform: translate3d(0, 0, 0);
 }
 
+/* Architectural drawings remain visible if the reveal observer is interrupted. */
+.motion-ready .shila-motion figure[data-shila-reveal].shila-reveal-ready,
+.motion-ready .shila-motion figure[data-shila-reveal].shila-reveal-ready.is-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  clip-path: none !important;
+  transform: none !important;
+}
+
 @media (max-width: 900px) {
   .shila-board p {
     font-size: 0.86rem;

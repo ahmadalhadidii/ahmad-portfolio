@@ -774,6 +774,15 @@ body.elma-page,
   transform: translate3d(0, 0, 0);
 }
 
+/* Project images cannot be left invisible by an optional reveal observer. */
+.motion-ready .elma-page.shila-motion figure[data-shila-reveal].shila-reveal-ready,
+.motion-ready .elma-page.shila-motion figure[data-shila-reveal].shila-reveal-ready.is-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  clip-path: none !important;
+  transform: none !important;
+}
+
 @media (max-width: 980px) {
   .elma-board__inner {
     width: min(92vw, 880px);

@@ -8,11 +8,16 @@
   function prepareClone(slide) {
     const clone = slide.cloneNode(true);
     clone.dataset.galleryClone = "true";
+    clone.removeAttribute("data-image-state");
     clone.setAttribute("aria-hidden", "true");
     clone.querySelectorAll("[id]").forEach(function (element) { element.removeAttribute("id"); });
     clone.querySelectorAll("img").forEach(function (image) {
       image.alt = "";
       image.setAttribute("aria-hidden", "true");
+      image.removeAttribute("data-image-lifecycle-ready");
+      image.removeAttribute("data-image-retry-count");
+      image.loading = "lazy";
+      if ("fetchPriority" in image) image.fetchPriority = "low";
     });
     return clone;
   }
@@ -56,13 +61,43 @@
     let queuedSteps = 0;
     let transitionTimer = 0;
 
-    function preloadAdjacent() {
-      [-1, 1].forEach(function (offset) {
-        const image = slides[modulo(logicalIndex + offset, slideCount)].querySelector("img");
-        if (!image) return;
-        const preload = new Image();
-        preload.src = image.currentSrc || image.src;
+    function requestSlideImage(index, priority) {
+      const image = slides[modulo(index, slideCount)].querySelector("img");
+      if (!image) return Promise.resolve(false);
+      image.loading = "eager";
+      if ("fetchPriority" in image) image.fetchPriority = priority || "low";
+      if (image.complete && image.naturalWidth > 0) {
+        return typeof image.decode === "function" ? image.decode().then(function () { return true; }).catch(function () { return true; }) : Promise.resolve(true);
+      }
+      return new Promise(function (resolve) {
+        let settled = false;
+        function finish(value) {
+          if (settled) return;
+          settled = true;
+          image.removeEventListener("load", loaded);
+          image.removeEventListener("error", failed);
+          resolve(value);
+        }
+        function loaded() {
+          if (typeof image.decode === "function") image.decode().then(function () { finish(true); }).catch(function () { finish(true); });
+          else finish(true);
+        }
+        function failed() {
+          if (Number(image.dataset.imageRetryCount || 0) <= 2) return;
+          finish(false);
+        }
+        image.addEventListener("load", loaded);
+        image.addEventListener("error", failed);
+        window.setTimeout(function () { finish(image.complete && image.naturalWidth > 0); }, 12000);
       });
+    }
+
+    function preloadAdjacent() {
+      const adjacent = new Set([
+        modulo(logicalIndex - 1, slideCount),
+        modulo(logicalIndex + 1, slideCount)
+      ]);
+      adjacent.forEach(function (index) { requestSlideImage(index, "low"); });
     }
 
     function updateState(announce) {
@@ -116,15 +151,26 @@
         queuedSteps += direction;
         return;
       }
-      gallery.classList.remove("is-jump", "is-dragging");
-      logicalIndex = modulo(logicalIndex + direction, slideCount);
-      physicalPosition += direction;
-      dragX = 0;
       animating = true;
-      setTrackPosition();
-      updateState(true);
-      if (reducedMotion) finishMove();
-      else transitionTimer = window.setTimeout(finishMove, 340);
+      gallery.classList.add("is-slide-loading");
+      const targetIndex = modulo(logicalIndex + direction, slideCount);
+      requestSlideImage(targetIndex, "high").then(function (ready) {
+        gallery.classList.remove("is-slide-loading");
+        if (!ready) {
+          animating = false;
+          gallery.classList.add("has-slide-error");
+          queuedSteps = 0;
+          return;
+        }
+        gallery.classList.remove("has-slide-error", "is-jump", "is-dragging");
+        logicalIndex = targetIndex;
+        physicalPosition += direction;
+        dragX = 0;
+        setTrackPosition();
+        updateState(true);
+        if (reducedMotion) finishMove();
+        else transitionTimer = window.setTimeout(finishMove, 340);
+      });
     }
 
     function endDrag(event) {
@@ -177,6 +223,7 @@
 
     jumpTo(1);
     updateState(false);
+    requestSlideImage(0, "high");
   }
 
   function init() {
@@ -185,4 +232,5 @@
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
   else init();
+  window.addEventListener("pageshow", init);
 })();

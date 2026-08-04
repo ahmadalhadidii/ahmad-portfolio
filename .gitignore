@@ -1,2 +1,4 @@
 runtime-validation/**/current-run.*
 runtime-validation/**/recording-frames-*/
+runtime-validation/protocol-port/*.png
+runtime-validation/protocol-port/*-verification.json

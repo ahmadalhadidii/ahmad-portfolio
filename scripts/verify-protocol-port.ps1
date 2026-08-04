@@ -119,13 +119,14 @@ try {
   $null = Invoke-Cdp 'Page.enable'
   $null = Invoke-Cdp 'Runtime.enable'
   $null = Invoke-Cdp 'Log.enable'
+  $null = Invoke-Cdp 'Network.enable'
   $null = Invoke-Cdp 'Page.addScriptToEvaluateOnNewDocument' @{ source = 'window.__protocolErrors=[];addEventListener("error",e=>__protocolErrors.push(String(e.message||e.error)));addEventListener("unhandledrejection",e=>__protocolErrors.push(String(e.reason)));' }
 
   $viewports = @(
+    @{ Name='mobile'; Width=390; Height=844; Mobile=$true },
     @{ Name='desktop'; Width=1440; Height=900; Mobile=$false },
     @{ Name='tablet-landscape'; Width=1024; Height=768; Mobile=$true },
-    @{ Name='tablet-portrait'; Width=768; Height=1024; Mobile=$true },
-    @{ Name='mobile'; Width=390; Height=844; Mobile=$true }
+    @{ Name='tablet-portrait'; Width=768; Height=1024; Mobile=$true }
   )
 
   foreach ($viewport in $viewports) {
@@ -158,7 +159,12 @@ JSON.stringify((()=>{
     width:innerWidth,
     scrollWidth:document.documentElement.scrollWidth,
     imageSources:Array.from(document.querySelectorAll(".protocol-port-board img")).filter(img=>!img.closest("[data-gallery-clone]")).map(img=>new URL(img.src).pathname),
+    currentSources:Array.from(document.querySelectorAll(".protocol-port-board img")).filter(img=>!img.closest("[data-gallery-clone]")).map(img=>new URL(img.currentSrc||img.src).pathname),
+    loadedSources:Array.from(document.querySelectorAll(".protocol-port-board img")).filter(img=>!img.closest("[data-gallery-clone]")&&img.complete&&img.naturalWidth>0&&img.currentSrc).map(img=>new URL(img.currentSrc).pathname),
     failedImages:(window.__assetFailures||[]).length,
+    failedStates:document.querySelectorAll('.protocol-port-board [data-image-state="failed"]').length,
+    zeroHeightImages:Array.from(document.querySelectorAll('.protocol-port-board img')).filter(img=>!img.closest('[data-gallery-clone]')&&img.getBoundingClientRect().height<=0).length,
+    invisibleFigures:Array.from(document.querySelectorAll('.protocol-port-board figure')).filter(figure=>{const style=getComputedStyle(figure);return style.display==='none'||style.visibility==='hidden'||Number(style.opacity)===0}).length,
     overviewCopy:rect(".protocol-port-overview .protocol-port-copy"),
     overviewImage:rect(".protocol-port-overview figure"),
     siteMap:rect(".protocol-port-site__map"),
@@ -186,12 +192,18 @@ JSON.stringify((()=>{
 })())
 '@
 
-    Assert-State ($state.title -eq 'ManMaTIC — Protocol Port: A Thermodynamic Framework for Algorithmic Logistics in Aqaba') "Title mismatch at $($viewport.Name)."
-    Assert-State ($state.h1 -eq 'ManMaTIC — Protocol Port:') "H1 mismatch at $($viewport.Name)."
+    Assert-State ($state.title -like '*Protocol Port: A Thermodynamic Framework for Algorithmic Logistics in Aqaba') "Title mismatch at $($viewport.Name)."
+    Assert-State ($state.h1 -like 'ManMaTIC*Protocol Port:') "H1 mismatch at $($viewport.Name)."
     Assert-State ($state.subtitle -eq 'A Thermodynamic Framework for Algorithmic Logistics in Aqaba') "Subtitle mismatch at $($viewport.Name)."
     Assert-State ($state.imageSources.Count -eq 17) "Expected 17 project images at $($viewport.Name), found $($state.imageSources.Count)."
-    Assert-State (($state.imageSources -join '|') -eq '/assets/images/protocol-port/1.webp|/assets/images/protocol-port/2.webp|/assets/images/protocol-port/3.webp|/assets/images/protocol-port/4.webp|/assets/images/protocol-port/5.webp|/assets/images/protocol-port/6.webp|/assets/images/protocol-port/7.webp|/assets/images/protocol-port/8.webp|/assets/images/protocol-port/9.webp|/assets/images/protocol-port/10.1.webp|/assets/images/protocol-port/10.2.webp|/assets/images/protocol-port/11.webp|/assets/images/protocol-port/12.webp|/assets/images/protocol-port/13.1.webp|/assets/images/protocol-port/13.2.webp|/assets/images/protocol-port/13.3.webp|/assets/images/protocol-port/13.4.webp') "Project image order does not match NUM.jpg at $($viewport.Name)."
+    Assert-State (($state.imageSources -join '|') -eq '/assets/images/protocol-port/1-1920.jpg|/assets/images/protocol-port/2-1920.jpg|/assets/images/protocol-port/3-1920.jpg|/assets/images/protocol-port/4-1920.jpg|/assets/images/protocol-port/5-1920.jpg|/assets/images/protocol-port/6-1920.png|/assets/images/protocol-port/7-1920.jpg|/assets/images/protocol-port/8-1920.jpg|/assets/images/protocol-port/9-1920.jpg|/assets/images/protocol-port/10.1-1920.jpg|/assets/images/protocol-port/10.2-1920.jpg|/assets/images/protocol-port/11-1920.jpg|/assets/images/protocol-port/12-1920.jpg|/assets/images/protocol-port/13.1-1920.jpg|/assets/images/protocol-port/13.2-1920.jpg|/assets/images/protocol-port/13.3-1920.jpg|/assets/images/protocol-port/13.4-1920.jpg') "Project image order does not match the verified Protocol Port sequence at $($viewport.Name)."
     Assert-State ($state.failedImages -eq 0) "Failed images remain at $($viewport.Name)."
+    Assert-State ($state.failedStates -eq 0) "Failed image states remain at $($viewport.Name)."
+    Assert-State ($state.zeroHeightImages -eq 0) "Zero-height image wrappers remain at $($viewport.Name)."
+    Assert-State ($state.invisibleFigures -eq 0) "Invisible image figures remain at $($viewport.Name)."
+    if ($viewport.Width -le 700) {
+      Assert-State (@($state.loadedSources | Where-Object { $_ -notmatch '-960\.(?:webp|jpg|png)$' }).Count -eq 0) "Mobile did not select the 960px responsive image set at $($viewport.Name): $($state.loadedSources -join ', ')."
+    }
     Assert-State ($state.scrollWidth -le ($state.width + 1)) "Horizontal overflow at $($viewport.Name): $($state.scrollWidth) > $($state.width)."
     Assert-State ($state.plansCounter -eq '01 / 02') "Plan counter is incorrect at $($viewport.Name)."
     Assert-State ($state.narrativeCounter -eq '01 / 04') "Narrative counter is incorrect at $($viewport.Name)."
@@ -231,7 +243,7 @@ JSON.stringify((()=>{
     $null = $results.Add([ordered]@{ viewport=$viewport.Name; width=$viewport.Width; height=$viewport.Height; scrollWidth=$state.scrollWidth; images=$state.imageSources.Count; topScreenshot=$topShot })
   }
 
-  Set-Viewport $viewports[0]
+  Set-Viewport ($viewports | Where-Object { $_.Name -eq 'desktop' } | Select-Object -First 1)
   $null = Invoke-Cdp 'Page.navigate' @{ url = $url }
   Wait-For 'document.readyState === "complete" && document.documentElement.classList.contains("loader-complete")' 'Desktop evidence page did not become ready.'
   foreach ($entry in @(
@@ -251,10 +263,41 @@ JSON.stringify((()=>{
     $null = Save-Shot $entry.Name 1440 900
   }
 
+  Set-Viewport ($viewports | Where-Object { $_.Name -eq 'mobile' } | Select-Object -First 1)
+  $null = Invoke-Cdp 'Network.setCacheDisabled' @{ cacheDisabled = $true }
+  $null = Invoke-Cdp 'Network.emulateNetworkConditions' @{
+    offline = $false; latency = 250; downloadThroughput = 307200; uploadThroughput = 102400; connectionType = 'cellular3g'
+  }
+  $null = Invoke-Cdp 'Page.navigate' @{ url = $url }
+  Wait-For 'document.readyState === "complete" && document.documentElement.classList.contains("loader-complete")' 'Slow-network mobile page did not become ready.'
+  Start-Sleep -Milliseconds 450
+  $slowInitial = Get-Json @'
+JSON.stringify((()=>{const figures=Array.from(document.querySelectorAll('.protocol-port-board figure')).filter(figure=>!figure.closest('[data-gallery-clone]'));const visibleFigures=figures.filter(figure=>!figure.closest('.shila-gallery__slide[aria-hidden="true"]'));const invisibleFigures=visibleFigures.filter(figure=>{const style=getComputedStyle(figure);return style.visibility==='hidden'||Number(style.opacity)===0});return{states:figures.filter(figure=>/^(loading|loaded|failed)$/.test(figure.dataset.imageState||'')).length,failed:figures.filter(figure=>figure.dataset.imageState==='failed').length,zeroHeight:figures.filter(figure=>figure.getBoundingClientRect().height<=0).length,invisible:invisibleFigures.length,invisibleDetails:invisibleFigures.map(figure=>({className:figure.className,mode:figure.dataset.shilaRevealMode||'',hidden:figure.getAttribute('aria-hidden')})),heroLoaded:document.querySelector('.protocol-port-hero img').complete&&document.querySelector('.protocol-port-hero img').naturalWidth>0}})())
+'@
+  Assert-State ($slowInitial.states -ge 13) 'Slow-network image containers do not expose loading states.'
+  Assert-State ($slowInitial.failed -eq 0 -and $slowInitial.zeroHeight -eq 0 -and $slowInitial.invisible -eq 0) "Slow-network mobile layout contains a failed, collapsed, or invisible image container: $($slowInitial | ConvertTo-Json -Compress)."
+  Assert-State ($slowInitial.heroLoaded) 'The priority hero did not load on the throttled mobile route.'
+  $null = Get-Value @'
+(async()=>{for(let y=0;y<document.documentElement.scrollHeight;y+=Math.max(480,innerHeight*.7)){scrollTo(0,y);await new Promise(r=>setTimeout(r,180));}return true})()
+'@
+  Wait-For 'Array.from(document.querySelectorAll(".protocol-port-board img")).filter(img=>!img.closest("[data-gallery-clone]")&&(!img.closest(".shila-gallery__slide")||img.closest(".shila-gallery__slide").getAttribute("aria-hidden")!=="true")).every(img=>img.complete&&img.naturalWidth>0)' 'Visible Protocol Port images did not finish on the throttled mobile route.'
+  $slowFinal = Get-Json 'JSON.stringify({failed:document.querySelectorAll(''.protocol-port-board [data-image-state="failed"]'').length,loading:document.querySelectorAll(''.protocol-port-board [data-image-state="loading"]'').length})'
+  Assert-State ($slowFinal.failed -eq 0) 'A Protocol Port image failed under throttled mobile loading.'
+
+  $null = Invoke-Cdp 'Network.emulateNetworkConditions' @{ offline = $false; latency = 0; downloadThroughput = -1; uploadThroughput = -1; connectionType = 'none' }
+  $null = Invoke-Cdp 'Network.setCacheDisabled' @{ cacheDisabled = $false }
+  $null = Invoke-Cdp 'Page.navigate' @{ url = 'http://127.0.0.1:4173/projects/manmatic/' }
+  Wait-For 'location.pathname === "/projects/manmatic/" && document.readyState === "complete"' 'The adjacent project did not open before the back-navigation check.'
+  $null = Get-Value 'history.back(); true'
+  Wait-For 'location.pathname === "/projects/protocol-port/" && document.readyState === "complete"' 'Browser back did not return to Protocol Port.'
+  Wait-For 'document.querySelector(".protocol-port-hero img")?.complete && document.querySelector(".protocol-port-hero img").naturalWidth > 0' 'Protocol Port hero did not recover after browser back.'
+  $backState = Get-Json 'JSON.stringify({failed:document.querySelectorAll(''.protocol-port-board [data-image-state="failed"]'').length,invisible:Array.from(document.querySelectorAll(''.protocol-port-board figure'')).filter(figure=>!figure.closest(''.shila-gallery__slide[aria-hidden="true"]'')).filter(figure=>{const style=getComputedStyle(figure);return style.visibility==="hidden"||Number(style.opacity)===0}).length})'
+  Assert-State ($backState.failed -eq 0 -and $backState.invisible -eq 0) 'Protocol Port returned with a stale failed or invisible image state.'
+
   $logErrors = @($script:events | Where-Object { $_.method -eq 'Log.entryAdded' -and $_.params.entry.level -eq 'error' })
   Assert-State ($logErrors.Count -eq 0) "Browser console errors: $($logErrors.params.entry.text -join '; ')"
 
-  $report = [ordered]@{ passed=$true; assertions=$script:assertions; url=$url; viewports=$results; consoleErrors=$logErrors.Count }
+  $report = [ordered]@{ passed=$true; assertions=$script:assertions; url=$url; viewports=$results; slowMobile=$slowInitial; backNavigation=$backState; consoleErrors=$logErrors.Count }
   $reportPath = Join-Path $outDir "$runId-verification.json"
   $report | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $reportPath -Encoding utf8
   $report | ConvertTo-Json -Depth 8

@@ -53,6 +53,9 @@
   let computationVideoController = null;
   let protectedMediaListenersBound = false;
   let protectedMediaObserver = null;
+  let reliableImageObserver = null;
+  let reliableImageMutationObserver = null;
+  let reliableImageLifecycleBound = false;
   let scrollEffectsBound = false;
   let homeDepartureArmed = false;
   let homeRestorationFrame = 0;
@@ -80,6 +83,185 @@
     if (className) node.className = className;
     if (text !== undefined && text !== null) node.textContent = text;
     return node;
+  }
+
+  function imageStateContainer(image) {
+    return image.closest("figure, [data-image-container], .image-frame__crop, .visual-slide__image-frame") || image.parentElement;
+  }
+
+  function setImageState(image, state) {
+    const container = imageStateContainer(image);
+    if (!container) return;
+    container.dataset.imageState = state;
+    if (image.width > 0 && image.height > 0) {
+      container.style.setProperty("--image-ratio", `${image.width} / ${image.height}`);
+    }
+  }
+
+  function retryUrl(value, retryCount) {
+    if (!value || /^data:/i.test(value)) return value;
+    try {
+      const url = new URL(value, window.location.href);
+      url.searchParams.set("image-retry", String(retryCount));
+      return url.href;
+    } catch (_) {
+      return value;
+    }
+  }
+
+  function retrySrcset(value, retryCount) {
+    return String(value || "")
+      .split(",")
+      .map(function (candidate) {
+        const parts = candidate.trim().split(/\s+/);
+        if (!parts[0]) return "";
+        parts[0] = retryUrl(parts[0], retryCount);
+        return parts.join(" ");
+      })
+      .filter(Boolean)
+      .join(", ");
+  }
+
+  function logImageFailure(image, retryCount) {
+    if (!/^(?:localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname)) return;
+    const container = imageStateContainer(image);
+    const bounds = container ? container.getBoundingClientRect() : null;
+    const source = image.currentSrc || image.src || image.dataset.src || "";
+    const diagnostics = {
+      originalSource: image.dataset.originalSrc || image.getAttribute("src") || image.dataset.src || "",
+      generatedSource: source,
+      route: window.location.pathname,
+      retryCount: retryCount,
+      observerTriggered: image.dataset.imageObserverTriggered === "true",
+      wrapper: bounds ? { width: Math.round(bounds.width), height: Math.round(bounds.height) } : null,
+      webp: Boolean(document.createElement("canvas").toDataURL("image/webp").startsWith("data:image/webp"))
+    };
+    fetch(source, { cache: "no-store" })
+      .then(function (response) {
+        diagnostics.httpStatus = response.status;
+        console.warn("[image-loading] Asset failed", diagnostics);
+      })
+      .catch(function () {
+        diagnostics.httpStatus = "network-error";
+        console.warn("[image-loading] Asset failed", diagnostics);
+      });
+  }
+
+  function retryImage(image) {
+    const retryCount = Number(image.dataset.imageRetryCount || 0) + 1;
+    image.dataset.imageRetryCount = String(retryCount);
+    logImageFailure(image, retryCount);
+
+    if (retryCount > 2) {
+      setImageState(image, "failed");
+      return;
+    }
+
+    setImageState(image, "loading");
+    const picture = image.closest("picture");
+    if (retryCount === 1) {
+      if (picture) {
+        picture.querySelectorAll("source[srcset]").forEach(function (source) {
+          source.srcset = retrySrcset(source.srcset, retryCount);
+        });
+      }
+      if (image.srcset) image.srcset = retrySrcset(image.srcset, retryCount);
+      image.src = retryUrl(image.dataset.originalSrc || image.src, retryCount);
+      return;
+    }
+
+    if (picture) {
+      picture.querySelectorAll("source[srcset]").forEach(function (source) {
+        source.dataset.failedSrcset = source.srcset;
+        source.removeAttribute("srcset");
+      });
+    }
+    image.removeAttribute("srcset");
+    image.src = retryUrl(image.dataset.fallbackSrc || image.dataset.originalSrc || image.src, retryCount);
+  }
+
+  function promoteImageRequest(image, priority) {
+    if (!image || image.closest("[data-gallery-clone]")) return;
+    image.dataset.imageObserverTriggered = "true";
+    image.loading = "eager";
+    if ("fetchPriority" in image) image.fetchPriority = priority || "auto";
+  }
+
+  function registerReliableImage(image) {
+    if (!(image instanceof HTMLImageElement) || image.closest("[data-gallery-clone]")) return;
+    if (image.dataset.imageLifecycleReady !== "true") {
+      image.dataset.imageLifecycleReady = "true";
+      image.dataset.originalSrc = image.getAttribute("src") || image.dataset.src || "";
+      image.addEventListener("load", function () {
+        image.dataset.imageRetryCount = "0";
+        setImageState(image, "loaded");
+      });
+      image.addEventListener("error", function () { retryImage(image); });
+    }
+
+    const picture = image.closest("picture");
+    const hasSource = Boolean(image.getAttribute("src") || image.getAttribute("srcset") || (picture && picture.querySelector("source[srcset]")));
+    if (!hasSource) return;
+    if (image.complete) {
+      if (image.naturalWidth > 0) setImageState(image, "loaded");
+      else window.setTimeout(function () { retryImage(image); }, 0);
+    } else {
+      setImageState(image, "loading");
+    }
+
+    const slide = image.closest(".shila-gallery__slide");
+    if (slide && slide.getAttribute("aria-hidden") === "true") return;
+    if (image.fetchPriority === "high" || !image.hasAttribute("loading")) {
+      promoteImageRequest(image, image.fetchPriority === "high" ? "high" : "auto");
+    } else if (reliableImageObserver) {
+      reliableImageObserver.observe(image);
+    }
+  }
+
+  function reconcileReliableImages(scope) {
+    elementsWithin(scope || document, "img").forEach(registerReliableImage);
+  }
+
+  function initReliableImages(scope) {
+    if (!reliableImageObserver && "IntersectionObserver" in window) {
+      reliableImageObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          promoteImageRequest(entry.target, "auto");
+          reliableImageObserver.unobserve(entry.target);
+        });
+      }, { rootMargin: "700px 0px", threshold: 0.01 });
+    }
+
+    reconcileReliableImages(scope || document);
+
+    if (!reliableImageMutationObserver && document.documentElement) {
+      reliableImageMutationObserver = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.type === "attributes" && mutation.target instanceof HTMLImageElement) {
+            registerReliableImage(mutation.target);
+          }
+          mutation.addedNodes.forEach(function (node) {
+            if (node.nodeType === Node.ELEMENT_NODE) reconcileReliableImages(node);
+          });
+        });
+      });
+      reliableImageMutationObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["src", "srcset"],
+        childList: true,
+        subtree: true
+      });
+    }
+
+    if (!reliableImageLifecycleBound) {
+      reliableImageLifecycleBound = true;
+      window.addEventListener("pageshow", function () { reconcileReliableImages(document); });
+      window.addEventListener("orientationchange", function () { reconcileReliableImages(document); });
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) reconcileReliableImages(document);
+      });
+    }
   }
 
   function appendEmphasizedText(node, text, emphasis) {
@@ -3491,6 +3673,7 @@
   }
 
   function refreshEnhancements(scope) {
+    initReliableImages(scope || document);
     initProtectedMedia(scope || document);
     initReadingProgress(scope || document);
     initHeadingMotion(scope || document);
@@ -3623,6 +3806,7 @@
   function init() {
     root.classList.remove("no-js");
     root.classList.add("js");
+    initReliableImages(document);
     respectReducedMotion();
     initAmbientMotion();
     initMobileNavigation();
