@@ -28,6 +28,7 @@ $mainScript = Get-Content -Raw -Encoding utf8 -LiteralPath (Join-Path $Root 'ass
 $visualScript = Get-Content -Raw -Encoding utf8 -LiteralPath (Join-Path $Root 'assets\js\visual.js')
 $sitemap = Get-Content -Raw -Encoding utf8 -LiteralPath (Join-Path $Root 'sitemap.xml')
 
+Assert-State ($homepage -match 'visual-slide__image-link' -and $homepage -notmatch 'visual-links|visual-slider__progress|VIEW VISUAL') 'The no-script Visual image link or ribbon cleanup is incorrect.'
 Assert-State ($mainScript -match '/visuals/\$\{encodeURIComponent\(study\.slug') 'The enhanced Visual cards do not build URLs from their own record slug.'
 Assert-State ($visualScript -match 'document\.body\.dataset\.visualSlug' -and $visualScript -match '/visuals/\$\{encodeURIComponent\(visual\.slug\)\}/') 'The Visual detail enhancer does not resolve and link clean Visual slugs.'
 
@@ -42,7 +43,6 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
   Assert-State (Test-Path -LiteralPath $file -PathType Leaf) ("Missing static Visual page: {0}" -f $visual.slug)
   $html = Get-Content -Raw -Encoding utf8 -LiteralPath $file
 
-  Assert-State ($homepage -match [regex]::Escape("href=`"$route`"")) ("Homepage archive link is missing for {0}." -f $visual.slug)
   Assert-State ($sitemap -match [regex]::Escape("<loc>$canonical</loc>")) ("Sitemap route is missing for {0}." -f $visual.slug)
   Assert-State ($html -match [regex]::Escape("<title>$(ConvertTo-HtmlEncoded $title)</title>")) ("Page title is incorrect for {0}." -f $visual.slug)
   Assert-State ($html -match [regex]::Escape("<h1>$(ConvertTo-HtmlEncoded $visual.title)</h1>")) ("Visible heading is incorrect for {0}." -f $visual.slug)

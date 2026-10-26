@@ -14,7 +14,7 @@
 .dabouq-board__inner { padding-block: clamp(24px, 2.6vw, 48px) clamp(56px, 7vw, 120px); }
 
 .dabouq-opening { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(220px, 0.7fr); gap: 8px clamp(28px, 5vw, 100px); padding: 0 1.2% clamp(42px, 5vw, 80px); }
-.dabouq-opening__file { margin: 0 0 5px; color: var(--dabouq-muted); font: 500 0.63rem/1.2 var(--font-mono); letter-spacing: 0.08em; }
+
 .dabouq-opening h1 { margin: 0; font: 600 clamp(1.55rem, 2.25vw, 2.75rem)/0.98 var(--font-mono); letter-spacing: -0.045em; }
 .dabouq-opening h2 { margin: 0; font: 600 clamp(0.88rem, 1.15vw, 1.24rem)/1.16 var(--font-mono); letter-spacing: 0.01em; }
 .dabouq-opening__identity > h2 { margin-top: 8px; }

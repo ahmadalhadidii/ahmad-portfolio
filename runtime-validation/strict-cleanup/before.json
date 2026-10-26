@@ -1,0 +1,588 @@
+[
+  {
+    "width": 1440,
+    "route": "/",
+    "overflow": false,
+    "links": [
+      "#index",
+      "#profile",
+      "#cv",
+      "#work",
+      "#computation",
+      "#visual-studies",
+      "#contact",
+      "https://www.manmatic.institute/",
+      "/projects/shila/",
+      "/projects/manmatic/",
+      "/projects/manmatic/#the-manmatic-field",
+      "/projects/protocol-port/",
+      "/projects/dabouq/",
+      "/projects/concrete-fatigue/"
+    ],
+    "boxes": [
+      {
+        "class": "project-row project-row--shila",
+        "x": 32,
+        "y": 5008.203125,
+        "width": 1376,
+        "height": 554.484375,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "project-row project-row--manmatic manmatic-system",
+        "x": 32,
+        "y": 5562.6875,
+        "width": 1376,
+        "height": 2103.0625,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "project-row__link",
+        "x": 32,
+        "y": 5814.6875,
+        "width": 1376,
+        "height": 432.40625,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "manmatic-category",
+        "x": 32,
+        "y": 6247.09375,
+        "width": 1376,
+        "height": 1418.65625,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "",
+        "x": 615.328125,
+        "y": 6975.109375,
+        "width": 792.65625,
+        "height": 490.78125,
+        "ratio": "auto 1200 / 743",
+        "fit": "contain"
+      },
+      {
+        "class": "project-row project-row--dabouq",
+        "x": 32,
+        "y": 7665.75,
+        "width": 1376,
+        "height": 649.453125,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "project-row project-row--elma",
+        "x": 32,
+        "y": 8315.203125,
+        "width": 1376,
+        "height": 614.703125,
+        "ratio": "auto",
+        "fit": "fill"
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/projects/shila/",
+    "overflow": false,
+    "links": [
+      "/",
+      "/#profile",
+      "/#cv",
+      "/#work",
+      "/#computation",
+      "/#visual-studies",
+      "/#contact",
+      "https://www.manmatic.institute/",
+      "/#work",
+      "/projects/concrete-fatigue/",
+      "/projects/manmatic/"
+    ],
+    "boxes": []
+  },
+  {
+    "width": 1440,
+    "route": "/projects/manmatic/",
+    "overflow": false,
+    "links": [
+      "/",
+      "/#profile",
+      "/#cv",
+      "/#work",
+      "/#contact",
+      "/#work"
+    ],
+    "boxes": [
+      {
+        "class": "mm-board",
+        "x": 0,
+        "y": 60,
+        "width": 1440,
+        "height": 5928.875,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width",
+        "x": 60,
+        "y": 598.59375,
+        "width": 1320,
+        "height": 608.84375,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width",
+        "x": 60,
+        "y": 1207.4375,
+        "width": 1320,
+        "height": 202.84375,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width",
+        "x": 60,
+        "y": 1410.28125,
+        "width": 1320,
+        "height": 370.8125,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width",
+        "x": 60,
+        "y": 1781.09375,
+        "width": 1320,
+        "height": 649.546875,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width",
+        "x": 60,
+        "y": 2430.640625,
+        "width": 1320,
+        "height": 538.875,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-section--chapter mm-width",
+        "x": 60,
+        "y": 2998.3125,
+        "width": 1320,
+        "height": 329.265625,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width",
+        "x": 60,
+        "y": 3327.578125,
+        "width": 1320,
+        "height": 152.328125,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width mm-record mm-record--portrait",
+        "x": 60,
+        "y": 3479.90625,
+        "width": 1320,
+        "height": 547.75,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width mm-record mm-record--landscape",
+        "x": 60,
+        "y": 4027.65625,
+        "width": 1320,
+        "height": 292.890625,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width mm-record mm-record--portrait",
+        "x": 60,
+        "y": 4320.546875,
+        "width": 1320,
+        "height": 373.65625,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width mm-record mm-record--reverse mm-record--landscape",
+        "x": 60,
+        "y": 4694.203125,
+        "width": 1320,
+        "height": 418.671875,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width mm-application",
+        "x": 60,
+        "y": 5141.671875,
+        "width": 1320,
+        "height": 567.3125,
+        "ratio": "auto",
+        "fit": "fill"
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/projects/protocol-port/",
+    "overflow": false,
+    "links": [
+      "/",
+      "/#profile",
+      "/#cv",
+      "/#work",
+      "/#computation",
+      "/#visual-studies",
+      "/#contact",
+      "https://www.manmatic.institute/",
+      "/#work",
+      "/projects/manmatic/"
+    ],
+    "boxes": []
+  },
+  {
+    "width": 1440,
+    "route": "/projects/dabouq/",
+    "overflow": false,
+    "links": [
+      "/",
+      "/#profile",
+      "/#cv",
+      "/#work",
+      "/#computation",
+      "/#visual-studies",
+      "/#contact",
+      "https://www.manmatic.institute/",
+      "/#work",
+      "/projects/manmatic/",
+      "/projects/concrete-fatigue/"
+    ],
+    "boxes": []
+  },
+  {
+    "width": 1440,
+    "route": "/projects/concrete-fatigue/",
+    "overflow": false,
+    "links": [
+      "/",
+      "/#profile",
+      "/#cv",
+      "/#work",
+      "/#computation",
+      "/#visual-studies",
+      "/#contact",
+      "https://www.manmatic.institute/",
+      "/#work",
+      "/projects/dabouq/",
+      "/projects/shila/"
+    ],
+    "boxes": []
+  },
+  {
+    "width": 390,
+    "route": "/",
+    "overflow": false,
+    "links": [
+      "/projects/shila/",
+      "/projects/manmatic/",
+      "/projects/manmatic/#the-manmatic-field",
+      "/projects/protocol-port/",
+      "/projects/dabouq/",
+      "/projects/concrete-fatigue/",
+      "#index",
+      "#profile",
+      "#cv",
+      "#work",
+      "#computation",
+      "#visual-studies",
+      "#contact",
+      "https://www.manmatic.institute/"
+    ],
+    "boxes": [
+      {
+        "class": "project-row project-row--shila",
+        "x": 18,
+        "y": 6620.921875,
+        "width": 354,
+        "height": 636.9375,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "project-row project-row--manmatic manmatic-system",
+        "x": 18,
+        "y": 7257.859375,
+        "width": 354,
+        "height": 2640.578125,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "project-row__link",
+        "x": 18,
+        "y": 7455.859375,
+        "width": 354,
+        "height": 668.921875,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "manmatic-category",
+        "x": 18,
+        "y": 8124.78125,
+        "width": 354,
+        "height": 1773.65625,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "",
+        "x": 18,
+        "y": 9069.640625,
+        "width": 354,
+        "height": 219.171875,
+        "ratio": "auto 1200 / 743",
+        "fit": "contain"
+      },
+      {
+        "class": "project-row project-row--dabouq",
+        "x": 18,
+        "y": 9898.4375,
+        "width": 354,
+        "height": 951.71875,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "project-row project-row--elma",
+        "x": 18,
+        "y": 10850.15625,
+        "width": 354,
+        "height": 631,
+        "ratio": "auto",
+        "fit": "fill"
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "route": "/projects/shila/",
+    "overflow": false,
+    "links": [
+      "/#work",
+      "/projects/concrete-fatigue/",
+      "/projects/manmatic/",
+      "/",
+      "/#profile",
+      "/#cv",
+      "/#work",
+      "/#computation",
+      "/#visual-studies",
+      "/#contact",
+      "https://www.manmatic.institute/"
+    ],
+    "boxes": []
+  },
+  {
+    "width": 390,
+    "route": "/projects/manmatic/",
+    "overflow": false,
+    "links": [
+      "/#work",
+      "/",
+      "/#profile",
+      "/#cv",
+      "/#work",
+      "/#contact"
+    ],
+    "boxes": [
+      {
+        "class": "mm-board",
+        "x": 0,
+        "y": 56,
+        "width": 390,
+        "height": 7586.8125,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width",
+        "x": 15,
+        "y": 724.046875,
+        "width": 360,
+        "height": 315.765625,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width",
+        "x": 15,
+        "y": 1039.8125,
+        "width": 360,
+        "height": 230.15625,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width",
+        "x": 15,
+        "y": 1269.96875,
+        "width": 360,
+        "height": 484.796875,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width",
+        "x": 15,
+        "y": 1754.765625,
+        "width": 360,
+        "height": 845.3125,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width",
+        "x": 15,
+        "y": 2600.078125,
+        "width": 360,
+        "height": 540.1875,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-section--chapter mm-width",
+        "x": 15,
+        "y": 3158.265625,
+        "width": 360,
+        "height": 614.203125,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width",
+        "x": 15,
+        "y": 3772.46875,
+        "width": 360,
+        "height": 101.140625,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width mm-record mm-record--portrait",
+        "x": 15,
+        "y": 3873.609375,
+        "width": 360,
+        "height": 865.515625,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width mm-record mm-record--landscape",
+        "x": 15,
+        "y": 4739.125,
+        "width": 360,
+        "height": 605.953125,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width mm-record mm-record--portrait",
+        "x": 15,
+        "y": 5345.078125,
+        "width": 360,
+        "height": 733.859375,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width mm-record mm-record--reverse mm-record--landscape",
+        "x": 15,
+        "y": 6078.9375,
+        "width": 360,
+        "height": 576.75,
+        "ratio": "auto",
+        "fit": "fill"
+      },
+      {
+        "class": "mm-section mm-width mm-application",
+        "x": 15,
+        "y": 6673.6875,
+        "width": 360,
+        "height": 779.609375,
+        "ratio": "auto",
+        "fit": "fill"
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "route": "/projects/protocol-port/",
+    "overflow": false,
+    "links": [
+      "/#work",
+      "/projects/manmatic/",
+      "/",
+      "/#profile",
+      "/#cv",
+      "/#work",
+      "/#computation",
+      "/#visual-studies",
+      "/#contact",
+      "https://www.manmatic.institute/"
+    ],
+    "boxes": []
+  },
+  {
+    "width": 390,
+    "route": "/projects/dabouq/",
+    "overflow": false,
+    "links": [
+      "/#work",
+      "/projects/manmatic/",
+      "/projects/concrete-fatigue/",
+      "/",
+      "/#profile",
+      "/#cv",
+      "/#work",
+      "/#computation",
+      "/#visual-studies",
+      "/#contact",
+      "https://www.manmatic.institute/"
+    ],
+    "boxes": []
+  },
+  {
+    "width": 390,
+    "route": "/projects/concrete-fatigue/",
+    "overflow": false,
+    "links": [
+      "/#work",
+      "/projects/dabouq/",
+      "/projects/shila/",
+      "/",
+      "/#profile",
+      "/#cv",
+      "/#work",
+      "/#computation",
+      "/#visual-studies",
+      "/#contact",
+      "https://www.manmatic.institute/"
+    ],
+    "boxes": []
+  }
+]

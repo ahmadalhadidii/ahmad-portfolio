@@ -11,13 +11,13 @@
   const animatedScrambles = new WeakSet();
   const dynamicScrambles = new WeakMap();
   const runningHeaderCopy = {
-    index: "PORTFOLIO FIELD / ARCHITECTURE OF ELSEWHERE / 2026",
-    profile: "SUBJECT FILE / AHMAD ALHADIDII / PROFILE",
-    cv: "CURRICULUM VITAE / INDEXED RECORD / 2021–2026",
-    work: "SELECTED WORK / PROJECT ARCHIVE / 01–04",
+    index: "ARCHITECTURE OF ELSEWHERE / 2026",
+    profile: "AHMAD ALHADIDII / PROFILE",
+    cv: "CURRICULUM VITAE / 2021–2026",
+    work: "SELECTED WORK",
     visual: "VISUALS / DRAWING / THOUGHT / VISUAL NARRATIVE",
-    contact: "CONTACT RECORD / AS-SALT, JORDAN / 2026",
-    manmatic: "MANMATIC / HUMAN–MACHINE COLLABORATION / ACTIVE FIELD"
+    contact: "CONTACT / AS-SALT, JORDAN",
+    manmatic: "MANMATIC / HUMAN–MACHINE COLLABORATION"
   };
 
   let imageObserver = null;
@@ -60,6 +60,7 @@
   let homeDepartureArmed = false;
   let homeRestorationFrame = 0;
   let homeRestorationPending = false;
+  let homeRestorationRevision = 0;
   const documentScrollLocks = new Set();
   let savedRootOverflow = "";
   let savedBodyOverflow = "";
@@ -683,8 +684,7 @@
       ".section-heading",
       ".contact__marker",
       ".project-row",
-      ".project-header",
-      ".closing-identity"
+      ".project-header"
     ];
     const containers = elementsWithin(scope || document, selectors.join(","));
     if (!containers.length) return;
@@ -750,11 +750,6 @@
     const progressPrimary = document.getElementById("loader-progress");
     const progressSecondary = document.getElementById("loader-progress-secondary");
     const progressBar = document.getElementById("loader-progress-bar");
-    const state = document.getElementById("loader-state");
-    const phase = document.getElementById("loader-phase");
-    const frame = document.getElementById("loader-frame");
-    const signal = document.getElementById("loader-signal");
-    const activeBinary = document.getElementById("loader-active-binary");
     const announcement = document.getElementById("loader-announcement");
     const loaderName = document.getElementById("loader-name");
     const preview = loader.querySelector("[data-loader-preview]");
@@ -833,40 +828,6 @@
       if (progressPrimary) progressPrimary.textContent = formatted;
       if (progressSecondary) progressSecondary.textContent = formatted;
       if (progressBar) progressBar.style.transform = `scaleX(${ratio.toFixed(3)})`;
-      if (frame) {
-        const frameValue = clamp(Math.ceil(Math.max(currentProgress, 1) / 17), 1, 6);
-        frame.textContent = `${String(frameValue).padStart(2, "0")} / 06`;
-      }
-      if (signal) signal.textContent = (currentProgress * 17.311).toFixed(3).padStart(7, "0");
-      if (activeBinary) {
-        const binaryValue = currentProgress.toString(2).padStart(8, "0");
-        activeBinary.textContent = `${binaryValue} / ${binaryValue.split("").reverse().join("")}`;
-      }
-
-      let stateText = "SYSTEM INITIALIZATION";
-      let phaseText = "ARCHIVE ACCESS";
-      if (currentProgress >= 12) {
-        stateText = "DATA ASSEMBLY";
-        phaseText = "SIGNAL SYNC";
-      }
-      if (currentProgress >= 35) {
-        stateText = "IMAGE BUFFER";
-        phaseText = "VISUAL FIELD";
-      }
-      if (currentProgress >= 68) {
-        stateText = "VISUAL FIELD";
-        phaseText = "FRAME ALIGNMENT";
-      }
-      if (currentProgress >= 92) {
-        stateText = "SIGNAL SYNC";
-        phaseText = "FIELD CHECK";
-      }
-      if (currentProgress >= 100) {
-        stateText = "FIELD ACTIVE";
-        phaseText = "SYSTEM READY";
-      }
-      if (state) state.textContent = stateText;
-      if (phase) phase.textContent = phaseText;
 
       if (!reducedMotion.matches) {
         blackFlashPoints.forEach(function (point) {
@@ -1135,8 +1096,6 @@
 
     showreel.dataset.showreelInitialized = "true";
     const frameReadout = document.getElementById("showreel-frame");
-    const statusReadout = document.getElementById("showreel-status");
-    const signalReadout = document.getElementById("showreel-signal");
     const toggle =
       document.querySelector("[data-showreel-toggle]") ||
       document.getElementById("showreel-toggle");
@@ -1157,9 +1116,6 @@
         const frameValue =
           (slide && slide.dataset.frame) || String(index + 1).padStart(2, "0");
         if (frameReadout) frameReadout.textContent = frameValue;
-        if (signalReadout) {
-          signalReadout.textContent = ((index + 1) * 13.7).toFixed(1).padStart(5, "0");
-        }
       }
     );
 
@@ -1179,33 +1135,23 @@
 
     function updateControls() {
       const playing = isPlaying();
-      const compactViewport = window.matchMedia("(max-width: 820px)").matches;
-      if (statusReadout) {
-        statusReadout.textContent = reducedMotion.matches
-          ? "STATIC / REDUCED MOTION"
-          : playing
-            ? "PLAYING / MUTED"
-            : "PAUSED / MUTED";
-      }
-
       if (!toggle) return;
       if (reducedMotion.matches) {
         toggle.disabled = true;
         toggle.setAttribute("aria-pressed", "true");
-        toggle.textContent = "STATIC FRAME";
-        toggle.setAttribute("aria-label", "Static frame");
+        toggle.textContent = "STILL IMAGE";
+        toggle.setAttribute("aria-label", "Still image");
         return;
       }
 
       toggle.disabled = false;
       toggle.setAttribute("aria-pressed", playing ? "false" : "true");
-      toggle.textContent = playing ? "PAUSE SIGNAL" : "PLAY SIGNAL";
-      toggle.setAttribute("aria-label", playing ? "Pause signal" : "Play signal");
+      toggle.textContent = playing ? "PAUSE" : "PLAY";
+      toggle.setAttribute("aria-label", playing ? "Pause showreel" : "Play showreel");
     }
 
     function activateFallback() {
       videoAttempt += 1;
-      const compactViewport = window.matchMedia("(max-width: 820px)").matches;
       mode = "fallback";
       monitor.classList.remove("is-video-active");
       monitor.classList.add("is-fallback-active");
@@ -1562,7 +1508,6 @@
     const next = slider.querySelector("[data-visual-next]");
     const current = slider.querySelector("[data-visual-current]");
     const total = slider.querySelector("[data-visual-total]");
-    const progress = slider.querySelector("[data-visual-progress]");
     if (!track || !viewport || !previous || !next) return null;
 
     slider.dataset.visualInitialized = "true";
@@ -1581,6 +1526,27 @@
     let touchGesture = false;
     let gestureDirection = "";
     let resizeTimer = 0;
+    let autoplayTimer = 0;
+    let inView = false;
+    let hovered = false;
+    let focused = false;
+    let suspended = false;
+    let suppressClick = false;
+
+    function stopAutoplay() {
+      window.clearTimeout(autoplayTimer);
+      autoplayTimer = 0;
+    }
+
+    function scheduleAutoplay() {
+      stopAutoplay();
+      if (!slider.isConnected || !inView || hovered || focused || suspended ||
+          document.hidden || reducedMotion.matches || pointerId !== null || touchIdentifier !== null) return;
+      autoplayTimer = window.setTimeout(function () {
+        autoplayTimer = 0;
+        setIndex(index + 1, false);
+      }, 45000);
+    }
 
     function addMetadata(list, label, value) {
       if (!value) return;
@@ -1621,16 +1587,12 @@
       addMetadata(metadata, "CATEGORY", study.category);
       addMetadata(metadata, "AI ROLE", study.aiRole || "PENDING VERIFICATION");
       copy.appendChild(metadata);
-      const openButton = element("a", "visual-slide__open", "OPEN VISUAL ");
-      openButton.href = `/visuals/${encodeURIComponent(study.slug || study.id || String(slideIndex + 1))}/`;
-      openButton.setAttribute("aria-label", `Open visual: ${study.title}`);
-      const openIcon = element("span", "", "↗");
-      openIcon.setAttribute("aria-hidden", "true");
-      openButton.appendChild(openIcon);
-      copy.appendChild(openButton);
 
       const figure = element("figure", "visual-slide__media");
       applyMediaClasses(figure, study);
+      const imageLink = element("a", "visual-slide__image-link");
+      imageLink.href = `/visuals/${encodeURIComponent(study.slug || study.id || String(slideIndex + 1))}/`;
+      imageLink.setAttribute("aria-label", study.title);
       const imageFrame = element("div", "visual-slide__image-frame image-reveal");
       imageFrame.setAttribute("data-image-reveal", "");
       imageFrame.dataset.revealVariant = study.reveal || ["horizontal", "split", "vertical"][slideIndex % 3];
@@ -1647,20 +1609,19 @@
         },
         { once: true }
       );
-      const scan = element("span", "visual-slide__scan");
-      scan.setAttribute("aria-hidden", "true");
       if (study.mobileSrc) {
         const picture = element("picture", "responsive-picture");
         const mobileSource = element("source");
         mobileSource.media = "(max-width: 767px)";
         mobileSource.srcset = study.mobileSrc;
         picture.append(mobileSource, image);
-        imageFrame.append(picture, scan);
+        imageFrame.append(picture);
       } else {
-        imageFrame.append(image, scan);
+        imageFrame.append(image);
       }
+      imageLink.appendChild(imageFrame);
       figure.append(
-        imageFrame,
+        imageLink,
         element("figcaption", "", study.caption || "LOCAL ARCHIVE VISUAL")
       );
       slide.append(copy, figure);
@@ -1693,15 +1654,13 @@
 
     function setIndex(nextIndex, announce) {
       const resolved = normalizeIndex(nextIndex);
+      const wrapping = Math.abs(resolved - index) > 1;
+      if (wrapping) track.style.transition = "none";
       if (resolved !== index) signalSwitch();
       index = resolved;
       slider.style.setProperty("--slider-index", String(index));
       slider.style.setProperty("--slider-offset", `${index * -100}%`);
       slider.style.setProperty("--slider-drag", "0px");
-      slider.style.setProperty(
-        "--visual-progress",
-        String(((index + 1) / slides.length).toFixed(4))
-      );
       slides.forEach(function (slide, slideIndex) {
         const active = slideIndex === index;
         slide.classList.toggle("is-active", active);
@@ -1714,11 +1673,13 @@
       });
       if (current) current.textContent = String(index + 1).padStart(2, "0");
       if (total) total.textContent = String(slides.length).padStart(2, "0");
-      if (progress) {
-        progress.style.transform = `scaleX(${((index + 1) / slides.length).toFixed(4)})`;
+      if (wrapping) {
+        void track.offsetWidth;
+        track.style.transition = "";
       }
       if (announce) slider.dataset.visualActive = String(index + 1).padStart(2, "0");
       window.requestAnimationFrame(syncViewportHeight);
+      scheduleAutoplay();
     }
 
     function resetGesture() {
@@ -1736,10 +1697,12 @@
       gestureDirection = "";
       slider.classList.remove("is-dragging");
       slider.style.setProperty("--slider-drag", "0px");
+      scheduleAutoplay();
     }
 
     function completeGesture() {
       const distance = lastX - startX;
+      suppressClick = gestureDirection === "horizontal" && Math.abs(distance) > 7;
       const elapsed = Math.max(performance.now() - startedAt, 1);
       const dragScale = touchGesture ? 1.28 : 1;
       const recentVelocity = performance.now() - lastSampleAt < 110 ? velocityX : 0;
@@ -1768,6 +1731,8 @@
     }
 
     function beginGesture(clientX, clientY, isTouchGesture) {
+      stopAutoplay();
+      suppressClick = false;
       startX = clientX;
       startY = clientY;
       lastX = clientX;
@@ -1831,7 +1796,8 @@
     });
     viewport.addEventListener("pointerdown", function (event) {
       if (event.button !== undefined && event.button !== 0) return;
-      if (event.target.closest("a, button, input, select, textarea")) return;
+      if (event.target.closest("button, input, select, textarea") ||
+          (event.target.closest("a") && !event.target.closest(".visual-slide__image-link"))) return;
       if (
         event.pointerType === "touch" &&
         window.matchMedia("(max-width: 1366px)").matches
@@ -1851,7 +1817,8 @@
     viewport.addEventListener("touchstart", function (event) {
       if (!window.matchMedia("(max-width: 1366px)").matches) return;
       if (touchIdentifier !== null || pointerId !== null || !event.changedTouches.length) return;
-      if (event.target.closest("a, button, input, select, textarea")) return;
+      if (event.target.closest("button, input, select, textarea") ||
+          (event.target.closest("a") && !event.target.closest(".visual-slide__image-link"))) return;
       const touch = event.changedTouches[0];
       touchIdentifier = touch.identifier;
       beginGesture(touch.clientX, touch.clientY, true);
@@ -1905,6 +1872,43 @@
 
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(syncViewportHeight);
+    }
+
+    viewport.addEventListener("click", function (event) {
+      if (suppressClick && event.detail !== 0) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      suppressClick = false;
+    }, true);
+    slider.addEventListener("mouseenter", function () { hovered = true; stopAutoplay(); });
+    slider.addEventListener("mouseleave", function () { hovered = false; scheduleAutoplay(); });
+    slider.addEventListener("focusin", function () { focused = true; stopAutoplay(); });
+    slider.addEventListener("focusout", function (event) {
+      focused = slider.contains(event.relatedTarget);
+      scheduleAutoplay();
+    });
+    document.addEventListener("visibilitychange", scheduleAutoplay);
+    reducedMotion.addEventListener("change", scheduleAutoplay);
+    window.addEventListener("pagehide", function () { suspended = true; stopAutoplay(); });
+    window.addEventListener("pageshow", function () { suspended = false; scheduleAutoplay(); });
+    if ("IntersectionObserver" in window) {
+      const activityObserver = new IntersectionObserver(function (entries) {
+        inView = entries[0].isIntersecting;
+        scheduleAutoplay();
+      });
+      activityObserver.observe(slider);
+      const removalObserver = new MutationObserver(function () {
+        if (slider.isConnected) return;
+        stopAutoplay();
+        activityObserver.disconnect();
+        removalObserver.disconnect();
+        document.removeEventListener("visibilitychange", scheduleAutoplay);
+        reducedMotion.removeEventListener("change", scheduleAutoplay);
+      });
+      removalObserver.observe(document.body, { childList: true, subtree: true });
+    } else {
+      inView = true;
     }
 
     setIndex(0, false);
@@ -2426,7 +2430,9 @@
     return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
   }
 
-  function currentReturnCandidate() {
+  function currentReturnCandidate(historyReturn) {
+    if (window.location.hash && navigationType() !== "back_forward" &&
+        !historyReturn) return null;
     const state = safeSessionRead(projectReturnStateKey);
     const intent = safeSessionRead(projectReturnIntentKey);
     const fallback = safeSessionRead(projectFallbackKey);
@@ -2460,12 +2466,12 @@
     return null;
   }
 
-  function restoreHomepageProjectPosition() {
+  function restoreHomepageProjectPosition(historyReturn) {
     if (!document.body.classList.contains("home-page") || homeRestorationPending) {
       return false;
     }
 
-    const candidate = currentReturnCandidate();
+    const candidate = currentReturnCandidate(historyReturn);
     if (!candidate) {
       root.classList.remove("route-restoration-pending", "route-restoring");
       delete root.dataset.routeRestoration;
@@ -2483,6 +2489,7 @@
       return false;
     }
 
+    const restorationToken = ++homeRestorationRevision;
     homeRestorationPending = true;
     root.classList.add("route-restoration-pending");
     root.dataset.routeRestoration = "pending";
@@ -2492,8 +2499,10 @@
       : Promise.resolve();
 
     fontsReady.then(function () {
+      if (restorationToken !== homeRestorationRevision) return;
       homeRestorationFrame = window.requestAnimationFrame(function () {
         homeRestorationFrame = 0;
+        if (restorationToken !== homeRestorationRevision) return;
         root.classList.add("route-restoring");
 
         const previousRootBehavior = root.style.scrollBehavior;
@@ -2623,7 +2632,7 @@
     } catch (error) {}
 
     const isHome = document.body.classList.contains("home-page");
-    if (!isHome) prepareProjectReturnContext();
+    if (!isHome && isProjectRoute(window.location.pathname)) prepareProjectReturnContext();
 
     document.addEventListener("click", function (event) {
       if (
@@ -2648,12 +2657,25 @@
       }
       if (destination.origin !== window.location.origin) return;
 
+      if (isHomeRoute(destination.pathname) && (destination.hash ||
+          anchor.closest(".site-nav") || anchor.classList.contains("site-header__name"))) {
+        safeSessionRemove(projectReturnIntentKey);
+        homeRestorationRevision += 1;
+        if (homeRestorationFrame) window.cancelAnimationFrame(homeRestorationFrame);
+        homeRestorationFrame = 0;
+        homeRestorationPending = false;
+        root.classList.remove("route-restoration-pending", "route-restoring");
+        delete root.dataset.routeRestoration;
+        return;
+      }
+
       if (isHome && isProjectRoute(destination.pathname)) {
         rememberHomepageProject(destination);
         return;
       }
 
-      if (!isHome && isHomeRoute(destination.pathname)) {
+      if (!isHome && isHomeRoute(destination.pathname) && !destination.hash &&
+          isProjectRoute(window.location.pathname)) {
         const activeState = safeSessionRead(projectReturnStateKey);
         const currentPath = normalizedRoute(window.location.pathname);
         if (activeState && activeState.token) {
@@ -2663,14 +2685,14 @@
             projectPath: currentPath,
             savedAt: Date.now()
           });
-          anchor.setAttribute("href", "/");
+
         } else {
           safeSessionWrite(projectReturnIntentKey, {
             kind: "fallback",
             projectPath: currentPath,
             savedAt: Date.now()
           });
-          anchor.setAttribute("href", "/#" + projectHomeAnchor(currentPath));
+
         }
       }
     }, true);
@@ -2690,7 +2712,7 @@
         homeDepartureArmed = false;
       });
       window.addEventListener("pageshow", function (event) {
-        if (event.persisted) restoreHomepageProjectPosition();
+        if (event.persisted) restoreHomepageProjectPosition(true);
       });
     }
 
@@ -3487,7 +3509,8 @@
       rail.addEventListener("touchstart", function (event) {
         if (!window.matchMedia("(max-width: 1366px)").matches) return;
         if (touchIdentifier !== null || pointerId !== null || !event.changedTouches.length) return;
-        if (event.target.closest("a, button, input, select, textarea")) return;
+        if (event.target.closest("button, input, select, textarea") ||
+          (event.target.closest("a") && !event.target.closest(".visual-slide__image-link"))) return;
         const touch = event.changedTouches[0];
         touchIdentifier = touch.identifier;
         beginRailGesture(touch.clientX, touch.clientY, true);
@@ -3694,52 +3717,78 @@
   }
 
   function stabilizeInitialHashPosition() {
-    if (!window.location.hash) return;
-    const alignmentTimers = new Set();
+    let target = null;
+    let pendingFrame = 0;
+    let observing = false;
+    const observer = "ResizeObserver" in window ? new ResizeObserver(align) : null;
 
-    function alignHashTarget() {
-      const id = decodeURIComponent(window.location.hash.slice(1));
-      const target = document.getElementById(id);
-      if (!target) return;
-      window.requestAnimationFrame(function () {
-        window.requestAnimationFrame(function () {
-          const previousBehavior = document.documentElement.style.scrollBehavior;
-          document.documentElement.style.scrollBehavior = "auto";
-          const header = document.getElementById("site-header");
-          const headerOffset = header ? header.getBoundingClientRect().height + 14 : 74;
-          window.scrollTo(0, target.getBoundingClientRect().top + window.scrollY - headerOffset);
-          document.documentElement.style.scrollBehavior = previousBehavior;
-        });
+    function align() {
+      if (!target || homeRestorationPending) return;
+      window.cancelAnimationFrame(pendingFrame);
+      pendingFrame = window.requestAnimationFrame(function () {
+        pendingFrame = 0;
+        if (!target || homeRestorationPending) return;
+        const header = document.getElementById("site-header");
+        const offset = header ? header.getBoundingClientRect().height + 14 : 74;
+        const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
+        if (Math.abs(window.scrollY - top) < 1) return;
+        const previousBehavior = root.style.scrollBehavior;
+        root.style.scrollBehavior = "auto";
+        window.scrollTo({ top: top, left: 0, behavior: "auto" });
+        root.style.scrollBehavior = previousBehavior;
       });
+    }
+
+    function stop() {
+      target = null;
+      window.cancelAnimationFrame(pendingFrame);
+      pendingFrame = 0;
+      if (observer) observer.disconnect();
+      observing = false;
     }
 
     function settleHashTarget() {
-      alignmentTimers.forEach(function (timer) {
-        window.clearTimeout(timer);
-      });
-      alignmentTimers.clear();
-      alignHashTarget();
-      [180, 820, 1800].forEach(function (delay) {
-        const timer = window.setTimeout(function () {
-          alignmentTimers.delete(timer);
-          alignHashTarget();
-        }, delay);
-        alignmentTimers.add(timer);
-      });
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(alignHashTarget);
+      if (homeRestorationPending || !window.location.hash) return;
+      let id;
+      try { id = decodeURIComponent(window.location.hash.slice(1)); } catch (error) { return; }
+      target = document.getElementById(id);
+      if (!target) return;
+      if (observer && !observing) {
+        observer.observe(document.body);
+        document.querySelectorAll("main > section").forEach(function (section) { observer.observe(section); });
+        observing = true;
       }
+      align();
     }
 
-    if (document.readyState === "complete") {
-      settleHashTarget();
-    } else {
-      window.addEventListener("load", settleHashTarget, { once: true });
-    }
-    window.addEventListener("hashchange", settleHashTarget);
-    window.addEventListener("pageshow", function (event) {
-      if (event.persisted) settleHashTarget();
+    // Layout changes from fonts, deferred sections and images can move an anchor.
+    // Follow those changes until the user deliberately starts scrolling again.
+    ["wheel", "touchstart", "pointerdown"].forEach(function (type) {
+      window.addEventListener(type, stop, { passive: true });
     });
+    window.addEventListener("focusin", function (event) {
+      if (event.target.matches("a, button, input, select, textarea") && !event.target.closest(".site-nav")) stop();
+    });
+    window.addEventListener("keydown", function (event) {
+      if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(event.key)) stop();
+    });
+    window.addEventListener("hashchange", settleHashTarget);
+    document.addEventListener("click", function (event) {
+      const link = event.target.closest("a[href]");
+      if (!link || event.defaultPrevented || event.button !== 0 ||
+          event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      const destination = new URL(link.href, window.location.href);
+      if (destination.origin === location.origin && destination.pathname === location.pathname && destination.hash) {
+        window.requestAnimationFrame(settleHashTarget);
+      }
+    });
+    window.addEventListener("load", settleHashTarget, { once: true });
+    window.addEventListener("pageshow", function (event) {
+      if (event.persisted && !homeRestorationPending && !currentReturnCandidate()) settleHashTarget();
+    });
+    window.addEventListener("pagehide", stop);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(align);
+    settleHashTarget();
   }
 
   function initDeferredEnhancements() {
@@ -3811,9 +3860,9 @@
     initAmbientMotion();
     initMobileNavigation();
     normalizeProjectArchiveOrder();
-    const restoringProjectPosition = initProjectScrollRestoration();
+    initProjectScrollRestoration();
     initManmaticRouteTransitions();
-    if (!restoringProjectPosition) stabilizeInitialHashPosition();
+    stabilizeInitialHashPosition();
     hydrateContentMedia();
     initRunningHeader();
     initProtectedMedia(document);

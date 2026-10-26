@@ -194,7 +194,7 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
           <a href="/#computation"><span data-scramble>COMPUTATION</span></a>
           <a class="is-active" href="/#visual-studies" aria-current="location"><span data-scramble>VISUALS</span></a>
           <a href="/#contact"><span data-scramble>CONTACT</span></a>
-          <a class="site-nav__external" href="https://www.manmatic.institute/" target="_blank" rel="noopener noreferrer" aria-label="Open the ManMaTIC Institute field website in a new tab">MANMATIC FIELD <span aria-hidden="true">↗</span></a>
+          <a class="site-nav__external" href="https://www.manmatic.institute/" target="_blank" rel="noopener noreferrer" aria-label="Open the ManMaTIC Institute field website in a new tab">MANMATIC FIELD</a>
         </nav>
       </div>
     </header>
@@ -229,7 +229,7 @@ for ($index = 0; $index -lt $visuals.Count; $index++) {
           <nav class="visual-record__navigation" aria-label="Visual narrative navigation">
             <a class="visual-record__previous" href="/visuals/$(ConvertTo-HtmlEncoded $previous.slug)/" rel="prev" aria-label="Previous visual: $(ConvertTo-HtmlEncoded $previous.title)"><span>PREVIOUS VISUAL</span><strong>$(ConvertTo-HtmlEncoded $previous.title)</strong></a>
             <a class="visual-record__next" href="/visuals/$(ConvertTo-HtmlEncoded $next.slug)/" rel="next" aria-label="Next visual: $(ConvertTo-HtmlEncoded $next.title)"><span>NEXT VISUAL</span><strong>$(ConvertTo-HtmlEncoded $next.title)</strong></a>
-            <a class="visual-record__all" href="/#visual-studies">ALL VISUALS ↗</a>
+            <a class="visual-record__all" href="/#visual-studies">ALL VISUALS</a>
           </nav>
         </section>
       </article>

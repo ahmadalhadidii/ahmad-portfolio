@@ -54,14 +54,6 @@
     return normalize(project && project.theme) === "manmatic" ? "manmatic" : "light";
   }
 
-  function projectFileNumber(project) {
-    const value = String((project && project.number) || "").trim();
-    const branch = value.match(/^(\d+)\.([a-z])$/i);
-    if (branch) return `${branch[1].padStart(3, "0")}.${branch[2].toUpperCase()}`;
-    const numeric = Number.parseInt(value, 10);
-    return Number.isFinite(numeric) ? String(numeric).padStart(2, "0") : value;
-  }
-
   function setTheme(project) {
     const theme = projectTheme(project);
     const themeColor = document.querySelector('meta[name="theme-color"]');
@@ -80,10 +72,10 @@
       return;
     }
     if (projectTheme(project) === "manmatic") {
-      target.textContent = "MANMATIC / HUMAN–MACHINE COLLABORATION / ACTIVE FIELD";
+      target.textContent = "MANMATIC / HUMAN–MACHINE COLLABORATION";
       return;
     }
-    target.textContent = `PROJECT FILE ${projectFileNumber(project)} / ${archiveTitle(project)} / ${project.year || "ARCHIVE"}`;
+    target.textContent = `${archiveTitle(project)} / ${project.year || ""}`;
   }
 
   function addMediaClasses(node, value) {
@@ -195,7 +187,7 @@
     const eyebrow = element(
       "p",
       "project-header__eyebrow",
-      `PROJECT FILE ${projectFileNumber(project)} / ${project.category}`
+      project.category
     );
     eyebrow.setAttribute("data-scramble", "");
     const title = element("h1");
@@ -222,7 +214,7 @@
       const systemNav = element("div", "project-header__system-nav");
       systemNav.appendChild(element("p", "", project.systemMarker));
       if (hasText(project.systemBack)) {
-        const back = element("a", "", "BACK TO MANMATIC SYSTEM ←");
+        const back = element("a", "", "BACK TO MANMATIC");
         back.href = project.systemBack;
         systemNav.appendChild(back);
       }
@@ -239,7 +231,7 @@
       header.appendChild(status);
     }
     if (projectTheme(project) === "manmatic" && project.slug !== "protocol-port") {
-      const fieldLink = element("a", "project-header__field-link", "MANMATIC FIELD ↗");
+      const fieldLink = element("a", "project-header__field-link", "MANMATIC FIELD");
       fieldLink.href = "https://www.manmatic.institute/";
       fieldLink.target = "_blank";
       fieldLink.rel = "noopener noreferrer";
@@ -463,14 +455,12 @@
     section.setAttribute("aria-label", "Project navigation");
 
     const top = element("div", "project-navigation__top");
-    const back = element("a", "", "BACK TO WORK ←");
+    const back = element("a", "", "WORK INDEX");
     back.href = "/#work";
-    const indexLink = element("a", "", "PORTFOLIO INDEX ↑");
-    indexLink.href = "/";
-    top.append(back, indexLink);
+    top.appendChild(back);
 
     if (currentIndex < 0) {
-      const systemLink = element("a", "project-navigation__link", "BACK TO MANMATIC METHODOLOGY ←");
+      const systemLink = element("a", "project-navigation__link", "BACK TO MANMATIC");
       systemLink.href = "/projects/manmatic/";
       section.append(top, systemLink);
       return section;
@@ -482,8 +472,8 @@
     previousLink.rel = "prev";
     previousLink.setAttribute("aria-label", `Previous project, ${navigationTitle(previous)}`);
     previousLink.append(
-      element("p", "project-navigation__direction", `PREVIOUS / ${previous.number}`),
-      element("p", "project-navigation__title", navigationTitle(previous))
+      element("p", "project-navigation__direction", "PREVIOUS PROJECT"),
+      element("p", "project-navigation__title", archiveTitle(previous))
     );
 
     const nextLink = element("a", "project-navigation__link");
@@ -491,8 +481,8 @@
     nextLink.rel = "next";
     nextLink.setAttribute("aria-label", `Next project, ${navigationTitle(next)}`);
     nextLink.append(
-      element("p", "project-navigation__direction", `NEXT / ${next.number}`),
-      element("p", "project-navigation__title", navigationTitle(next))
+      element("p", "project-navigation__direction", "NEXT PROJECT"),
+      element("p", "project-navigation__title", archiveTitle(next))
     );
     grid.append(previousLink, nextLink);
     section.append(top, grid);

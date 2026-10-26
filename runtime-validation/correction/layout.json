@@ -1,0 +1,306 @@
+[
+  {
+    "width": 1440,
+    "phase": "before",
+    "boxes": [
+      {
+        "sel": "#manmatic-project",
+        "x": 32,
+        "w": 1376,
+        "h": 2103.0625,
+        "top": 5562.6875
+      },
+      {
+        "sel": ".project-row--manmatic .project-row__link",
+        "x": 32,
+        "w": 1376,
+        "h": 432.40625,
+        "top": 5814.6875
+      },
+      {
+        "sel": ".manmatic-category",
+        "x": 32,
+        "w": 1376,
+        "h": 1418.65625,
+        "top": 6247.09375
+      },
+      {
+        "sel": ".manmatic-branch",
+        "x": 32,
+        "w": 1376,
+        "h": 536.015625,
+        "top": 6268.09375
+      },
+      {
+        "sel": ".manmatic-branch figure",
+        "x": 615.328125,
+        "w": 792.65625,
+        "h": 594.640625,
+        "top": 6975.109375
+      },
+      {
+        "sel": ".manmatic-field-window",
+        "x": 615.328125,
+        "w": 792.65625,
+        "h": 478.734375,
+        "top": 6268.09375
+      },
+      {
+        "sel": ".manmatic-threshold",
+        "x": 0,
+        "w": 1440,
+        "h": 252,
+        "top": 5562.6875
+      },
+      {
+        "sel": ".visual-slider__viewport",
+        "x": 32,
+        "w": 1376,
+        "h": 572,
+        "top": 9986.5625
+      },
+      {
+        "sel": ".visual-slide.is-active .visual-slide__media",
+        "x": 593,
+        "w": 815,
+        "h": 461.890625,
+        "top": 9986.5625
+      },
+      {
+        "sel": ".visual-slide.is-active .visual-slide__image-frame",
+        "x": 593,
+        "w": 815,
+        "h": 439.078125,
+        "top": 9986.5625
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "phase": "after",
+    "boxes": [
+      {
+        "sel": "#manmatic-project",
+        "x": 32,
+        "w": 1376,
+        "h": 2103.0625,
+        "top": 5562.6875
+      },
+      {
+        "sel": ".project-row--manmatic .project-row__link",
+        "x": 32,
+        "w": 1376,
+        "h": 432.40625,
+        "top": 5814.6875
+      },
+      {
+        "sel": ".manmatic-category",
+        "x": 32,
+        "w": 1376,
+        "h": 1418.65625,
+        "top": 6247.09375
+      },
+      {
+        "sel": ".manmatic-branch",
+        "x": 32,
+        "w": 1376,
+        "h": 536.015625,
+        "top": 6268.09375
+      },
+      {
+        "sel": ".manmatic-branch figure",
+        "x": 615.328125,
+        "w": 792.65625,
+        "h": 594.640625,
+        "top": 6975.109375
+      },
+      {
+        "sel": ".manmatic-field-window",
+        "x": 615.328125,
+        "w": 792.65625,
+        "h": 478.734375,
+        "top": 6268.09375
+      },
+      {
+        "sel": ".manmatic-threshold",
+        "x": 0,
+        "w": 1440,
+        "h": 252,
+        "top": 5562.6875
+      },
+      {
+        "sel": ".visual-slider__viewport",
+        "x": 32,
+        "w": 1376,
+        "h": 572,
+        "top": 9986.5625
+      },
+      {
+        "sel": ".visual-slide.is-active .visual-slide__media",
+        "x": 593,
+        "w": 815,
+        "h": 461.890625,
+        "top": 9986.5625
+      },
+      {
+        "sel": ".visual-slide.is-active .visual-slide__image-frame",
+        "x": 609.2999877929688,
+        "w": 815.0000610351562,
+        "h": 439.078125,
+        "top": 9986.5625
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "phase": "before",
+    "boxes": [
+      {
+        "sel": "#manmatic-project",
+        "x": 18,
+        "w": 354,
+        "h": 2640.578125,
+        "top": 7257.859375
+      },
+      {
+        "sel": ".project-row--manmatic .project-row__link",
+        "x": 18,
+        "w": 354,
+        "h": 668.921875,
+        "top": 7455.859375
+      },
+      {
+        "sel": ".manmatic-category",
+        "x": 18,
+        "w": 354,
+        "h": 1773.65625,
+        "top": 8124.78125
+      },
+      {
+        "sel": ".manmatic-branch",
+        "x": 18,
+        "w": 354,
+        "h": 792.96875,
+        "top": 8145.78125
+      },
+      {
+        "sel": ".manmatic-branch figure",
+        "x": 18,
+        "w": 354,
+        "h": 240.5625,
+        "top": 9069.640625
+      },
+      {
+        "sel": ".manmatic-field-window",
+        "x": 18,
+        "w": 354,
+        "h": 232,
+        "top": 8191.671875
+      },
+      {
+        "sel": ".manmatic-threshold",
+        "x": 0,
+        "w": 390,
+        "h": 198,
+        "top": 7257.859375
+      },
+      {
+        "sel": ".visual-slider__viewport",
+        "x": 18,
+        "w": 354,
+        "h": 792,
+        "top": 12291.84375
+      },
+      {
+        "sel": ".visual-slide.is-active .visual-slide__media",
+        "x": 18,
+        "w": 354,
+        "h": 213.515625,
+        "top": 12291.84375
+      },
+      {
+        "sel": ".visual-slide.is-active .visual-slide__image-frame",
+        "x": 25.079999923706055,
+        "w": 354,
+        "h": 190.703125,
+        "top": 12291.84375
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "phase": "after",
+    "boxes": [
+      {
+        "sel": "#manmatic-project",
+        "x": 18,
+        "w": 354,
+        "h": 2640.578125,
+        "top": 7257.859375
+      },
+      {
+        "sel": ".project-row--manmatic .project-row__link",
+        "x": 18,
+        "w": 354,
+        "h": 668.921875,
+        "top": 7455.859375
+      },
+      {
+        "sel": ".manmatic-category",
+        "x": 18,
+        "w": 354,
+        "h": 1773.65625,
+        "top": 8124.78125
+      },
+      {
+        "sel": ".manmatic-branch",
+        "x": 18,
+        "w": 354,
+        "h": 792.96875,
+        "top": 8145.78125
+      },
+      {
+        "sel": ".manmatic-branch figure",
+        "x": 18,
+        "w": 354,
+        "h": 240.5625,
+        "top": 9069.640625
+      },
+      {
+        "sel": ".manmatic-field-window",
+        "x": 18,
+        "w": 354,
+        "h": 232,
+        "top": 8191.671875
+      },
+      {
+        "sel": ".manmatic-threshold",
+        "x": 0,
+        "w": 390,
+        "h": 198,
+        "top": 7257.859375
+      },
+      {
+        "sel": ".visual-slider__viewport",
+        "x": 18,
+        "w": 354,
+        "h": 726,
+        "top": 12291.84375
+      },
+      {
+        "sel": ".visual-slide.is-active .visual-slide__media",
+        "x": 18,
+        "w": 354,
+        "h": 213.515625,
+        "top": 12291.84375
+      },
+      {
+        "sel": ".visual-slide.is-active .visual-slide__image-frame",
+        "x": 25.079999923706055,
+        "w": 354,
+        "h": 190.703125,
+        "top": 12291.84375
+      }
+    ]
+  }
+]

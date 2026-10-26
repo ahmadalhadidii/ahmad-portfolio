@@ -217,7 +217,7 @@
     const navigation = element("nav", "visual-record__navigation");
     navigation.setAttribute("aria-label", "Visual narrative navigation");
 
-    const indexLink = element("a", "visual-record__all", "ALL VISUALS ↗");
+    const indexLink = element("a", "visual-record__all", "ALL VISUALS");
     indexLink.href = "/#visual-studies";
 
     const previousLink = element("a", "visual-record__previous");
@@ -243,7 +243,7 @@
       element("h1", "", "VISUAL NOT FOUND"),
       element("p", "", "The requested visual record is unavailable or the link is incomplete.")
     );
-    const link = element("a", "", "RETURN TO VISUALS ↗");
+    const link = element("a", "", "RETURN TO VISUALS");
     link.href = "/#visual-studies";
     error.appendChild(link);
     container.replaceChildren(error);

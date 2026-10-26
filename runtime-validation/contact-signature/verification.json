@@ -1,0 +1,587 @@
+{
+  "passed": true,
+  "all40FramesFit": true,
+  "gifUnchanged": true,
+  "results": [
+    {
+      "width": 1440,
+      "phase": "before",
+      "heading": {
+        "x": 32,
+        "y": 139.296875,
+        "width": 185.640625,
+        "height": 42.625,
+        "right": 217.640625,
+        "bottom": 181.921875
+      },
+      "slot": {
+        "x": 32,
+        "y": 246.71875,
+        "width": 1376,
+        "height": 260,
+        "right": 1408,
+        "bottom": 506.71875
+      },
+      "image": {
+        "x": 32,
+        "y": 246.71875,
+        "width": 1100,
+        "height": 260,
+        "right": 1132,
+        "bottom": 506.71875
+      },
+      "paragraph": {
+        "x": 32,
+        "y": 538.390625,
+        "width": 1120,
+        "height": 83.625,
+        "right": 1152,
+        "bottom": 622.015625
+      },
+      "paragraphStyle": {
+        "font": "31.68px / 41.8176px \"IBM Plex Sans\", sans-serif",
+        "color": "rgb(17, 17, 17)",
+        "marginTop": "31.68px",
+        "textAlign": "justify"
+      },
+      "links": [
+        {
+          "text": "EMAIL 01ahmadalhadidii@manmatic.institute",
+          "href": "mailto:ahmadalhadidii@manmatic.institute"
+        },
+        {
+          "text": "EMAIL 02alhadidiahamd@gmail.com",
+          "href": "mailto:alhadidiahamd@gmail.com"
+        },
+        {
+          "text": "CALL",
+          "href": "tel:+962790652697"
+        },
+        {
+          "text": "WHATSAPP",
+          "href": "https://wa.me/962790652697"
+        },
+        {
+          "text": "LINKEDINAhmad Alhadidii",
+          "href": "https://www.linkedin.com/in/ahmad-alhadidii-97b796290/"
+        },
+        {
+          "text": "INSTAGRAM@ahmad.alhadidii",
+          "href": "https://www.instagram.com/ahmad.alhadidii/"
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "phase": "after",
+      "heading": {
+        "x": 32,
+        "y": 139.296875,
+        "width": 185.640625,
+        "height": 42.625,
+        "right": 217.640625,
+        "bottom": 181.921875
+      },
+      "slot": {
+        "x": 32,
+        "y": 205.921875,
+        "width": 425,
+        "height": 64.5625,
+        "right": 457,
+        "bottom": 270.484375
+      },
+      "image": {
+        "x": -93.03160095214844,
+        "y": 152.5085906982422,
+        "width": 645.703125,
+        "height": 152.60939025878906,
+        "right": 552.6715240478516,
+        "bottom": 305.11798095703125
+      },
+      "paragraph": {
+        "x": 32,
+        "y": 302.15625,
+        "width": 1120,
+        "height": 83.625,
+        "right": 1152,
+        "bottom": 385.78125
+      },
+      "paragraphStyle": {
+        "font": "31.68px / 41.8176px \"IBM Plex Sans\", sans-serif",
+        "color": "rgb(17, 17, 17)",
+        "marginTop": "31.68px",
+        "textAlign": "justify"
+      },
+      "links": [
+        {
+          "text": "EMAIL 01ahmadalhadidii@manmatic.institute",
+          "href": "mailto:ahmadalhadidii@manmatic.institute"
+        },
+        {
+          "text": "EMAIL 02alhadidiahamd@gmail.com",
+          "href": "mailto:alhadidiahamd@gmail.com"
+        },
+        {
+          "text": "CALL",
+          "href": "tel:+962790652697"
+        },
+        {
+          "text": "WHATSAPP",
+          "href": "https://wa.me/962790652697"
+        },
+        {
+          "text": "LINKEDINAhmad Alhadidii",
+          "href": "https://www.linkedin.com/in/ahmad-alhadidii-97b796290/"
+        },
+        {
+          "text": "INSTAGRAM@ahmad.alhadidii",
+          "href": "https://www.instagram.com/ahmad.alhadidii/"
+        }
+      ],
+      "overflow": false,
+      "visibleInk": {
+        "left": 32.58700700239703,
+        "top": 206.51285206187856,
+        "width": 423.8160511363637,
+        "height": 63.39630681818182,
+        "bottom": 269.9091588800604
+      }
+    },
+    {
+      "width": 820,
+      "phase": "before",
+      "heading": {
+        "x": 24,
+        "y": 118.515625,
+        "width": 108.046875,
+        "height": 24.8125,
+        "right": 132.046875,
+        "bottom": 143.328125
+      },
+      "slot": {
+        "x": 24,
+        "y": 191.328125,
+        "width": 772,
+        "height": 182.46875,
+        "right": 796,
+        "bottom": 373.796875
+      },
+      "image": {
+        "x": 24,
+        "y": 191.328125,
+        "width": 772,
+        "height": 182.46875,
+        "right": 796,
+        "bottom": 373.796875
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 397.796875,
+        "width": 772,
+        "height": 61.25,
+        "right": 796,
+        "bottom": 459.046875
+      },
+      "paragraphStyle": {
+        "font": "23.2px / 30.624px \"IBM Plex Sans\", sans-serif",
+        "color": "rgb(17, 17, 17)",
+        "marginTop": "24px",
+        "textAlign": "justify"
+      },
+      "links": [
+        {
+          "text": "EMAIL 01ahmadalhadidii@manmatic.institute",
+          "href": "mailto:ahmadalhadidii@manmatic.institute"
+        },
+        {
+          "text": "EMAIL 02alhadidiahamd@gmail.com",
+          "href": "mailto:alhadidiahamd@gmail.com"
+        },
+        {
+          "text": "CALL",
+          "href": "tel:+962790652697"
+        },
+        {
+          "text": "WHATSAPP",
+          "href": "https://wa.me/962790652697"
+        },
+        {
+          "text": "LINKEDINAhmad Alhadidii",
+          "href": "https://www.linkedin.com/in/ahmad-alhadidii-97b796290/"
+        },
+        {
+          "text": "INSTAGRAM@ahmad.alhadidii",
+          "href": "https://www.instagram.com/ahmad.alhadidii/"
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "width": 820,
+      "phase": "after",
+      "heading": {
+        "x": 24,
+        "y": 118.515625,
+        "width": 108.046875,
+        "height": 24.8125,
+        "right": 132.046875,
+        "bottom": 143.328125
+      },
+      "slot": {
+        "x": 24,
+        "y": 167.328125,
+        "width": 425,
+        "height": 64.5625,
+        "right": 449,
+        "bottom": 231.890625
+      },
+      "image": {
+        "x": -101.03160095214844,
+        "y": 113.91484069824219,
+        "width": 645.703125,
+        "height": 152.60939025878906,
+        "right": 544.6715240478516,
+        "bottom": 266.52423095703125
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 255.890625,
+        "width": 772,
+        "height": 61.25,
+        "right": 796,
+        "bottom": 317.140625
+      },
+      "paragraphStyle": {
+        "font": "23.2px / 30.624px \"IBM Plex Sans\", sans-serif",
+        "color": "rgb(17, 17, 17)",
+        "marginTop": "24px",
+        "textAlign": "justify"
+      },
+      "links": [
+        {
+          "text": "EMAIL 01ahmadalhadidii@manmatic.institute",
+          "href": "mailto:ahmadalhadidii@manmatic.institute"
+        },
+        {
+          "text": "EMAIL 02alhadidiahamd@gmail.com",
+          "href": "mailto:alhadidiahamd@gmail.com"
+        },
+        {
+          "text": "CALL",
+          "href": "tel:+962790652697"
+        },
+        {
+          "text": "WHATSAPP",
+          "href": "https://wa.me/962790652697"
+        },
+        {
+          "text": "LINKEDINAhmad Alhadidii",
+          "href": "https://www.linkedin.com/in/ahmad-alhadidii-97b796290/"
+        },
+        {
+          "text": "INSTAGRAM@ahmad.alhadidii",
+          "href": "https://www.instagram.com/ahmad.alhadidii/"
+        }
+      ],
+      "overflow": false,
+      "visibleInk": {
+        "left": 24.58700700239703,
+        "top": 167.91910206187856,
+        "width": 423.8160511363637,
+        "height": 63.39630681818182,
+        "bottom": 231.31540888006037
+      }
+    },
+    {
+      "width": 390,
+      "phase": "before",
+      "heading": {
+        "x": 18,
+        "y": 106.984375,
+        "width": 108.046875,
+        "height": 24.8125,
+        "right": 126.046875,
+        "bottom": 131.796875
+      },
+      "slot": {
+        "x": 18,
+        "y": 179.796875,
+        "width": 354,
+        "height": 83.671875,
+        "right": 372,
+        "bottom": 263.46875
+      },
+      "image": {
+        "x": 18,
+        "y": 179.796875,
+        "width": 354,
+        "height": 83.671875,
+        "right": 372,
+        "bottom": 263.46875
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 287.46875,
+        "width": 354,
+        "height": 153.125,
+        "right": 372,
+        "bottom": 440.59375
+      },
+      "paragraphStyle": {
+        "font": "23.2px / 30.624px \"IBM Plex Sans\", sans-serif",
+        "color": "rgb(17, 17, 17)",
+        "marginTop": "24px",
+        "textAlign": "justify"
+      },
+      "links": [
+        {
+          "text": "EMAIL 01ahmadalhadidii@manmatic.institute",
+          "href": "mailto:ahmadalhadidii@manmatic.institute"
+        },
+        {
+          "text": "EMAIL 02alhadidiahamd@gmail.com",
+          "href": "mailto:alhadidiahamd@gmail.com"
+        },
+        {
+          "text": "CALL",
+          "href": "tel:+962790652697"
+        },
+        {
+          "text": "WHATSAPP",
+          "href": "https://wa.me/962790652697"
+        },
+        {
+          "text": "LINKEDINAhmad Alhadidii",
+          "href": "https://www.linkedin.com/in/ahmad-alhadidii-97b796290/"
+        },
+        {
+          "text": "INSTAGRAM@ahmad.alhadidii",
+          "href": "https://www.instagram.com/ahmad.alhadidii/"
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "phase": "after",
+      "heading": {
+        "x": 18,
+        "y": 106.984375,
+        "width": 108.046875,
+        "height": 24.8125,
+        "right": 126.046875,
+        "bottom": 131.796875
+      },
+      "slot": {
+        "x": 18,
+        "y": 155.796875,
+        "width": 354,
+        "height": 53.78125,
+        "right": 372,
+        "bottom": 209.578125
+      },
+      "image": {
+        "x": -86.14610290527344,
+        "y": 111.3031234741211,
+        "width": 537.84375,
+        "height": 127.12500762939453,
+        "right": 451.69764709472656,
+        "bottom": 238.42813110351562
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 233.578125,
+        "width": 354,
+        "height": 153.125,
+        "right": 372,
+        "bottom": 386.703125
+      },
+      "paragraphStyle": {
+        "font": "23.2px / 30.624px \"IBM Plex Sans\", sans-serif",
+        "color": "rgb(17, 17, 17)",
+        "marginTop": "24px",
+        "textAlign": "justify"
+      },
+      "links": [
+        {
+          "text": "EMAIL 01ahmadalhadidii@manmatic.institute",
+          "href": "mailto:ahmadalhadidii@manmatic.institute"
+        },
+        {
+          "text": "EMAIL 02alhadidiahamd@gmail.com",
+          "href": "mailto:alhadidiahamd@gmail.com"
+        },
+        {
+          "text": "CALL",
+          "href": "tel:+962790652697"
+        },
+        {
+          "text": "WHATSAPP",
+          "href": "https://wa.me/962790652697"
+        },
+        {
+          "text": "LINKEDINAhmad Alhadidii",
+          "href": "https://www.linkedin.com/in/ahmad-alhadidii-97b796290/"
+        },
+        {
+          "text": "INSTAGRAM@ahmad.alhadidii",
+          "href": "https://www.instagram.com/ahmad.alhadidii/"
+        }
+      ],
+      "overflow": false,
+      "visibleInk": {
+        "left": 18.488953912908386,
+        "top": 156.28641892866654,
+        "width": 353.02107954545454,
+        "height": 52.80647727272727,
+        "bottom": 209.09289620139384
+      }
+    },
+    {
+      "width": 320,
+      "phase": "before",
+      "heading": {
+        "x": 18,
+        "y": 107.25,
+        "width": 108.046875,
+        "height": 24.8125,
+        "right": 126.046875,
+        "bottom": 132.0625
+      },
+      "slot": {
+        "x": 18,
+        "y": 180.0625,
+        "width": 284,
+        "height": 67.125,
+        "right": 302,
+        "bottom": 247.1875
+      },
+      "image": {
+        "x": 18,
+        "y": 180.0625,
+        "width": 284,
+        "height": 67.125,
+        "right": 302,
+        "bottom": 247.1875
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 271.1875,
+        "width": 284,
+        "height": 214.375,
+        "right": 302,
+        "bottom": 485.5625
+      },
+      "paragraphStyle": {
+        "font": "23.2px / 30.624px \"IBM Plex Sans\", sans-serif",
+        "color": "rgb(17, 17, 17)",
+        "marginTop": "24px",
+        "textAlign": "justify"
+      },
+      "links": [
+        {
+          "text": "EMAIL 01ahmadalhadidii@manmatic.institute",
+          "href": "mailto:ahmadalhadidii@manmatic.institute"
+        },
+        {
+          "text": "EMAIL 02alhadidiahamd@gmail.com",
+          "href": "mailto:alhadidiahamd@gmail.com"
+        },
+        {
+          "text": "CALL",
+          "href": "tel:+962790652697"
+        },
+        {
+          "text": "WHATSAPP",
+          "href": "https://wa.me/962790652697"
+        },
+        {
+          "text": "LINKEDINAhmad Alhadidii",
+          "href": "https://www.linkedin.com/in/ahmad-alhadidii-97b796290/"
+        },
+        {
+          "text": "INSTAGRAM@ahmad.alhadidii",
+          "href": "https://www.instagram.com/ahmad.alhadidii/"
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "phase": "after",
+      "heading": {
+        "x": 18,
+        "y": 107.25,
+        "width": 108.046875,
+        "height": 24.8125,
+        "right": 126.046875,
+        "bottom": 132.0625
+      },
+      "slot": {
+        "x": 18,
+        "y": 156.0625,
+        "width": 284,
+        "height": 43.140625,
+        "right": 302,
+        "bottom": 199.203125
+      },
+      "image": {
+        "x": -65.55106353759766,
+        "y": 120.36796569824219,
+        "width": 431.484375,
+        "height": 101.984375,
+        "right": 365.93331146240234,
+        "bottom": 222.3523406982422
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 223.203125,
+        "width": 284,
+        "height": 214.375,
+        "right": 302,
+        "bottom": 437.578125
+      },
+      "paragraphStyle": {
+        "font": "23.2px / 30.624px \"IBM Plex Sans\", sans-serif",
+        "color": "rgb(17, 17, 17)",
+        "marginTop": "24px",
+        "textAlign": "justify"
+      },
+      "links": [
+        {
+          "text": "EMAIL 01ahmadalhadidii@manmatic.institute",
+          "href": "mailto:ahmadalhadidii@manmatic.institute"
+        },
+        {
+          "text": "EMAIL 02alhadidiahamd@gmail.com",
+          "href": "mailto:alhadidiahamd@gmail.com"
+        },
+        {
+          "text": "CALL",
+          "href": "tel:+962790652697"
+        },
+        {
+          "text": "WHATSAPP",
+          "href": "https://wa.me/962790652697"
+        },
+        {
+          "text": "LINKEDINAhmad Alhadidii",
+          "href": "https://www.linkedin.com/in/ahmad-alhadidii-97b796290/"
+        },
+        {
+          "text": "INSTAGRAM@ahmad.alhadidii",
+          "href": "https://www.instagram.com/ahmad.alhadidii/"
+        }
+      ],
+      "overflow": false,
+      "visibleInk": {
+        "left": 18.39226032603871,
+        "top": 156.45574978915127,
+        "width": 283.2106534090909,
+        "height": 42.36392045454546,
+        "bottom": 198.81967024369675
+      }
+    }
+  ]
+}

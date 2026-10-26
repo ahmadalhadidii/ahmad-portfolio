@@ -35,9 +35,8 @@ const siteContent = {
       orientation: "portrait",
       fit: "contain",
       mediaClass: "media--portrait media--cutout",
-      label: "PROFILE IMAGE / 001",
       title: "AHMAD ALHADIDII",
-      caption: "SUBJECT RECORD / ARCHITECTURE · RESEARCH · COMPUTATION",
+      caption: "ARCHITECTURE · RESEARCH · COMPUTATION",
       alt:
         "Portrait of Ahmad Alhadidii wearing round glasses and a dark pinstriped jacket."
     },

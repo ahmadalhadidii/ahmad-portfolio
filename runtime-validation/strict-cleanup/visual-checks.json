@@ -1,0 +1,56 @@
+{
+  "gifSha256": "91c9b05ab6a5aa4eaadeb4ed704cd1b8ffd8c9bdeeaf31a72cced0577c6a6619",
+  "frames": 40,
+  "hasAlpha": true,
+  "showreelPlayPause": true,
+  "viewports": [
+    {
+      "width": 1440,
+      "absent": 0,
+      "separator": "none",
+      "gif": {
+        "loaded": true,
+        "alt": "Ahmad Alhadidii",
+        "width": 1100,
+        "height": 260,
+        "left": 170,
+        "right": 1270,
+        "fit": "fill"
+      },
+      "animationChanged": true,
+      "overflow": false
+    },
+    {
+      "width": 820,
+      "absent": 0,
+      "separator": "none",
+      "gif": {
+        "loaded": true,
+        "alt": "Ahmad Alhadidii",
+        "width": 772,
+        "height": 182.46875,
+        "left": 24,
+        "right": 796,
+        "fit": "fill"
+      },
+      "animationChanged": true,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "absent": 0,
+      "separator": "none",
+      "gif": {
+        "loaded": true,
+        "alt": "Ahmad Alhadidii",
+        "width": 354,
+        "height": 83.671875,
+        "left": 18,
+        "right": 372,
+        "fit": "fill"
+      },
+      "animationChanged": true,
+      "overflow": false
+    }
+  ]
+}

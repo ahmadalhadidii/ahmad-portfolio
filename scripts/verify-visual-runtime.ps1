@@ -269,7 +269,7 @@ try {
 JSON.stringify((() => {
   const slide = document.querySelector(".visual-slide.is-active");
   const visual = window.siteContent.visuals[Number(document.querySelector("[data-visual-current]").textContent) - 1];
-  const link = slide?.querySelector(".visual-slide__open");
+  const link = slide?.querySelector(".visual-slide__image-link");
   const image = slide?.querySelector("img");
   return {
     title: slide?.querySelector("h3")?.textContent.trim() || "",
@@ -284,7 +284,7 @@ JSON.stringify((() => {
     Assert-State ($card.title -eq $card.dataTitle -and $card.title -eq $Titles[$index]) "Visual card $number has the wrong title."
     Assert-State ($card.href -eq "/visuals/$($Slugs[$index])/" -and $card.isAnchor) "Visual card $number does not have its own clean anchor URL."
     Assert-State ($card.image -eq $card.dataImage) "Visual card $number has the wrong image."
-    $null = Get-BrowserValue 'document.querySelector(".visual-slide.is-active .visual-slide__open").click(); true'
+    $null = Get-BrowserValue 'document.querySelector(".visual-slide.is-active .visual-slide__image-link").click(); true'
     Wait-For "location.pathname === '/visuals/$($Slugs[$index])/'" "Visual card $number opened the wrong Visual."
     Assert-VisualPage $index "Visual card $number"
     Assert-NoBrowserErrors "Visual card $number"
