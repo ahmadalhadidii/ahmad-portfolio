@@ -1,0 +1,1290 @@
+[
+  {
+    "engine": "webkit",
+    "width": 402,
+    "height": 874,
+    "old": {
+      "name": {
+        "x": 18,
+        "y": 156.5,
+        "width": 366,
+        "height": 55.609375,
+        "bottom": 212.109375
+      },
+      "image": {
+        "x": -89.671875,
+        "y": 110.5,
+        "width": 556.0625,
+        "height": 131.421875,
+        "bottom": 241.921875
+      },
+      "heading": {
+        "x": 18,
+        "y": 107.703125,
+        "width": 366,
+        "height": 24.796875,
+        "bottom": 132.5
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 232.109375,
+        "width": 366,
+        "height": 127.96875,
+        "bottom": 360.078125
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 18.50755681818181,
+        "y": 157.003125,
+        "right": 383.99227272727273,
+        "bottom": 212.09921875
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 18,
+        "y": 156.5,
+        "width": 366,
+        "height": 55.609375,
+        "bottom": 212.109375
+      },
+      "image": {
+        "x": -89.671875,
+        "y": 110.5,
+        "width": 556.0625,
+        "height": 131.421875,
+        "bottom": 241.921875
+      },
+      "heading": {
+        "x": 18,
+        "y": 107.703125,
+        "width": 366,
+        "height": 24.796875,
+        "bottom": 132.5
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 232.109375,
+        "width": 366,
+        "height": 127.96875,
+        "bottom": 360.078125
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 18.50755681818181,
+        "y": 157.003125,
+        "right": 383.99227272727273,
+        "bottom": 212.09921875
+      }
+    },
+    "distinctAnimationFrames": 5
+  },
+  {
+    "engine": "webkit",
+    "width": 874,
+    "height": 402,
+    "old": {
+      "name": {
+        "x": 24,
+        "y": 169.359375,
+        "width": 425,
+        "height": 64.578125,
+        "bottom": 233.9375
+      },
+      "image": {
+        "x": -101.03125,
+        "y": 115.953125,
+        "width": 645.703125,
+        "height": 152.609375,
+        "bottom": 268.5625
+      },
+      "heading": {
+        "x": 24,
+        "y": 119.5,
+        "width": 826,
+        "height": 25.859375,
+        "bottom": 145.359375
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 253.9375,
+        "width": 661.1875,
+        "height": 91.171875,
+        "bottom": 345.109375
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 24.587357954545453,
+        "y": 169.95336538461538,
+        "right": 448.99041193181813,
+        "bottom": 233.9319110576923
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 24,
+        "y": 169.359375,
+        "width": 425,
+        "height": 64.578125,
+        "bottom": 233.9375
+      },
+      "image": {
+        "x": -101.03125,
+        "y": 115.953125,
+        "width": 645.703125,
+        "height": 152.609375,
+        "bottom": 268.5625
+      },
+      "heading": {
+        "x": 24,
+        "y": 119.5,
+        "width": 826,
+        "height": 25.859375,
+        "bottom": 145.359375
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 253.9375,
+        "width": 661.1875,
+        "height": 91.171875,
+        "bottom": 345.109375
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 24.587357954545453,
+        "y": 169.95336538461538,
+        "right": 448.99041193181813,
+        "bottom": 233.9319110576923
+      }
+    },
+    "distinctAnimationFrames": 5
+  },
+  {
+    "engine": "webkit",
+    "width": 375,
+    "height": 667,
+    "old": {
+      "name": {
+        "x": 18,
+        "y": 156.125,
+        "width": 339,
+        "height": 51.515625,
+        "bottom": 207.640625
+      },
+      "image": {
+        "x": -81.71875,
+        "y": 113.53125,
+        "width": 515.046875,
+        "height": 121.734375,
+        "bottom": 235.265625
+      },
+      "heading": {
+        "x": 18,
+        "y": 107.328125,
+        "width": 339,
+        "height": 24.796875,
+        "bottom": 132.125
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 227.640625,
+        "width": 339,
+        "height": 127.96875,
+        "bottom": 355.609375
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 18.481278409090905,
+        "y": 156.60649038461537,
+        "right": 357.00754261363636,
+        "bottom": 207.6412860576923
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 18,
+        "y": 156.125,
+        "width": 339,
+        "height": 51.515625,
+        "bottom": 207.640625
+      },
+      "image": {
+        "x": -81.71875,
+        "y": 113.53125,
+        "width": 515.046875,
+        "height": 121.734375,
+        "bottom": 235.265625
+      },
+      "heading": {
+        "x": 18,
+        "y": 107.328125,
+        "width": 339,
+        "height": 24.796875,
+        "bottom": 132.125
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 227.640625,
+        "width": 339,
+        "height": 127.96875,
+        "bottom": 355.609375
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 18.481278409090905,
+        "y": 156.60649038461537,
+        "right": 357.00754261363636,
+        "bottom": 207.6412860576923
+      }
+    },
+    "distinctAnimationFrames": 5
+  },
+  {
+    "engine": "webkit",
+    "width": 667,
+    "height": 375,
+    "old": {
+      "name": {
+        "x": 24,
+        "y": 160.71875,
+        "width": 425,
+        "height": 64.578125,
+        "bottom": 225.296875
+      },
+      "image": {
+        "x": -101.03125,
+        "y": 107.3125,
+        "width": 645.703125,
+        "height": 152.609375,
+        "bottom": 259.921875
+      },
+      "heading": {
+        "x": 24,
+        "y": 111.921875,
+        "width": 619,
+        "height": 24.796875,
+        "bottom": 136.71875
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 245.296875,
+        "width": 619,
+        "height": 91.171875,
+        "bottom": 336.46875
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 24.587357954545453,
+        "y": 161.31274038461538,
+        "right": 448.99041193181813,
+        "bottom": 225.2912860576923
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 24,
+        "y": 160.71875,
+        "width": 425,
+        "height": 64.578125,
+        "bottom": 225.296875
+      },
+      "image": {
+        "x": -101.03125,
+        "y": 107.3125,
+        "width": 645.703125,
+        "height": 152.609375,
+        "bottom": 259.921875
+      },
+      "heading": {
+        "x": 24,
+        "y": 111.921875,
+        "width": 619,
+        "height": 24.796875,
+        "bottom": 136.71875
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 245.296875,
+        "width": 619,
+        "height": 91.171875,
+        "bottom": 336.46875
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 24.587357954545453,
+        "y": 161.31274038461538,
+        "right": 448.99041193181813,
+        "bottom": 225.2912860576923
+      }
+    },
+    "distinctAnimationFrames": 5
+  },
+  {
+    "engine": "webkit",
+    "width": 320,
+    "height": 568,
+    "old": {
+      "name": {
+        "x": 18,
+        "y": 156.46875,
+        "width": 284,
+        "height": 43.15625,
+        "bottom": 199.625
+      },
+      "image": {
+        "x": -65.546875,
+        "y": 120.78125,
+        "width": 431.484375,
+        "height": 101.984375,
+        "bottom": 222.765625
+      },
+      "heading": {
+        "x": 18,
+        "y": 107.671875,
+        "width": 284,
+        "height": 24.796875,
+        "bottom": 132.46875
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 219.625,
+        "width": 284,
+        "height": 153.5625,
+        "bottom": 373.1875
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 18.396448863636365,
+        "y": 156.86802884615383,
+        "right": 301.99936079545455,
+        "bottom": 199.62301682692308
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 18,
+        "y": 156.46875,
+        "width": 284,
+        "height": 43.15625,
+        "bottom": 199.625
+      },
+      "image": {
+        "x": -65.546875,
+        "y": 120.78125,
+        "width": 431.484375,
+        "height": 101.984375,
+        "bottom": 222.765625
+      },
+      "heading": {
+        "x": 18,
+        "y": 107.671875,
+        "width": 284,
+        "height": 24.796875,
+        "bottom": 132.46875
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 219.625,
+        "width": 284,
+        "height": 153.5625,
+        "bottom": 373.1875
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 18.396448863636365,
+        "y": 156.86802884615383,
+        "right": 301.99936079545455,
+        "bottom": 199.62301682692308
+      }
+    },
+    "distinctAnimationFrames": 5
+  },
+  {
+    "engine": "webkit",
+    "width": 1440,
+    "height": 900,
+    "old": {
+      "name": {
+        "x": 32,
+        "y": 212.921875,
+        "width": 425,
+        "height": 64.5625,
+        "bottom": 277.484375
+      },
+      "image": {
+        "x": -93.0890884399414,
+        "y": 159.3720703125,
+        "width": 645.703125,
+        "height": 152.609375,
+        "bottom": 311.9814453125
+      },
+      "heading": {
+        "x": 32,
+        "y": 146.296875,
+        "width": 1376,
+        "height": 42.625,
+        "bottom": 188.921875
+      },
+      "paragraph": {
+        "x": 32,
+        "y": 297.484375,
+        "width": 661.1875,
+        "height": 91.171875,
+        "bottom": 388.65625
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "absolute",
+      "transform": "matrix(1, 0, 0, 1, -125.031601, -53.41328)",
+      "overflow": false,
+      "visible": {
+        "x": 32.52951951460405,
+        "y": 213.37231069711538,
+        "right": 456.9325734918767,
+        "bottom": 277.35085637019233
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 32,
+        "y": 212.921875,
+        "width": 425,
+        "height": 64.5625,
+        "bottom": 277.484375
+      },
+      "image": {
+        "x": -93.0890884399414,
+        "y": 159.3720703125,
+        "width": 645.703125,
+        "height": 152.609375,
+        "bottom": 311.9814453125
+      },
+      "heading": {
+        "x": 32,
+        "y": 146.296875,
+        "width": 1376,
+        "height": 42.625,
+        "bottom": 188.921875
+      },
+      "paragraph": {
+        "x": 32,
+        "y": 297.484375,
+        "width": 661.1875,
+        "height": 91.171875,
+        "bottom": 388.65625
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "absolute",
+      "transform": "matrix(1, 0, 0, 1, -125.031601, -53.41328)",
+      "overflow": false,
+      "visible": {
+        "x": 32.52951951460405,
+        "y": 213.37231069711538,
+        "right": 456.9325734918767,
+        "bottom": 277.35085637019233
+      }
+    },
+    "distinctAnimationFrames": 5
+  },
+  {
+    "engine": "webkit",
+    "width": 1025,
+    "height": 800,
+    "old": {
+      "name": {
+        "x": 24,
+        "y": 178.25,
+        "width": 425,
+        "height": 64.5625,
+        "bottom": 242.8125
+      },
+      "image": {
+        "x": -101.0890884399414,
+        "y": 124.7001953125,
+        "width": 645.703125,
+        "height": 152.609375,
+        "bottom": 277.3095703125
+      },
+      "heading": {
+        "x": 24,
+        "y": 123.90625,
+        "width": 977,
+        "height": 30.34375,
+        "bottom": 154.25
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 262.8125,
+        "width": 661.1875,
+        "height": 91.171875,
+        "bottom": 353.984375
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "absolute",
+      "transform": "matrix(1, 0, 0, 1, -125.031601, -53.41328)",
+      "overflow": false,
+      "visible": {
+        "x": 24.529519514604047,
+        "y": 178.70043569711538,
+        "right": 448.9325734918767,
+        "bottom": 242.6789813701923
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 24,
+        "y": 178.25,
+        "width": 425,
+        "height": 64.5625,
+        "bottom": 242.8125
+      },
+      "image": {
+        "x": -101.0890884399414,
+        "y": 124.7001953125,
+        "width": 645.703125,
+        "height": 152.609375,
+        "bottom": 277.3095703125
+      },
+      "heading": {
+        "x": 24,
+        "y": 123.90625,
+        "width": 977,
+        "height": 30.34375,
+        "bottom": 154.25
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 262.8125,
+        "width": 661.1875,
+        "height": 91.171875,
+        "bottom": 353.984375
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "absolute",
+      "transform": "matrix(1, 0, 0, 1, -125.031601, -53.41328)",
+      "overflow": false,
+      "visible": {
+        "x": 24.529519514604047,
+        "y": 178.70043569711538,
+        "right": 448.9325734918767,
+        "bottom": 242.6789813701923
+      }
+    },
+    "distinctAnimationFrames": 5
+  },
+  {
+    "engine": "chromium",
+    "width": 402,
+    "height": 874,
+    "old": {
+      "name": {
+        "x": 18,
+        "y": 155.671875,
+        "width": 366,
+        "height": 55.609375,
+        "bottom": 211.28125
+      },
+      "image": {
+        "x": -89.671875,
+        "y": 109.671875,
+        "width": 556.0625,
+        "height": 131.421875,
+        "bottom": 241.09375
+      },
+      "heading": {
+        "x": 18,
+        "y": 106.859375,
+        "width": 366,
+        "height": 24.8125,
+        "bottom": 131.671875
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 231.28125,
+        "width": 366,
+        "height": 127.96875,
+        "bottom": 359.25
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 18.50755681818181,
+        "y": 156.175,
+        "right": 383.99227272727273,
+        "bottom": 211.27109375
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 18,
+        "y": 156.046875,
+        "width": 366,
+        "height": 55.609375,
+        "bottom": 211.65625
+      },
+      "image": {
+        "x": -89.671875,
+        "y": 110.046875,
+        "width": 556.0625,
+        "height": 131.421875,
+        "bottom": 241.46875
+      },
+      "heading": {
+        "x": 18,
+        "y": 107.234375,
+        "width": 366,
+        "height": 24.8125,
+        "bottom": 132.046875
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 231.65625,
+        "width": 366,
+        "height": 127.96875,
+        "bottom": 359.625
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 18.50755681818181,
+        "y": 156.55,
+        "right": 383.99227272727273,
+        "bottom": 211.64609375
+      }
+    },
+    "distinctAnimationFrames": 5
+  },
+  {
+    "engine": "chromium",
+    "width": 874,
+    "height": 402,
+    "old": {
+      "name": {
+        "x": 24,
+        "y": 169.1875,
+        "width": 425,
+        "height": 64.578125,
+        "bottom": 233.765625
+      },
+      "image": {
+        "x": -101.03125,
+        "y": 115.78125,
+        "width": 645.703125,
+        "height": 152.609375,
+        "bottom": 268.390625
+      },
+      "heading": {
+        "x": 24,
+        "y": 119.3125,
+        "width": 826,
+        "height": 25.875,
+        "bottom": 145.1875
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 253.765625,
+        "width": 661.1875,
+        "height": 91.171875,
+        "bottom": 344.9375
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 24.587357954545453,
+        "y": 169.78149038461538,
+        "right": 448.99041193181813,
+        "bottom": 233.7600360576923
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 24,
+        "y": 169.1875,
+        "width": 425,
+        "height": 64.578125,
+        "bottom": 233.765625
+      },
+      "image": {
+        "x": -101.03125,
+        "y": 115.78125,
+        "width": 645.703125,
+        "height": 152.609375,
+        "bottom": 268.390625
+      },
+      "heading": {
+        "x": 24,
+        "y": 119.3125,
+        "width": 826,
+        "height": 25.875,
+        "bottom": 145.1875
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 253.765625,
+        "width": 661.1875,
+        "height": 91.171875,
+        "bottom": 344.9375
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 24.587357954545453,
+        "y": 169.78149038461538,
+        "right": 448.99041193181813,
+        "bottom": 233.7600360576923
+      }
+    },
+    "distinctAnimationFrames": 5
+  },
+  {
+    "engine": "chromium",
+    "width": 375,
+    "height": 667,
+    "old": {
+      "name": {
+        "x": 18,
+        "y": 156.15625,
+        "width": 339,
+        "height": 51.515625,
+        "bottom": 207.671875
+      },
+      "image": {
+        "x": -81.71875,
+        "y": 113.5625,
+        "width": 515.046875,
+        "height": 121.734375,
+        "bottom": 235.296875
+      },
+      "heading": {
+        "x": 18,
+        "y": 107.34375,
+        "width": 339,
+        "height": 24.8125,
+        "bottom": 132.15625
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 227.671875,
+        "width": 339,
+        "height": 127.96875,
+        "bottom": 355.640625
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 18.481278409090905,
+        "y": 156.63774038461537,
+        "right": 357.00754261363636,
+        "bottom": 207.6725360576923
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 18,
+        "y": 155.515625,
+        "width": 339,
+        "height": 51.515625,
+        "bottom": 207.03125
+      },
+      "image": {
+        "x": -81.71875,
+        "y": 112.921875,
+        "width": 515.046875,
+        "height": 121.734375,
+        "bottom": 234.65625
+      },
+      "heading": {
+        "x": 18,
+        "y": 106.703125,
+        "width": 339,
+        "height": 24.8125,
+        "bottom": 131.515625
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 227.03125,
+        "width": 339,
+        "height": 127.96875,
+        "bottom": 355
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 18.481278409090905,
+        "y": 155.99711538461537,
+        "right": 357.00754261363636,
+        "bottom": 207.0319110576923
+      }
+    },
+    "distinctAnimationFrames": 5
+  },
+  {
+    "engine": "chromium",
+    "width": 667,
+    "height": 375,
+    "old": {
+      "name": {
+        "x": 24,
+        "y": 159.484375,
+        "width": 425,
+        "height": 64.578125,
+        "bottom": 224.0625
+      },
+      "image": {
+        "x": -101.03125,
+        "y": 106.078125,
+        "width": 645.703125,
+        "height": 152.609375,
+        "bottom": 258.6875
+      },
+      "heading": {
+        "x": 24,
+        "y": 110.671875,
+        "width": 619,
+        "height": 24.8125,
+        "bottom": 135.484375
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 244.0625,
+        "width": 619,
+        "height": 91.171875,
+        "bottom": 335.234375
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 24.587357954545453,
+        "y": 160.07836538461538,
+        "right": 448.99041193181813,
+        "bottom": 224.0569110576923
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 24,
+        "y": 160.15625,
+        "width": 425,
+        "height": 64.578125,
+        "bottom": 224.734375
+      },
+      "image": {
+        "x": -101.03125,
+        "y": 106.75,
+        "width": 645.703125,
+        "height": 152.609375,
+        "bottom": 259.359375
+      },
+      "heading": {
+        "x": 24,
+        "y": 111.34375,
+        "width": 619,
+        "height": 24.8125,
+        "bottom": 136.15625
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 244.734375,
+        "width": 619,
+        "height": 91.171875,
+        "bottom": 335.90625
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 24.587357954545453,
+        "y": 160.75024038461538,
+        "right": 448.99041193181813,
+        "bottom": 224.7287860576923
+      }
+    },
+    "distinctAnimationFrames": 5
+  },
+  {
+    "engine": "chromium",
+    "width": 320,
+    "height": 568,
+    "old": {
+      "name": {
+        "x": 18,
+        "y": 155.890625,
+        "width": 284,
+        "height": 43.15625,
+        "bottom": 199.046875
+      },
+      "image": {
+        "x": -65.546875,
+        "y": 120.203125,
+        "width": 431.484375,
+        "height": 101.984375,
+        "bottom": 222.1875
+      },
+      "heading": {
+        "x": 18,
+        "y": 107.078125,
+        "width": 284,
+        "height": 24.8125,
+        "bottom": 131.890625
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 219.046875,
+        "width": 284,
+        "height": 153.5625,
+        "bottom": 372.609375
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 18.396448863636365,
+        "y": 156.28990384615383,
+        "right": 301.99936079545455,
+        "bottom": 199.04489182692308
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 18,
+        "y": 156.1875,
+        "width": 284,
+        "height": 43.15625,
+        "bottom": 199.34375
+      },
+      "image": {
+        "x": -65.546875,
+        "y": 120.5,
+        "width": 431.484375,
+        "height": 101.984375,
+        "bottom": 222.484375
+      },
+      "heading": {
+        "x": 18,
+        "y": 107.375,
+        "width": 284,
+        "height": 24.8125,
+        "bottom": 132.1875
+      },
+      "paragraph": {
+        "x": 18,
+        "y": 219.34375,
+        "width": 284,
+        "height": 153.5625,
+        "bottom": 372.90625
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "static",
+      "transform": "none",
+      "overflow": false,
+      "visible": {
+        "x": 18.396448863636365,
+        "y": 156.58677884615383,
+        "right": 301.99936079545455,
+        "bottom": 199.34176682692308
+      }
+    },
+    "distinctAnimationFrames": 5
+  },
+  {
+    "engine": "chromium",
+    "width": 1440,
+    "height": 900,
+    "old": {
+      "name": {
+        "x": 32,
+        "y": 212.65625,
+        "width": 425,
+        "height": 64.5625,
+        "bottom": 277.21875
+      },
+      "image": {
+        "x": -93.03160095214844,
+        "y": 159.2429656982422,
+        "width": 645.703125,
+        "height": 152.60939025878906,
+        "bottom": 311.85235595703125
+      },
+      "heading": {
+        "x": 32,
+        "y": 146.03125,
+        "width": 1376,
+        "height": 42.625,
+        "bottom": 188.65625
+      },
+      "paragraph": {
+        "x": 32,
+        "y": 297.21875,
+        "width": 661.1875,
+        "height": 91.171875,
+        "bottom": 388.390625
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "absolute",
+      "transform": "matrix(1, 0, 0, 1, -125.032, -53.4133)",
+      "overflow": false,
+      "visible": {
+        "x": 32.587007002397016,
+        "y": 213.2432114821214,
+        "right": 456.9900609796697,
+        "bottom": 277.2217635521522
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 32,
+        "y": 212.65625,
+        "width": 425,
+        "height": 64.5625,
+        "bottom": 277.21875
+      },
+      "image": {
+        "x": -93.03160095214844,
+        "y": 159.2429656982422,
+        "width": 645.703125,
+        "height": 152.60939025878906,
+        "bottom": 311.85235595703125
+      },
+      "heading": {
+        "x": 32,
+        "y": 146.03125,
+        "width": 1376,
+        "height": 42.625,
+        "bottom": 188.65625
+      },
+      "paragraph": {
+        "x": 32,
+        "y": 297.21875,
+        "width": 661.1875,
+        "height": 91.171875,
+        "bottom": 388.390625
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "absolute",
+      "transform": "matrix(1, 0, 0, 1, -125.032, -53.4133)",
+      "overflow": false,
+      "visible": {
+        "x": 32.587007002397016,
+        "y": 213.2432114821214,
+        "right": 456.9900609796697,
+        "bottom": 277.2217635521522
+      }
+    },
+    "distinctAnimationFrames": 5
+  },
+  {
+    "engine": "chromium",
+    "width": 1025,
+    "height": 800,
+    "old": {
+      "name": {
+        "x": 24,
+        "y": 176.984375,
+        "width": 425,
+        "height": 64.5625,
+        "bottom": 241.546875
+      },
+      "image": {
+        "x": -101.03160095214844,
+        "y": 123.57109069824219,
+        "width": 645.703125,
+        "height": 152.60939025878906,
+        "bottom": 276.18048095703125
+      },
+      "heading": {
+        "x": 24,
+        "y": 122.640625,
+        "width": 977,
+        "height": 30.34375,
+        "bottom": 152.984375
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 261.546875,
+        "width": 661.1875,
+        "height": 91.171875,
+        "bottom": 352.71875
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "absolute",
+      "transform": "matrix(1, 0, 0, 1, -125.032, -53.4133)",
+      "overflow": false,
+      "visible": {
+        "x": 24.587007002397016,
+        "y": 177.5713364821214,
+        "right": 448.9900609796697,
+        "bottom": 241.5498885521522
+      }
+    },
+    "actual": {
+      "name": {
+        "x": 24,
+        "y": 177.65625,
+        "width": 425,
+        "height": 64.5625,
+        "bottom": 242.21875
+      },
+      "image": {
+        "x": -101.03160095214844,
+        "y": 124.24296569824219,
+        "width": 645.703125,
+        "height": 152.60939025878906,
+        "bottom": 276.85235595703125
+      },
+      "heading": {
+        "x": 24,
+        "y": 123.3125,
+        "width": 977,
+        "height": 30.34375,
+        "bottom": 153.65625
+      },
+      "paragraph": {
+        "x": 24,
+        "y": 262.21875,
+        "width": 661.1875,
+        "height": 91.171875,
+        "bottom": 353.390625
+      },
+      "natural": [
+        1100,
+        260
+      ],
+      "position": "absolute",
+      "transform": "matrix(1, 0, 0, 1, -125.032, -53.4133)",
+      "overflow": false,
+      "visible": {
+        "x": 24.587007002397016,
+        "y": 178.2432114821214,
+        "right": 448.9900609796697,
+        "bottom": 242.2217635521522
+      }
+    },
+    "distinctAnimationFrames": 5
+  }
+]

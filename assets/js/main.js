@@ -1545,7 +1545,7 @@
       autoplayTimer = window.setTimeout(function () {
         autoplayTimer = 0;
         setIndex(index + 1, false);
-      }, 45000);
+      }, 20000);
     }
 
     function addMetadata(list, label, value) {

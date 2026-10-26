@@ -5931,3 +5931,16 @@ figure[data-image-state],
   .section-heading { padding-bottom: 28.6875px; }
   .computation .section-heading { padding-bottom: 45.375px; }
 }
+
+/* Keep the mobile signature in normal flow; compensate only for transparent canvas padding. */
+@media (max-width: 700px), (max-width: 1024px) and (hover: none) and (pointer: coarse) {
+  .contact__name {
+    display: flow-root;
+    aspect-ratio: auto;
+  }
+  .contact__name img {
+    position: static;
+    transform: none;
+    margin: -12.569061% 0 -8.149171% -29.41989%;
+  }
+}

@@ -159,7 +159,7 @@ async function menuLink(page, id, mobile) {
     }
 
     if (suite === 'all' || suite === 'autoplay') {
-    // Browser virtual time exercises the real 45,000ms timer without waiting minutes.
+    // Browser virtual time exercises the real 20,000ms timer without waiting minutes.
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     page.on('pageerror', error => errors.push(error.message));
     await ready(page, '/#visual-studies');
@@ -171,34 +171,34 @@ async function menuLink(page, id, mobile) {
     const slider = page.locator('[data-visual-slider]');
     const number = () => page.locator('[data-visual-current]').textContent();
     await slider.dispatchEvent('mouseleave');
-    await page.clock.fastForward(44999);
-    check(await number() === '01', 'No advance before 45 seconds');
+    await page.clock.fastForward(19999);
+    check(await number() === '01', 'No advance before 20 seconds');
     await page.clock.fastForward(1);
-    check(await number() === '02', 'Advance at 45 seconds');
+    check(await number() === '02', 'Advance at 20 seconds');
     for (const expected of ['03', '04', '05', '01']) {
-      await page.clock.fastForward(45000);
+      await page.clock.fastForward(20000);
       check(await number() === expected, 'Autoplay loop reaches ' + expected);
     }
     await slider.dispatchEvent('mouseenter');
     await page.clock.fastForward(90000);
     check(await number() === '01', 'Hover pauses');
     await slider.dispatchEvent('mouseleave');
-    await page.clock.fastForward(45000);
+    await page.clock.fastForward(20000);
     check(await number() === '02', 'Hover exit resumes');
     await page.locator('[data-visual-next]').focus();
     await page.clock.fastForward(90000);
     check(await number() === '02', 'Keyboard focus pauses');
     await page.evaluate(() => document.activeElement.blur());
-    await page.clock.fastForward(44999);
+    await page.clock.fastForward(19999);
     check(await number() === '02', 'Focus exit restarts full interval');
     await page.clock.fastForward(1);
     check(await number() === '03', 'Focus exit resumes');
-    await page.clock.fastForward(30000);
+    await page.clock.fastForward(10000);
     await page.locator('[data-visual-next]').dispatchEvent('click');
-    await page.clock.fastForward(44999);
+    await page.clock.fastForward(19999);
     check(await number() === '04', 'Manual interaction resets interval');
     await page.clock.fastForward(1);
-    check(await number() === '05', 'Reset interval advances at 45 seconds');
+    check(await number() === '05', 'Reset interval advances at 20 seconds');
     await page.evaluate(() => {
       window.dispatchEvent(new WheelEvent('wheel'));
       document.getElementById('profile').scrollIntoView({behavior:'instant'});
@@ -208,7 +208,7 @@ async function menuLink(page, id, mobile) {
     check(await number() === '05', 'Offscreen gallery pauses');
     await slider.scrollIntoViewIfNeeded();
     await page.clock.runFor(40);
-    await page.clock.fastForward(45000);
+    await page.clock.fastForward(20000);
     check(await number() === '01', 'Visible gallery resumes');
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.clock.fastForward(90000);
